@@ -1,0 +1,65 @@
+import { query } from "../../database/db.js";
+
+export const listNotifications = async (req, res) => {
+    try {
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const status = req.query.status || "all";
+        const type = req.query.type;
+
+        const offset = (page - 1) * limit;
+
+        let sqlQuery = `SELECT * FROM notifications WHERE user_id = ?`;
+        let queryParams = [req.user.id];
+
+        if (status === "read") {
+            sqlQuery += ` AND is_read = 1`;
+        } else if (status === "unread") {
+            sqlQuery += ` AND is_read = 0`;
+        }
+
+        if (type) {
+            sqlQuery += ` AND type = ?`;
+            queryParams.push(type);
+        }
+
+        sqlQuery += ` ORDER BY id DESC LIMIT ? OFFSET ?`;
+        queryParams.push(limit, offset);
+
+        const rows = await query(sqlQuery, queryParams);
+
+        let countQuery = `SELECT COUNT(*) as total FROM notifications WHERE user_id = ?`;
+        let countParams = [req.user.id];
+
+        if (status === "read") {
+            countQuery += ` AND is_read = 1`;
+        } else if (status === "unread") {
+            countQuery += ` AND is_read = 0`;
+        }
+
+        if (type) {
+            countQuery += ` AND type = ?`;
+            countParams.push(type);
+        }
+
+        const countResult = await query(countQuery, countParams);
+        const total = countResult[0].total;
+
+        res.json({
+            success: true,
+            data: rows,
+            pagination: {
+                page,
+                limit,
+                total,
+                totalPages: Math.ceil(total / limit),
+            },
+        });
+    } catch (error) {
+        console.error("Error fetching notifications:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error",
+        });
+    }
+};

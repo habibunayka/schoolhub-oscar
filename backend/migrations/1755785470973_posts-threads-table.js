@@ -1,0 +1,33 @@
+export const up = (pgm) => {
+    pgm.createTable("posts", {
+        id: "id",
+        club_id: {
+            type: "integer",
+            notNull: true,
+            references: "clubs",
+            onDelete: "cascade",
+        },
+        author_id: {
+            type: "integer",
+            notNull: true,
+            references: "users",
+            onDelete: "set null",
+        },
+        body_html: { type: "text", notNull: true },
+        visibility: {
+            type: "text",
+            default: "public",
+            check: "visibility IN ('public','members','school')",
+        },
+        status: { type: "text", default: "active" },
+        created_at: {
+            type: "timestamp",
+            default: pgm.func("CURRENT_TIMESTAMP"),
+        },
+        pinned: { type: "boolean", default: false },
+    });
+};
+
+export const down = (pgm) => {
+    pgm.dropTable("posts");
+};
