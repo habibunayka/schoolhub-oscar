@@ -1,5 +1,5 @@
 import { body, param, validationResult } from "express-validator";
-import { ValidationError } from "../../exceptions/ValidationError";
+import { ValidationError } from "../../exceptions/ValidationError.js";
 
 export const checkValidationResult = (req, res, next) => {
     const errors = validationResult(req);
@@ -13,7 +13,6 @@ export const validateListPosts = [
     param("id")
         .isInt({ min: 1 })
         .withMessage("Club ID must be a positive integer"),
-
     checkValidationResult,
 ];
 
@@ -21,11 +20,9 @@ export const validateGetPostById = [
     param("id")
         .isInt({ min: 1 })
         .withMessage("Club ID must be a positive integer"),
-
     param("postId")
         .isInt({ min: 1 })
         .withMessage("Post ID must be a positive integer"),
-
     checkValidationResult,
 ];
 
@@ -55,6 +52,17 @@ export const validateCreatePost = [
             if (value === null || value === undefined) return true;
             if (![0, 1, true, false].includes(value)) {
                 throw new Error("Pinned must be 0/1 or boolean");
+            }
+            return true;
+        }),
+
+    body("attachments")
+        .optional()
+        .isArray({ max: 10 })
+        .withMessage("Attachments must be an array with maximum 10 items")
+        .custom((arr) => {
+            if (!arr.every((item) => typeof item === "string")) {
+                throw new Error("All attachments must be string URLs");
             }
             return true;
         }),

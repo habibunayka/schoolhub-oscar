@@ -7,6 +7,7 @@ import {
     validateListPosts,
     validateGetPostById,
 } from "./validator.js";
+import { upload } from "../../services/storage.js";
 
 const r = Router();
 
@@ -23,6 +24,7 @@ r.post(
     "/clubs/:id/posts",
     auth(),
     permitClub("owner", "admin", "member"),
+    upload.array("attachments", 10),
     validateCreatePost,
     Posts.createPost
 );

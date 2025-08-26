@@ -1,19 +1,14 @@
-import fs from "fs";
+import multer from "multer";
 import path from "path";
 
-const UPLOAD_DIR = path.resolve("./uploads");
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, path.join(process.cwd(), "../../uploads"));
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        cb(null, uniqueSuffix + "-" + file.originalname);
+    },
+});
 
-if (!fs.existsSync(UPLOAD_DIR)) {
-    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-}
-
-export async function presignPut(key, contentType) {
-    const filePath = path.join(UPLOAD_DIR, key);
-
-    return {
-        uploadPath: filePath,
-        url: `/uploads/${key}`, 
-        key,
-        contentType,
-    };
-}
+export const upload = multer({ storage });

@@ -23,6 +23,8 @@ app.use("/api", api);
 
 app.get("/health", (req, res) => res.json({ ok: true }));
 
+app.use("/uploads", express.static(path.join(process.cwd(), "../uploads")));
+
 app.use((req, res, next) => {
     if (res.headersSent) return next();
 
