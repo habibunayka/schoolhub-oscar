@@ -12,7 +12,7 @@
         "migrate:create": "node-pg-migrate create",
         "seed": "node src/database/seed.js",
         "worker": "node src/queues/workers.js",
-        "test": "cross-env NODE_OPTIONS=--experimental-vm-modules jest"
+        "test": "cross-env NODE_ENV=test JWT_SECRET=test node --test"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.645.0",
