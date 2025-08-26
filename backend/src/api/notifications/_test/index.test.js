@@ -1,8 +1,58 @@
-import router from "../index.js";
+import test from "node:test";
+import assert from "node:assert/strict";
+import express from "express";
+import jwt from "jsonwebtoken";
+import { __setDbMocks } from "../../../database/db.js";
 
-describe("notifications index", () => {
-    test("should export router", () => {
-        expect(typeof router).toBe("function");
+process.env.JWT_SECRET = "test";
+const router = (await import("../index.js")).default;
+
+async function createServer() {
+    const app = express();
+    app.use(express.json());
+    app.use(router);
+    const server = app.listen(0);
+    await new Promise((resolve) => server.once("listening", resolve));
+    const port = server.address().port;
+    return { server, url: `http://localhost:${port}` };
+}
+
+test("GET /notifications returns data", async () => {
+    let calls = 0;
+    __setDbMocks({
+        query: (sql, params) => {
+            calls++;
+            if (sql.includes("COUNT")) return [{ total: 0 }];
+            return [];
+        },
     });
+    const token = jwt.sign({ id: 1 }, process.env.JWT_SECRET);
+
+    const { server, url } = await createServer();
+    const res = await fetch(`${url}/notifications`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.deepEqual(body.data, []);
+    assert.equal(calls, 2);
+
+    server.close();
+    __setDbMocks({ query: () => [] });
 });
 
+test("GET /notifications with invalid limit triggers validation", async () => {
+    let called = false;
+    __setDbMocks({ query: () => { called = true; return []; } });
+    const token = jwt.sign({ id: 1 }, process.env.JWT_SECRET);
+
+    const { server, url } = await createServer();
+    const res = await fetch(`${url}/notifications?limit=-1`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    assert.equal(res.status, 500);
+    assert.equal(called, false);
+
+    server.close();
+    __setDbMocks({ query: () => [] });
+});
