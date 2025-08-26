@@ -131,7 +131,7 @@ export function StudentDashboard({ onViewClubProfile, onCreateEvent, studentName
     {
       id: "5",
       name: "Robotics Club",
-      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyb2JvdGljcyUyMHN0dWRlbnRzfGVufDF8fHx8MTc1NTkzMjExN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxyb2JvdGljcyUyMHN0dWRlbnRzfGVufDF8fHx8MTc1NTkzMjExN3ww&ixlib=rb-4.1.0&q=80&w=1080",
       category: "Teknologi",
       memberCount: 12,
       matchPercentage: 88

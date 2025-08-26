@@ -8,8 +8,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Separator } from "./ui/separator";
 
 export function ClubProfilePage({ onBack, clubId }) {
-  // TODO: Use clubId to fetch club data in real app
-  // eslint-disable-next-line no-unused-vars
   const [activeTab, setActiveTab] = useState("posts");
 
   // Mock club data - in real app this would be fetched based on clubId
