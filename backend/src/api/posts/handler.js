@@ -58,7 +58,7 @@ export const createPost = (req, res) => {
     if (req.files && req.files.length > 10) {
         return res
             .status(400)
-            .json({ message: "Maximum 10 attachments allowed" });
+            .json({ message: "Maximum of 10 attachments allowed" });
     }
 
     req.files?.forEach((file) => {
