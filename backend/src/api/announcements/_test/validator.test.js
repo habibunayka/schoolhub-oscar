@@ -1,16 +1,45 @@
+import test from "node:test";
+import assert from "node:assert/strict";
 import {
     validateGetAllAnnouncements,
-    validateGetAnnouncementById,
     validateCreateAnnouncement,
 } from "../validator.js";
+import { ValidationError } from "../../../exceptions/ValidationError.js";
 
-describe("announcements validator", () => {
-    test("validators should be arrays", () => {
-        [
-            validateGetAllAnnouncements,
-            validateGetAnnouncementById,
-            validateCreateAnnouncement,
-        ].forEach((v) => expect(Array.isArray(v)).toBe(true));
-    });
+async function run(middlewares, req) {
+    for (const mw of middlewares) {
+        await new Promise((resolve, reject) =>
+            mw(req, {}, (err) => (err ? reject(err) : resolve()))
+        );
+    }
+}
+
+test("validateGetAllAnnouncements rejects negative limit", async () => {
+    const req = { query: { limit: "-1" } };
+    await assert.rejects(
+        () => run(validateGetAllAnnouncements, req),
+        ValidationError
+    );
 });
+
+test("validateCreateAnnouncement requires fields", async () => {
+    const req = { body: {} };
+    await assert.rejects(
+        () => run(validateCreateAnnouncement, req),
+        ValidationError
+    );
+});
+
+test("validateCreateAnnouncement passes with valid data", async () => {
+    const req = {
+        body: {
+            club_id: 1,
+            title: "Title",
+            content_html: "<p>Valid</p>",
+            target: "all",
+        },
+    };
+    await run(validateCreateAnnouncement, req);
+});
+
 
