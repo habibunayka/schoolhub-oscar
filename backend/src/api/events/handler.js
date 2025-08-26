@@ -42,7 +42,7 @@ export const createEvent = (req, res) => {
 
 export const rsvpEvent = (req, res) => {
     const eventId = Number(req.params.id);
-    const { status } = req.body; // going|interested|declined
+    const { status } = req.body; // status: "going" | "interested" | "declined"
     try {
         run(
             `INSERT INTO event_rsvps(event_id, user_id, status, checkin_code) VALUES (?,?,?,?)`,
