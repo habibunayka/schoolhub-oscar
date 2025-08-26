@@ -7,6 +7,7 @@ import {
     validateCreateEvent,
     validateRsvpEvent,
     validateCheckinEvent,
+    validateReviewEvent,
 } from "./validator.js";
 
 const r = Router();
@@ -22,6 +23,8 @@ r.post(
 );
 
 r.post("/events/:id/rsvp", validateRsvpEvent, auth(), Events.rsvpEvent);
+
+r.post("/events/:id/review", validateReviewEvent, auth(), Events.reviewEvent);
 
 r.post(
     "/events/:id/checkin",

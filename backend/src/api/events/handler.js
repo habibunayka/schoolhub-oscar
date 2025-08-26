@@ -57,6 +57,28 @@ export const rsvpEvent = (req, res) => {
     res.json({ ok: true });
 };
 
+export const reviewEvent = (req, res) => {
+    const eventId = Number(req.params.id);
+    const { rating, comment } = req.body;
+    const rsvp = get(
+        `SELECT id FROM event_rsvps WHERE event_id = ? AND user_id = ?`,
+        [eventId, req.user.id]
+    );
+    if (!rsvp) return res.status(403).json({ message: "RSVP required" });
+    try {
+        run(
+            `INSERT INTO event_reviews(event_id, user_id, rating, comment) VALUES (?,?,?,?)`,
+            [eventId, req.user.id, rating, comment]
+        );
+    } catch {
+        run(
+            `UPDATE event_reviews SET rating = ?, comment = ? WHERE event_id = ? AND user_id = ?`,
+            [rating, comment, eventId, req.user.id]
+        );
+    }
+    res.json({ ok: true });
+};
+
 export const checkinEvent = (req, res) => {
     const eventId = Number(req.params.id);
     const { code } = req.body;
