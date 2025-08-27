@@ -4,7 +4,7 @@ import * as Auth from "../handler.js";
 import { __setDbMocks } from "../../../database/db.js";
 
 test("login returns 401 when user not found", async () => {
-    __setDbMocks({ get: () => undefined });
+    __setDbMocks({ get: async () => undefined });
     const req = { body: { email: "a@a.com", password: "pw" } };
     let status, json;
     const res = {
@@ -16,15 +16,15 @@ test("login returns 401 when user not found", async () => {
 
     assert.equal(status, 401);
     assert.deepEqual(json, { message: "Invalid credentials" });
-    __setDbMocks({ get: () => undefined });
+    __setDbMocks({ get: async () => undefined });
 });
 
 test("register hashes password and inserts", async () => {
     let params;
     __setDbMocks({
-        run: (sql, p) => {
+        run: async (sql, p) => {
             params = p;
-            return { lastInsertRowid: 5 };
+            return { rowCount: 1, rows: [{ id: 5 }] };
         },
     });
     const req = {
@@ -43,5 +43,5 @@ test("register hashes password and inserts", async () => {
     assert.equal(params[0], "User");
     assert.equal(params[1], "u@e.com");
     assert.notEqual(params[2], "secret");
-    __setDbMocks({ run: () => ({ lastInsertRowid: 0 }) });
+    __setDbMocks({ run: async () => ({ rowCount: 0, rows: [] }) });
 });

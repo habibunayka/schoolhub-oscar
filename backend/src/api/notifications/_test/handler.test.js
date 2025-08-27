@@ -7,7 +7,7 @@ test("listNotifications returns data and pagination", async () => {
     const rows = [{ id: 1 }];
     let calls = 0;
     __setDbMocks({
-        query: (sql, params) => {
+        query: async (sql, params) => {
             calls++;
             if (sql.includes("COUNT")) return [{ total: rows.length }];
             assert.ok(sql.includes("FROM notifications"));
@@ -24,5 +24,5 @@ test("listNotifications returns data and pagination", async () => {
     assert.deepEqual(json.data, rows);
     assert.equal(json.pagination.total, rows.length);
     assert.equal(calls, 2);
-    __setDbMocks({ query: () => [] });
+    __setDbMocks({ query: async () => [] });
 });

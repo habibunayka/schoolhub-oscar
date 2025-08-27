@@ -16,7 +16,12 @@ async function createServer() {
 
 test("POST /auth/register creates user", async () => {
     let called = false;
-    __setDbMocks({ run: () => { called = true; return { lastInsertRowid: 1 }; } });
+    __setDbMocks({
+        run: async () => {
+            called = true;
+            return { rowCount: 1, rows: [{ id: 1 }] };
+        },
+    });
 
     const { server, url } = await createServer();
     const res = await fetch(`${url}/auth/register`, {
@@ -31,12 +36,17 @@ test("POST /auth/register creates user", async () => {
     assert.equal(called, true);
 
     server.close();
-    __setDbMocks({ run: () => ({ lastInsertRowid: 0 }) });
+    __setDbMocks({ run: async () => ({ rowCount: 0, rows: [] }) });
 });
 
 test("POST /auth/register with invalid data triggers validation", async () => {
     let called = false;
-    __setDbMocks({ run: () => { called = true; return { lastInsertRowid: 2 }; } });
+    __setDbMocks({
+        run: async () => {
+            called = true;
+            return { rowCount: 1, rows: [{ id: 2 }] };
+        },
+    });
 
     const { server, url } = await createServer();
     const res = await fetch(`${url}/auth/register`, {
@@ -49,5 +59,5 @@ test("POST /auth/register with invalid data triggers validation", async () => {
     assert.equal(called, false);
 
     server.close();
-    __setDbMocks({ run: () => ({ lastInsertRowid: 0 }) });
+    __setDbMocks({ run: async () => ({ rowCount: 0, rows: [] }) });
 });

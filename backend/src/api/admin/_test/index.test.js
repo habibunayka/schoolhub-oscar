@@ -19,7 +19,7 @@ async function createServer() {
 
 test("PATCH /admin/takedown updates row", async () => {
     let called = false;
-    __setDbMocks({ run: () => { called = true; } });
+    __setDbMocks({ run: async () => { called = true; return { rowCount: 1, rows: [] }; } });
     const token = jwt.sign({ id: 1, role_global: "school_admin" }, process.env.JWT_SECRET);
 
     const { server, url } = await createServer();
@@ -38,12 +38,12 @@ test("PATCH /admin/takedown updates row", async () => {
     assert.equal(called, true);
 
     server.close();
-    __setDbMocks({ run: () => ({ lastInsertRowid: 0 }) });
+    __setDbMocks({ run: async () => ({ rowCount: 0, rows: [] }) });
 });
 
 test("PATCH /admin/takedown with invalid entity triggers validation", async () => {
     let called = false;
-    __setDbMocks({ run: () => { called = true; } });
+    __setDbMocks({ run: async () => { called = true; return { rowCount: 1, rows: [] }; } });
     const token = jwt.sign({ id: 1, role_global: "school_admin" }, process.env.JWT_SECRET);
 
     const { server, url } = await createServer();
@@ -60,5 +60,5 @@ test("PATCH /admin/takedown with invalid entity triggers validation", async () =
     assert.equal(called, false);
 
     server.close();
-    __setDbMocks({ run: () => ({ lastInsertRowid: 0 }) });
+    __setDbMocks({ run: async () => ({ rowCount: 0, rows: [] }) });
 });

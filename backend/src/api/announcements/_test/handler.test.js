@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import * as Announcements from "../handler.js";
 import { __setDbMocks } from "../../../database/db.js";
 
-test("getAllAnnouncements returns queried rows", () => {
+test("getAllAnnouncements returns queried rows", async () => {
     const rows = [{ id: 1, title: "Hello" }];
     let called = false;
     __setDbMocks({
@@ -19,16 +19,16 @@ test("getAllAnnouncements returns queried rows", () => {
     let json;
     const res = { json: (data) => (json = data) };
 
-    Announcements.getAllAnnouncements(req, res);
+    await Announcements.getAllAnnouncements(req, res);
 
     assert.deepEqual(json, rows);
     assert.equal(called, true);
     __setDbMocks({ query: () => [] });
 });
 
-test("getAnnouncementById handles missing row", () => {
+test("getAnnouncementById handles missing row", async () => {
     let getCalled = false;
-    __setDbMocks({ get: () => { getCalled = true; return undefined; } });
+    __setDbMocks({ get: async () => { getCalled = true; return undefined; } });
 
     const req = { params: { id: "99" } };
     let status, json;
@@ -37,22 +37,22 @@ test("getAnnouncementById handles missing row", () => {
         json: (data) => (json = data),
     };
 
-    Announcements.getAnnouncementById(req, res);
+    await Announcements.getAnnouncementById(req, res);
 
     assert.equal(status, 404);
     assert.deepEqual(json, { message: "Announcement not found" });
     assert.equal(getCalled, true);
-    __setDbMocks({ get: () => undefined });
+    __setDbMocks({ get: async () => undefined });
 });
 
-test("createAnnouncement sanitizes HTML and inserts", () => {
+test("createAnnouncement sanitizes HTML and inserts", async () => {
     let params;
     let runCalled = false;
     __setDbMocks({
-        run: (sql, p) => {
+        run: async (sql, p) => {
             runCalled = true;
             params = p;
-            return { lastInsertRowid: 7 };
+            return { rowCount: 1, rows: [{ id: 7 }] };
         },
     });
 
@@ -70,12 +70,12 @@ test("createAnnouncement sanitizes HTML and inserts", () => {
         json: (data) => (json = data),
     };
 
-    Announcements.createAnnouncement(req, res);
+    await Announcements.createAnnouncement(req, res);
 
     assert.equal(status, 201);
     assert.deepEqual(json, { id: 7 });
     assert.equal(params[2], "<p>Hi</p>");
     assert.equal(runCalled, true);
-    __setDbMocks({ run: () => ({ lastInsertRowid: 0 }) });
+    __setDbMocks({ run: async () => ({ rowCount: 0, rows: [] }) });
 });
 
