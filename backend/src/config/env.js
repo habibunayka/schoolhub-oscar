@@ -5,6 +5,7 @@ export const env = {
     NODE_ENV: process.env.NODE_ENV || "development",
     JWT_SECRET: process.env.JWT_SECRET,
     REDIS_URL: process.env.REDIS_URL,
+    CLIENT_ORIGIN: process.env.CLIENT_ORIGIN || "http://localhost:5173",
     S3: {
         ENDPOINT: process.env.S3_ENDPOINT,
         REGION: process.env.S3_REGION,
