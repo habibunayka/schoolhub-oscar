@@ -20,9 +20,9 @@ export default function AppLayout() {
     window.scrollTo(0, 0);
   }, [location.pathname]);
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-background">
       <Navbar />
-      <main className="pb-20 md:pb-8">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 pb-20 md:pb-8">
         <Outlet />
       </main>
       <BottomNavigation />

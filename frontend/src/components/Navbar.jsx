@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Bell } from 'lucide-react';
+import { Bell, Search } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -68,24 +68,40 @@ function UserMenu() {
 }
 
 export default function Navbar() {
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   return (
-    <nav className="flex items-center justify-between p-4 gap-4 w-screen bg-white border-b border-border sticky top-0 z-50">
-      <div className="flex items-center">
-        <Link to="/" className="font-bold">
-          SchoolHub
-        </Link>
-      </div>
-      <div className="flex-1 max-w-md">
-        <GlobalSearch />
-      </div>
-      <div className="flex items-center gap-2">
-        <Button variant="ghost" size="icon" className="relative">
-          <Bell className="size-5" />
-          <span className="absolute -top-1 -right-1 bg-[#DC2626] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-            3
-          </span>
-        </Button>
-        <UserMenu />
+    <nav className="w-full bg-white/80 dark:bg-slate-900/80 backdrop-blur shadow-sm sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 px-4 py-3">
+        <div className="flex items-center">
+          <Link to="/" className="font-bold text-xl text-primary">
+            SchoolHub
+          </Link>
+        </div>
+        <div className="flex-1 max-w-md hidden md:block">
+          <GlobalSearch />
+        </div>
+        {mobileSearchOpen && (
+          <div className="absolute left-0 right-0 top-full p-4 md:hidden bg-white dark:bg-slate-900 border-b border-border">
+            <GlobalSearch />
+          </div>
+        )}
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="md:hidden"
+            onClick={() => setMobileSearchOpen((s) => !s)}
+          >
+            <Search className="size-5" />
+          </Button>
+          <Button variant="ghost" size="icon" className="relative">
+            <Bell className="size-5" />
+            <span className="absolute -top-1 -right-1 bg-destructive text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+              3
+            </span>
+          </Button>
+          <UserMenu />
+        </div>
       </div>
     </nav>
   );
