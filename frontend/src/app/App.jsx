@@ -1,18 +1,24 @@
-import { Search, Gamepad2, Palette, FlaskConical, Languages, Plus } from "lucide-react";
+import {
+  Search,
+  Gamepad2,
+  Palette,
+  FlaskConical,
+  Languages,
+  Plus,
+} from "lucide-react";
 import { useState } from "react";
-import { Header } from "./components/Header";
-import { EventCard } from "./components/EventCard";
-import { BottomNavigation } from "./components/BottomNavigation";
-import { LoginPage } from "./components/LoginPage";
-import { RegisterPage } from "./components/RegisterPage";
-import { CreateEventPage } from "./components/CreateEventPage";
-import { ClubProfilePage } from "./components/ClubProfilePage";
-import { StudentDashboard } from "./components/StudentDashboard";
-import { Button } from "./components/ui/button";
-import { Input } from "./components/ui/input";
-import { Badge } from "./components/ui/badge";
-import { ImageWithFallback } from "./components/figma/ImageWithFallback";
-import { ClubList } from "./components/ClubList";
+import { Header } from "@components/ui/Header";
+import { EventCard } from "@components/ui/EventCard";
+import { BottomNavigation } from "@components/ui/BottomNavigation";
+import LoginPage from "@pages/Auth/LoginPage";
+import RegisterPage from "@pages/Auth/RegisterPage";
+import CreateEventPage from "@pages/Clubs/CreateEventPage";
+import ClubProfilePage from "@pages/Clubs/ClubProfilePage";
+import StudentDashboard from "@pages/Dashboard/StudentDashboard";
+import { Button } from "@components/ui/button";
+import { Input } from "@components/ui/input";
+import { Badge } from "@components/ui/badge";
+import ClubListPage from "@pages/Clubs/ClubListPage";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState("login");
@@ -70,18 +76,25 @@ export default function App() {
 
   // Show create event page
   if (currentPage === "create-event") {
-    return <CreateEventPage onBack={handleBackToDashboard} onSave={handleSaveEvent} />;
+    return (
+      <CreateEventPage
+        onBack={handleBackToDashboard}
+        onSave={handleSaveEvent}
+      />
+    );
   }
 
   // Show club profile page
   if (currentPage === "club-profile") {
-    return <ClubProfilePage onBack={handleBackToDashboard} clubId={selectedClubId} />;
+    return (
+      <ClubProfilePage onBack={handleBackToDashboard} clubId={selectedClubId} />
+    );
   }
 
   // Show student dashboard when logged in
   if (currentPage === "dashboard" && isLoggedIn) {
     return (
-      <StudentDashboard 
+      <StudentDashboard
         onViewClubProfile={handleViewClubProfile}
         onCreateEvent={handleCreateEvent}
         studentName={user?.name || "User"}
@@ -98,43 +111,46 @@ export default function App() {
       date: "25 Aug 2025",
       time: "15:00 - 17:00",
       location: "Sports Hall",
-      image: "https://images.unsplash.com/photo-1720716430227-82ce7abf761d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwdGVhbSUyMHNjaG9vbHxlbnwxfHx8fDE3NTU5Mjc5MDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      attendeeCount: 45
+      image:
+        "https://images.unsplash.com/photo-1720716430227-82ce7abf761d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwdGVhbSUyMHNjaG9vbHxlbnwxfHx8fDE3NTU5Mjc5MDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      attendeeCount: 45,
     },
     {
       id: "2",
       title: "Drama Performance",
-      clubName: "Drama Club", 
+      clubName: "Drama Club",
       date: "27 Aug 2025",
       time: "19:00 - 21:00",
       location: "School Auditorium",
-      image: "https://images.unsplash.com/photo-1572700432881-42c60fe8c869?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkcmFtYSUyMGNsdWIlMjB0aGVhdGVyfGVufDF8fHx8MTc1NTkyNzkwMXww&ixlib=rb-4.1.0&q=80&w=1080",
-      attendeeCount: 32
+      image:
+        "https://images.unsplash.com/photo-1572700432881-42c60fe8c869?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkcmFtYSUyMGNsdWIlMjB0aGVhdGVyfGVufDF8fHx8MTc1NTkyNzkwMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      attendeeCount: 32,
     },
     {
       id: "3",
       title: "Science Fair",
       clubName: "Science Lab",
-      date: "30 Aug 2025", 
+      date: "30 Aug 2025",
       time: "10:00 - 16:00",
       location: "Main Hall",
-      image: "https://images.unsplash.com/photo-1605781645799-c9c7d820b4ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzY2llbmNlJTIwbGFiJTIwc3R1ZGVudHN8ZW58MXx8fHwxNzU1OTI3OTAxfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      attendeeCount: 28
-    }
+      image:
+        "https://images.unsplash.com/photo-1605781645799-c9c7d820b4ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzY2llbmNlJTIwbGFiJTIwc3R1ZGVudHN8ZW58MXx8fHwxNzU1OTI3OTAxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      attendeeCount: 28,
+    },
   ];
 
   const filterCategories = [
     { icon: <Gamepad2 className="size-4" />, label: "Olahraga", count: 8 },
     { icon: <Palette className="size-4" />, label: "Seni", count: 6 },
     { icon: <FlaskConical className="size-4" />, label: "Sains", count: 4 },
-    { icon: <Languages className="size-4" />, label: "Bahasa", count: 3 }
+    { icon: <Languages className="size-4" />, label: "Bahasa", count: 3 },
   ];
 
   // Dashboard page (main content)
   return (
     <div className="min-h-screen bg-background">
       <Header showProfile={isLoggedIn} onLogout={handleLogout} />
-      
+
       <main className="pb-20 md:pb-8">
         {/* Hero Section */}
         <section className="bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] text-white py-12 md:py-16">
@@ -144,15 +160,16 @@ export default function App() {
                 Temukan Ekstrakurikuler Impianmu
               </h1>
               <p className="text-lg md:text-xl text-blue-100 mb-8">
-                Bergabunglah dengan komunitas sekolah dan kembangkan bakatmu bersama teman-teman
+                Bergabunglah dengan komunitas sekolah dan kembangkan bakatmu
+                bersama teman-teman
               </p>
-              
+
               {/* Search Bar */}
               <div className="max-w-2xl mx-auto">
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground size-5" />
-                  <Input 
-                    placeholder="Cari ekstrakurikuler, event, atau kegiatan..." 
+                  <Input
+                    placeholder="Cari ekstrakurikuler, event, atau kegiatan..."
                     className="pl-12 pr-4 py-4 text-lg bg-white text-foreground border-0 rounded-xl"
                   />
                   <Button className="absolute right-2 top-2 bg-[#2563EB] hover:bg-blue-700 rounded-lg">
@@ -190,12 +207,15 @@ export default function App() {
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold">Ekskul Populer</h2>
-              <Button variant="ghost" className="text-[#2563EB] hover:text-blue-700">
+              <Button
+                variant="ghost"
+                className="text-[#2563EB] hover:text-blue-700"
+              >
                 Lihat Semua
               </Button>
             </div>
-            
-            <ClubList onViewProfile={handleViewClubProfile} />
+
+            <ClubListPage onViewProfile={handleViewClubProfile} />
           </div>
         </section>
 
@@ -205,19 +225,22 @@ export default function App() {
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold">Event Minggu Ini</h2>
               <div className="flex items-center gap-2">
-                <Button 
+                <Button
                   onClick={handleCreateEvent}
                   className="bg-[#16A34A] hover:bg-green-700 text-white"
                 >
                   <Plus className="size-4 mr-2" />
                   Create Event
                 </Button>
-                <Button variant="ghost" className="text-[#2563EB] hover:text-blue-700">
+                <Button
+                  variant="ghost"
+                  className="text-[#2563EB] hover:text-blue-700"
+                >
                   Lihat Semua
                 </Button>
               </div>
             </div>
-            
+
             <div className="flex gap-4 overflow-x-auto pb-4 md:grid md:grid-cols-3 md:overflow-x-visible md:pb-0">
               {upcomingEvents.map((event) => (
                 <div key={event.id} className="flex-shrink-0 w-80 md:w-auto">

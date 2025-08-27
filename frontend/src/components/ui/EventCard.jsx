@@ -1,36 +1,34 @@
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { Button } from "./button";
+import { Badge } from "./badge";
+import { ImageWithFallback } from "./ImageWithFallback";
 
-export function EventCard({ 
-  title, 
-  clubName, 
-  date, 
-  time, 
-  location, 
+export function EventCard({
+  title,
+  clubName,
+  date,
+  time,
+  location,
   image,
   attendeeCount = 0,
-  isRSVPed = false 
+  isRSVPed = false,
 }) {
   return (
     <div className="bg-card rounded-lg border border-border overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative">
-        <ImageWithFallback 
-          src={image} 
+        <ImageWithFallback
+          src={image}
           alt={title}
           className="w-full h-32 object-cover"
         />
-        <Badge 
-          className="absolute top-2 left-2 bg-[#F97316] text-white hover:bg-orange-600"
-        >
+        <Badge className="absolute top-2 left-2 bg-[#F97316] text-white hover:bg-orange-600">
           {clubName}
         </Badge>
       </div>
-      
+
       <div className="p-4">
         <h3 className="font-medium mb-2 line-clamp-1">{title}</h3>
-        
+
         <div className="space-y-2 mb-3 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <Calendar className="size-4" />
@@ -51,12 +49,10 @@ export function EventCard({
             </div>
           )}
         </div>
-        
-        <Button 
+
+        <Button
           variant={isRSVPed ? "secondary" : "default"}
-          className={`w-full ${
-            !isRSVPed && "bg-[#2563EB] hover:bg-blue-700"
-          }`}
+          className={`w-full ${!isRSVPed && "bg-[#2563EB] hover:bg-blue-700"}`}
         >
           {isRSVPed ? "RSVP'd" : "RSVP"}
         </Button>

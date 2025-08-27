@@ -1,20 +1,38 @@
 import { useState, useRef } from "react";
-import { ArrowLeft, Upload, Calendar, Clock, MapPin, Users, Eye, Bold, Italic, List, Save } from "lucide-react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
-import { Label } from "./ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Switch } from "./ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { Separator } from "./ui/separator";
-import { Badge } from "./ui/badge";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
+import {
+  ArrowLeft,
+  Upload,
+  Calendar,
+  Clock,
+  MapPin,
+  Users,
+  Eye,
+  Bold,
+  Italic,
+  List,
+  Save,
+} from "lucide-react";
+import { Button } from "@components/ui/button";
+import { Input } from "@components/ui/input";
+import { Textarea } from "@components/ui/textarea";
+import { Label } from "@components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@components/ui/select";
+import { Switch } from "@components/ui/switch";
+import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card";
+import { Separator } from "@components/ui/separator";
+import { Badge } from "@components/ui/badge";
+import { ImageWithFallback } from "@components/ui/ImageWithFallback";
 
-export function CreateEventPage({ onBack, onSave }) {
+export default function CreateEventPage({ onBack, onSave }) {
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -26,18 +44,18 @@ export function CreateEventPage({ onBack, onSave }) {
     capacity: "",
     requiresRSVP: true,
     isPublic: true,
-    image: null
+    image: null,
   });
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleImageUpload = (file) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const result = e.target?.result;
-      handleInputChange('image', result);
+      handleInputChange("image", result);
     };
     reader.readAsDataURL(file);
   };
@@ -56,7 +74,7 @@ export function CreateEventPage({ onBack, onSave }) {
     e.preventDefault();
     setIsDragOver(false);
     const files = e.dataTransfer.files;
-    if (files.length > 0 && files[0].type.startsWith('image/')) {
+    if (files.length > 0 && files[0].type.startsWith("image/")) {
       handleImageUpload(files[0]);
     }
   };
@@ -75,10 +93,10 @@ export function CreateEventPage({ onBack, onSave }) {
   const formatDate = (dateStr) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
-    return date.toLocaleDateString('id-ID', { 
-      day: 'numeric', 
-      month: 'short', 
-      year: 'numeric' 
+    return date.toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "short",
+      year: "numeric",
     });
   };
 
@@ -100,16 +118,21 @@ export function CreateEventPage({ onBack, onSave }) {
               </Button>
               <div>
                 <h1 className="font-bold text-xl">Create Event</h1>
-                <p className="text-sm text-muted-foreground">Design and publish a new event</p>
+                <p className="text-sm text-muted-foreground">
+                  Design and publish a new event
+                </p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <Button variant="outline">
                 <Save className="size-4 mr-2" />
                 Save Draft
               </Button>
-              <Button onClick={handleSave} className="bg-[#2563EB] hover:bg-blue-700">
+              <Button
+                onClick={handleSave}
+                className="bg-[#2563EB] hover:bg-blue-700"
+              >
                 Publish Event
               </Button>
             </div>
@@ -134,19 +157,24 @@ export function CreateEventPage({ onBack, onSave }) {
                     id="title"
                     placeholder="Enter event title"
                     value={formData.title}
-                    onChange={(e) => handleInputChange('title', e.target.value)}
+                    onChange={(e) => handleInputChange("title", e.target.value)}
                     className="bg-input-background border-border"
                   />
                 </div>
 
                 <div className="space-y-2">
                   <Label htmlFor="club">Organizing Club</Label>
-                  <Select value={formData.club} onValueChange={(value) => handleInputChange('club', value)}>
+                  <Select
+                    value={formData.club}
+                    onValueChange={(value) => handleInputChange("club", value)}
+                  >
                     <SelectTrigger className="bg-input-background border-border">
                       <SelectValue placeholder="Select organizing club" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="basketball">Basketball Club</SelectItem>
+                      <SelectItem value="basketball">
+                        Basketball Club
+                      </SelectItem>
                       <SelectItem value="drama">Drama Club</SelectItem>
                       <SelectItem value="science">Science Lab</SelectItem>
                       <SelectItem value="debate">Debate Society</SelectItem>
@@ -178,7 +206,9 @@ export function CreateEventPage({ onBack, onSave }) {
                       id="description"
                       placeholder="Describe your event in detail..."
                       value={formData.description}
-                      onChange={(e) => handleInputChange('description', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("description", e.target.value)
+                      }
                       className="border-0 bg-transparent resize-none min-h-32"
                     />
                   </div>
@@ -226,7 +256,9 @@ export function CreateEventPage({ onBack, onSave }) {
                             </Button>{" "}
                             or drag and drop
                           </p>
-                          <p className="text-xs text-muted-foreground">PNG, JPG up to 10MB</p>
+                          <p className="text-xs text-muted-foreground">
+                            PNG, JPG up to 10MB
+                          </p>
                         </div>
                       </div>
                     )}
@@ -255,7 +287,9 @@ export function CreateEventPage({ onBack, onSave }) {
                       id="date"
                       type="date"
                       value={formData.date}
-                      onChange={(e) => handleInputChange('date', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("date", e.target.value)
+                      }
                       className="bg-input-background border-border"
                     />
                   </div>
@@ -265,7 +299,9 @@ export function CreateEventPage({ onBack, onSave }) {
                       id="startTime"
                       type="time"
                       value={formData.startTime}
-                      onChange={(e) => handleInputChange('startTime', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("startTime", e.target.value)
+                      }
                       className="bg-input-background border-border"
                     />
                   </div>
@@ -275,7 +311,9 @@ export function CreateEventPage({ onBack, onSave }) {
                       id="endTime"
                       type="time"
                       value={formData.endTime}
-                      onChange={(e) => handleInputChange('endTime', e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("endTime", e.target.value)
+                      }
                       className="bg-input-background border-border"
                     />
                   </div>
@@ -287,7 +325,9 @@ export function CreateEventPage({ onBack, onSave }) {
                     id="location"
                     placeholder="Enter event location"
                     value={formData.location}
-                    onChange={(e) => handleInputChange('location', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("location", e.target.value)
+                    }
                     className="bg-input-background border-border"
                   />
                 </div>
@@ -307,7 +347,9 @@ export function CreateEventPage({ onBack, onSave }) {
                     type="number"
                     placeholder="Maximum number of attendees"
                     value={formData.capacity}
-                    onChange={(e) => handleInputChange('capacity', e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("capacity", e.target.value)
+                    }
                     className="bg-input-background border-border"
                   />
                 </div>
@@ -321,7 +363,9 @@ export function CreateEventPage({ onBack, onSave }) {
                   </div>
                   <Switch
                     checked={formData.requiresRSVP}
-                    onCheckedChange={(checked) => handleInputChange('requiresRSVP', checked)}
+                    onCheckedChange={(checked) =>
+                      handleInputChange("requiresRSVP", checked)
+                    }
                   />
                 </div>
 
@@ -334,7 +378,9 @@ export function CreateEventPage({ onBack, onSave }) {
                   </div>
                   <Switch
                     checked={formData.isPublic}
-                    onCheckedChange={(checked) => handleInputChange('isPublic', checked)}
+                    onCheckedChange={(checked) =>
+                      handleInputChange("isPublic", checked)
+                    }
                   />
                 </div>
               </CardContent>
@@ -346,7 +392,10 @@ export function CreateEventPage({ onBack, onSave }) {
                 <Save className="size-4 mr-2" />
                 Save Draft
               </Button>
-              <Button onClick={handleSave} className="flex-1 bg-[#2563EB] hover:bg-blue-700">
+              <Button
+                onClick={handleSave}
+                className="flex-1 bg-[#2563EB] hover:bg-blue-700"
+              >
                 Publish Event
               </Button>
             </div>
@@ -379,10 +428,15 @@ export function CreateEventPage({ onBack, onSave }) {
                       )}
                       {formData.club && (
                         <Badge className="absolute top-2 left-2 bg-[#F97316] text-white hover:bg-orange-600">
-                          {formData.club === "basketball" ? "Basketball Club" :
-                           formData.club === "drama" ? "Drama Club" :
-                           formData.club === "science" ? "Science Lab" :
-                           formData.club === "debate" ? "Debate Society" : formData.club}
+                          {formData.club === "basketball"
+                            ? "Basketball Club"
+                            : formData.club === "drama"
+                              ? "Drama Club"
+                              : formData.club === "science"
+                                ? "Science Lab"
+                                : formData.club === "debate"
+                                  ? "Debate Society"
+                                  : formData.club}
                         </Badge>
                       )}
                     </div>
@@ -430,8 +484,8 @@ export function CreateEventPage({ onBack, onSave }) {
                       </div>
 
                       <div className="mt-4">
-                        <Button 
-                          className="w-full bg-[#2563EB] hover:bg-blue-700" 
+                        <Button
+                          className="w-full bg-[#2563EB] hover:bg-blue-700"
                           disabled
                         >
                           {formData.requiresRSVP ? "RSVP" : "Join Event"}
@@ -444,9 +498,16 @@ export function CreateEventPage({ onBack, onSave }) {
                   <div className="mt-4 p-3 bg-muted/30 rounded-lg">
                     <h4 className="font-medium text-sm mb-2">Event Settings</h4>
                     <div className="space-y-1 text-xs text-muted-foreground">
-                      <div>• RSVP: {formData.requiresRSVP ? "Required" : "Not required"}</div>
-                      <div>• Visibility: {formData.isPublic ? "Public" : "Private"}</div>
-                      {formData.capacity && <div>• Capacity: {formData.capacity} attendees</div>}
+                      <div>
+                        • RSVP:{" "}
+                        {formData.requiresRSVP ? "Required" : "Not required"}
+                      </div>
+                      <div>
+                        • Visibility: {formData.isPublic ? "Public" : "Private"}
+                      </div>
+                      {formData.capacity && (
+                        <div>• Capacity: {formData.capacity} attendees</div>
+                      )}
                     </div>
                   </div>
                 </CardContent>

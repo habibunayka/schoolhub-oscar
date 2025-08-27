@@ -1,13 +1,33 @@
-import { Eye, EyeOff, Mail, Lock, User, GraduationCap, ArrowRight } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Mail,
+  Lock,
+  User,
+  GraduationCap,
+  ArrowRight,
+} from "lucide-react";
 import { useState } from "react";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Checkbox } from "./ui/checkbox";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { Button } from "@components/ui/button";
+import { Input } from "@components/ui/input";
+import { Label } from "@components/ui/label";
+import { Checkbox } from "@components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@components/ui/select";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@components/ui/card";
 
-export function RegisterPage({ onLogin, onBack }) {
+export default function RegisterPage({ onLogin, onBack }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -16,28 +36,33 @@ export function RegisterPage({ onLogin, onBack }) {
     email: "",
     password: "",
     confirmPassword: "",
-    grade: ""
+    grade: "",
   });
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // Simple validation
-    if (formData.fullName && formData.email && formData.password && 
-        formData.password === formData.confirmPassword && 
-        formData.grade && acceptTerms) {
+    if (
+      formData.fullName &&
+      formData.email &&
+      formData.password &&
+      formData.password === formData.confirmPassword &&
+      formData.grade &&
+      acceptTerms
+    ) {
       onLogin();
     }
   };
 
   const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] flex items-center justify-center p-4">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
-      
+
       <Card className="w-full max-w-md relative z-10 bg-white/95 backdrop-blur-sm border-0 shadow-2xl">
         <CardHeader className="text-center pb-6">
           {/* School Logo */}
@@ -46,7 +71,7 @@ export function RegisterPage({ onLogin, onBack }) {
               <span className="text-white text-2xl font-bold">SH</span>
             </div>
           </div>
-          
+
           <CardTitle className="text-2xl font-bold text-foreground">
             Join SchoolHub
           </CardTitle>
@@ -67,7 +92,9 @@ export function RegisterPage({ onLogin, onBack }) {
                   type="text"
                   placeholder="Enter your full name"
                   value={formData.fullName}
-                  onChange={(e) => handleInputChange("fullName", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("fullName", e.target.value)
+                  }
                   className="pl-10 bg-input-background border-border focus:border-[#2563EB] focus:ring-[#2563EB]"
                   required
                 />
@@ -96,7 +123,10 @@ export function RegisterPage({ onLogin, onBack }) {
               <Label htmlFor="grade">Grade</Label>
               <div className="relative">
                 <GraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4 z-10" />
-                <Select value={formData.grade} onValueChange={(value) => handleInputChange("grade", value)}>
+                <Select
+                  value={formData.grade}
+                  onValueChange={(value) => handleInputChange("grade", value)}
+                >
                   <SelectTrigger className="pl-10 bg-input-background border-border focus:border-[#2563EB] focus:ring-[#2563EB]">
                     <SelectValue placeholder="Select your grade" />
                   </SelectTrigger>
@@ -122,7 +152,9 @@ export function RegisterPage({ onLogin, onBack }) {
                   type={showPassword ? "text" : "password"}
                   placeholder="Create a password"
                   value={formData.password}
-                  onChange={(e) => handleInputChange("password", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("password", e.target.value)
+                  }
                   className="pl-10 pr-10 bg-input-background border-border focus:border-[#2563EB] focus:ring-[#2563EB]"
                   required
                 />
@@ -152,7 +184,9 @@ export function RegisterPage({ onLogin, onBack }) {
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm your password"
                   value={formData.confirmPassword}
-                  onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("confirmPassword", e.target.value)
+                  }
                   className="pl-10 pr-10 bg-input-background border-border focus:border-[#2563EB] focus:ring-[#2563EB]"
                   required
                 />
@@ -170,9 +204,12 @@ export function RegisterPage({ onLogin, onBack }) {
                   )}
                 </Button>
               </div>
-              {formData.password !== formData.confirmPassword && formData.confirmPassword && (
-                <p className="text-xs text-[#DC2626]">Passwords do not match</p>
-              )}
+              {formData.password !== formData.confirmPassword &&
+                formData.confirmPassword && (
+                  <p className="text-xs text-[#DC2626]">
+                    Passwords do not match
+                  </p>
+                )}
             </div>
 
             {/* Terms and Conditions */}
@@ -183,7 +220,10 @@ export function RegisterPage({ onLogin, onBack }) {
                 onCheckedChange={(checked) => setAcceptTerms(checked)}
                 className="mt-0.5"
               />
-              <Label htmlFor="terms" className="text-sm cursor-pointer leading-relaxed">
+              <Label
+                htmlFor="terms"
+                className="text-sm cursor-pointer leading-relaxed"
+              >
                 I agree to the{" "}
                 <Button
                   type="button"
@@ -206,7 +246,9 @@ export function RegisterPage({ onLogin, onBack }) {
             {/* Create Account Button */}
             <Button
               type="submit"
-              disabled={!acceptTerms || formData.password !== formData.confirmPassword}
+              disabled={
+                !acceptTerms || formData.password !== formData.confirmPassword
+              }
               className="w-full bg-[#2563EB] hover:bg-blue-700 text-white py-3 text-base font-medium group disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Create Account

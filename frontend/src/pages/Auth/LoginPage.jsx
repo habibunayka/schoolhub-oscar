@@ -1,13 +1,19 @@
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { useState } from "react";
-import { authApi } from "../lib/apiClient";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
-import { Checkbox } from "./ui/checkbox";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
+import { authApi } from "@lib/api/apiClient";
+import { Button } from "@components/ui/button";
+import { Input } from "@components/ui/input";
+import { Label } from "@components/ui/label";
+import { Checkbox } from "@components/ui/checkbox";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@components/ui/card";
 
-export function LoginPage({ onLogin, onRegister }) {
+export default function LoginPage({ onLogin, onRegister }) {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState("");
@@ -35,7 +41,7 @@ export function LoginPage({ onLogin, onRegister }) {
     <div className="min-h-screen bg-gradient-to-br from-[#2563EB] to-[#1D4ED8] flex items-center justify-center p-4">
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:60px_60px]" />
-      
+
       <Card className="w-full max-w-md relative z-10 bg-white/95 backdrop-blur-sm border-0 shadow-2xl">
         <CardHeader className="text-center pb-6">
           {/* School Logo */}
@@ -44,7 +50,7 @@ export function LoginPage({ onLogin, onRegister }) {
               <span className="text-white text-2xl font-bold">SH</span>
             </div>
           </div>
-          
+
           <CardTitle className="text-2xl font-bold text-foreground">
             Welcome to SchoolHub
           </CardTitle>
@@ -163,7 +169,8 @@ export function LoginPage({ onLogin, onRegister }) {
           {/* Demo Account Info */}
           <div className="mt-6 p-3 bg-blue-50 rounded-lg border border-blue-200">
             <p className="text-xs text-blue-800 text-center">
-              <span className="font-medium">Demo:</span> Use any email and password to sign in
+              <span className="font-medium">Demo:</span> Use any email and
+              password to sign in
             </p>
           </div>
         </CardContent>
