@@ -8,28 +8,28 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { register as registerService, login as loginService } from "@lib/api/services/authentications";
-import { Button } from "@components/ui/button";
-import { Input } from "@components/ui/input";
-import { Label } from "@components/ui/label";
-import { Checkbox } from "@components/ui/checkbox";
 import {
+  Button,
+  Input,
+  Label,
+  Checkbox,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@components/ui/select";
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@components/ui/card";
+} from "@components/common/ui";
 
-export default function RegisterPage({ onLogin, onBack }) {
+export default function RegisterPage() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -56,7 +56,7 @@ export default function RegisterPage({ onLogin, onBack }) {
     },
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
-      onLogin(data.user);
+      navigate("/dashboard");
     },
   });
 
@@ -300,7 +300,7 @@ export default function RegisterPage({ onLogin, onBack }) {
               <Button
                 type="button"
                 variant="link"
-                onClick={onBack}
+                onClick={() => navigate('/login')}
                 className="text-[#2563EB] hover:text-blue-700 p-0 h-auto font-medium"
               >
                 Sign in here

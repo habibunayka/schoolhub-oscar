@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
   Heart,
@@ -10,14 +11,25 @@ import {
   Settings,
   UserPlus,
 } from "lucide-react";
-import { Button } from "@components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@components/ui/tabs";
-import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card";
-import { Badge } from "@components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar";
-import { Separator } from "@components/ui/separator";
+import {
+  Button,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Badge,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Separator,
+} from "@components/common/ui";
 
-export default function ClubProfilePage({ onBack }) {
+export default function ClubProfilePage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState("posts");
 
   // Mock club data - in real app this would be fetched based on clubId
@@ -173,7 +185,7 @@ export default function ClubProfilePage({ onBack }) {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={onBack}>
+              <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
                 <ArrowLeft className="size-4 mr-2" />
                 Back
               </Button>

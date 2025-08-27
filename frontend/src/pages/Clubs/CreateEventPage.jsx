@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Upload,
@@ -12,24 +13,29 @@ import {
   List,
   Save,
 } from "lucide-react";
-import { Button } from "@components/ui/button";
-import { Input } from "@components/ui/input";
-import { Textarea } from "@components/ui/textarea";
-import { Label } from "@components/ui/label";
 import {
+  Button,
+  Input,
+  Textarea,
+  Label,
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@components/ui/select";
-import { Switch } from "@components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card";
-import { Separator } from "@components/ui/separator";
-import { Badge } from "@components/ui/badge";
-import { ImageWithFallback } from "@components/ui/ImageWithFallback";
+  Switch,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Separator,
+  Badge,
+  ImageWithFallback,
+} from "@components/common/ui";
 
-export default function CreateEventPage({ onBack, onSave }) {
+export default function CreateEventPage() {
+  const navigate = useNavigate();
+  const { id } = useParams();
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -87,7 +93,8 @@ export default function CreateEventPage({ onBack, onSave }) {
   };
 
   const handleSave = () => {
-    onSave(formData);
+    console.log("Saving event:", formData);
+    navigate(`/clubs/${id}`);
   };
 
   const formatDate = (dateStr) => {
@@ -112,7 +119,7 @@ export default function CreateEventPage({ onBack, onSave }) {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={onBack}>
+              <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
                 <ArrowLeft className="size-4 mr-2" />
                 Back
               </Button>

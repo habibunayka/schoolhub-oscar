@@ -1,20 +1,22 @@
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { login as loginService } from "@lib/api/services/authentications";
-import { Button } from "@components/ui/button";
-import { Input } from "@components/ui/input";
-import { Label } from "@components/ui/label";
-import { Checkbox } from "@components/ui/checkbox";
 import {
+  Button,
+  Input,
+  Label,
+  Checkbox,
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@components/ui/card";
+} from "@components/common/ui";
 
-export default function LoginPage({ onLogin, onRegister }) {
+export default function LoginPage() {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState("");
@@ -26,7 +28,7 @@ export default function LoginPage({ onLogin, onRegister }) {
     mutationFn: loginService,
     onSuccess: (data) => {
       localStorage.setItem("token", data.token);
-      onLogin(data.user);
+      navigate("/dashboard");
     },
     onError: (err) => {
       setError(err.userMessage || err.message);
@@ -160,7 +162,7 @@ export default function LoginPage({ onLogin, onRegister }) {
               <Button
                 type="button"
                 variant="link"
-                onClick={onRegister}
+                onClick={() => navigate('/register')}
                 className="text-[#2563EB] hover:text-blue-700 p-0 h-auto font-medium"
               >
                 Create an account
