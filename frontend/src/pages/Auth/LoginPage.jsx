@@ -1,6 +1,7 @@
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { useState } from "react";
-import { authApi } from "@lib/api/apiClient";
+import { useMutation } from "@tanstack/react-query";
+import { login as loginService } from "@lib/api/services/authentications";
 import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
 import { Label } from "@components/ui/label";
@@ -20,21 +21,22 @@ export default function LoginPage({ onLogin, onRegister }) {
   const [password, setPassword] = useState("");
 
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    try {
-      setLoading(true);
-      const data = await authApi.login(email, password);
+  const mutation = useMutation({
+    mutationFn: loginService,
+    onSuccess: (data) => {
       localStorage.setItem("token", data.token);
       onLogin(data.user);
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
+    },
+    onError: (err) => {
+      setError(err.userMessage || err.message);
+    },
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    setError("");
+    mutation.mutate({ email, password });
   };
 
   return (
@@ -133,10 +135,10 @@ export default function LoginPage({ onLogin, onRegister }) {
             {error && <p className="text-sm text-red-600">{error}</p>}
             <Button
               type="submit"
-              disabled={loading}
+              disabled={mutation.isLoading}
               className="w-full bg-[#2563EB] hover:bg-blue-700 text-white py-3 text-base font-medium group disabled:opacity-50"
             >
-              {loading ? "Signing In..." : "Sign In"}
+              {mutation.isLoading ? "Signing In..." : "Sign In"}
               <ArrowRight className="ml-2 size-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </form>
