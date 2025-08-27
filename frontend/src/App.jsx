@@ -17,9 +17,11 @@ import { ImageWithFallback } from "./components/figma/ImageWithFallback";
 export default function App() {
   const [currentPage, setCurrentPage] = useState("login");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
   const [selectedClubId, setSelectedClubId] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = (userData) => {
+    setUser(userData);
     setIsLoggedIn(true);
     setCurrentPage("dashboard");
   };
@@ -82,7 +84,7 @@ export default function App() {
       <StudentDashboard 
         onViewClubProfile={handleViewClubProfile}
         onCreateEvent={handleCreateEvent}
-        studentName="Alex"
+        studentName={user?.name || "User"}
       />
     );
   }

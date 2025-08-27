@@ -1,5 +1,6 @@
 import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { useState } from "react";
+import { authApi } from "../lib/apiClient";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -12,11 +13,21 @@ export function LoginPage({ onLogin, onRegister }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simple validation
-    if (email && password) {
-      onLogin();
+    setError("");
+    try {
+      setLoading(true);
+      const data = await authApi.login(email, password);
+      localStorage.setItem("token", data.token);
+      onLogin(data.user);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -113,11 +124,13 @@ export function LoginPage({ onLogin, onRegister }) {
             </div>
 
             {/* Sign In Button */}
+            {error && <p className="text-sm text-red-600">{error}</p>}
             <Button
               type="submit"
-              className="w-full bg-[#2563EB] hover:bg-blue-700 text-white py-3 text-base font-medium group"
+              disabled={loading}
+              className="w-full bg-[#2563EB] hover:bg-blue-700 text-white py-3 text-base font-medium group disabled:opacity-50"
             >
-              Sign In
+              {loading ? "Signing In..." : "Sign In"}
               <ArrowRight className="ml-2 size-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </form>

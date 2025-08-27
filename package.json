@@ -1,0 +1,9 @@
+{
+  "name": "schoolhub-monorepo",
+  "private": true,
+  "scripts": {
+    "frontend:dev": "npm --prefix frontend run dev",
+    "backend:dev": "npm --prefix backend run dev",
+    "dev:all": "npm run backend:dev & npm run frontend:dev & wait"
+  }
+}
