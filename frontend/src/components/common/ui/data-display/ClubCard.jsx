@@ -1,7 +1,7 @@
 import { Users, MapPin } from "lucide-react";
-import { Button } from "./button";
-import { Badge } from "./badge";
-import { ImageWithFallback } from "./ImageWithFallback";
+import { Button } from "../forms/Button.jsx";
+import { Badge } from "./Badge.jsx";
+import { ImageWithFallback } from "./ImageWithFallback.jsx";
 
 export function ClubCard({
   id,
