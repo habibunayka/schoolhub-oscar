@@ -1,37 +1,64 @@
-import api from "../apiClient";
-import { endpoints } from "../endpoints";
+import api from "../client.js";
+import { endpoints } from "../endpoints.js";
 
 const map = Object.fromEntries(endpoints.announcements.map((e) => [e.name, e]));
 
-export function list({ page = 1, limit = 10, clubId, target } = {}) {
+/**
+ * List announcements
+ * @param {Object} [options]
+ * @param {number} [options.page=1]
+ * @param {number} [options.limit=10]
+ * @param {number} [options.clubId]
+ * @param {string} [options.target]
+ * @returns {Promise<object[]>}
+ */
+export const list = async ({ page = 1, limit = 10, clubId, target } = {}) => {
   const params = { limit, offset: (page - 1) * limit };
   if (clubId) params.club_id = clubId;
   if (target) params.target = target;
-  return api
-    .get(map.getAllAnnouncements.path, { params })
-    .then((r) => r.data);
-}
+  const { data } = await api.get(map.getAllAnnouncements.path, { params });
+  return data;
+};
 
-export function get(id) {
-  return api
-    .get(map.getAnnouncementById.path.replace(":id", id))
-    .then((r) => r.data);
-}
+/**
+ * Get announcement by id
+ * @param {number} id
+ * @returns {Promise<object>}
+ */
+export const get = async (id) => {
+  const { data } = await api.get(map.getAnnouncementById.path.replace(":id", id));
+  return data;
+};
 
-export function create(payload) {
-  return api.post(map.createAnnouncement.path, payload).then((r) => r.data);
-}
+/**
+ * Create announcement
+ * @param {{ club_id:number, title:string, content_html:string, target:string }} payload
+ * @returns {Promise<object>}
+ */
+export const create = async (payload) => {
+  const { data } = await api.post(map.createAnnouncement.path, payload);
+  return data;
+};
 
-export function update(id, payload) {
-  return api
-    .put(map.updateAnnouncement.path.replace(":id", id), payload)
-    .then((r) => r.data);
-}
+/**
+ * Update announcement
+ * @param {number} id
+ * @param {{ title:string, content_html:string, target:string }} payload
+ * @returns {Promise<object>}
+ */
+export const update = async (id, payload) => {
+  const { data } = await api.put(map.updateAnnouncement.path.replace(":id", id), payload);
+  return data;
+};
 
-export function remove(id) {
-  return api
-    .delete(map.deleteAnnouncement.path.replace(":id", id))
-    .then((r) => r.data);
-}
+/**
+ * Delete announcement
+ * @param {number} id
+ * @returns {Promise<object>}
+ */
+export const remove = async (id) => {
+  const { data } = await api.delete(map.deleteAnnouncement.path.replace(":id", id));
+  return data;
+};
 
 export default { list, get, create, update, remove };

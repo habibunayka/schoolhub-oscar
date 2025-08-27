@@ -1,23 +1,52 @@
-import api from "../apiClient";
-import { endpoints } from "../endpoints";
+import api from "../client.js";
+import { endpoints } from "../endpoints.js";
 
 const map = Object.fromEntries(endpoints.posts.map((e) => [e.name, e]));
 
-export function listPosts(clubId) {
+/**
+ * List posts for a club
+ * @param {number} clubId
+ * @returns {Promise<object[]>}
+ */
+export const listPosts = async (clubId) => {
   const path = map.listPosts.path.replace(":id", clubId);
-  return api.get(path).then((r) => r.data);
-}
+  const { data } = await api.get(path);
+  return data;
+};
 
-export function getPostById(clubId, postId) {
+/**
+ * Get posts for feed (currently per club)
+ * @param {number} clubId
+ * @returns {Promise<object[]>}
+ */
+export const getFeedPosts = async (clubId) => {
+  return listPosts(clubId);
+};
+
+/**
+ * Get a post by id
+ * @param {number} clubId
+ * @param {number} postId
+ * @returns {Promise<object>}
+ */
+export const getPostById = async (clubId, postId) => {
   const path = map.getPostById.path
     .replace(":id", clubId)
     .replace(":postId", postId);
-  return api.get(path).then((r) => r.data);
-}
+  const { data } = await api.get(path);
+  return data;
+};
 
-export function createPost(clubId, payload) {
+/**
+ * Create a post in club
+ * @param {number} clubId
+ * @param {Object} payload
+ * @returns {Promise<object>}
+ */
+export const createPost = async (clubId, payload) => {
   const path = map.createPost.path.replace(":id", clubId);
-  return api.post(path, payload).then((r) => r.data);
-}
+  const { data } = await api.post(path, payload);
+  return data;
+};
 
-export default { listPosts, getPostById, createPost };
+export default { listPosts, getFeedPosts, getPostById, createPost };

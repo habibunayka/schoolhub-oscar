@@ -1,14 +1,27 @@
-import api from "../apiClient";
-import { endpoints } from "../endpoints";
+import api from "../client.js";
+import { endpoints } from "../endpoints.js";
 
 const map = Object.fromEntries(endpoints.authentications.map((e) => [e.name, e]));
 
-export function login(payload) {
-  return api.post(map.login.path, payload).then((r) => r.data);
-}
+/**
+ * Login user
+ * @param {string} email
+ * @param {string} password
+ * @returns {Promise<object>} `{ token, user }`
+ */
+export const login = async (email, password) => {
+  const { data } = await api.post(map.login.path, { email, password });
+  return data;
+};
 
-export function register(payload) {
-  return api.post(map.register.path, payload).then((r) => r.data);
-}
+/**
+ * Register new user
+ * @param {{ name:string, email:string, password:string }} payload
+ * @returns {Promise<object>}
+ */
+export const register = async (payload) => {
+  const { data } = await api.post(map.register.path, payload);
+  return data;
+};
 
 export default { login, register };
