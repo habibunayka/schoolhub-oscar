@@ -6,6 +6,8 @@ import {
     validateGetAllAnnouncements,
     validateGetAnnouncementById,
     validateCreateAnnouncement,
+    validateUpdateAnnouncement,
+    validateDeleteAnnouncement,
 } from "./validator.js";
 
 const r = Router();
@@ -30,6 +32,22 @@ r.post(
     auth(),
     permitClub("owner", "admin"),
     Announcements.createAnnouncement
+);
+
+r.put(
+    "/announcements/:id",
+    validateUpdateAnnouncement,
+    auth(),
+    permitClub("owner", "admin"),
+    Announcements.updateAnnouncement
+);
+
+r.delete(
+    "/announcements/:id",
+    validateDeleteAnnouncement,
+    auth(),
+    permitClub("owner", "admin"),
+    Announcements.deleteAnnouncement
 );
 
 export default r;

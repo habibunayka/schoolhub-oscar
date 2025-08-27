@@ -69,6 +69,40 @@ export const endpoints = {
         }
       ],
       "auth": true
+    },
+    {
+      "name": "updateAnnouncement",
+      "method": "PUT",
+      "path": "/announcements/:id",
+      "validators": [
+        {
+          "body": [
+            "title",
+            "content_html",
+            "target"
+          ],
+          "params": [
+            "id"
+          ],
+          "query": []
+        }
+      ],
+      "auth": true
+    },
+    {
+      "name": "deleteAnnouncement",
+      "method": "DELETE",
+      "path": "/announcements/:id",
+      "validators": [
+        {
+          "body": [],
+          "params": [
+            "id"
+          ],
+          "query": []
+        }
+      ],
+      "auth": true
     }
   ],
   "authentications": [
