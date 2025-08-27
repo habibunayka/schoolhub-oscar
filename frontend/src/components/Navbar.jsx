@@ -1,5 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { Bell } from 'lucide-react';
 import {
   Avatar,
   AvatarFallback,
@@ -77,7 +78,13 @@ export default function Navbar() {
       <div className="flex-1 max-w-md">
         <GlobalSearch />
       </div>
-      <div className="flex items-center">
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" size="icon" className="relative">
+          <Bell className="size-5" />
+          <span className="absolute -top-1 -right-1 bg-[#DC2626] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+            3
+          </span>
+        </Button>
         <UserMenu />
       </div>
     </nav>
