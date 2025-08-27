@@ -15,6 +15,15 @@ export const listPosts = async (clubId) => {
 };
 
 /**
+ * Get posts for feed (currently per club)
+ * @param {number} clubId
+ * @returns {Promise<object[]>}
+ */
+export const getFeedPosts = async (clubId) => {
+  return listPosts(clubId);
+};
+
+/**
  * Get a post by id
  * @param {number} clubId
  * @param {number} postId
@@ -40,4 +49,4 @@ export const createPost = async (clubId, payload) => {
   return data;
 };
 
-export default { listPosts, getPostById, createPost };
+export default { listPosts, getFeedPosts, getPostById, createPost };

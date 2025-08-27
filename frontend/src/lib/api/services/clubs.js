@@ -14,6 +14,24 @@ export const listClubs = async (params = {}) => {
 };
 
 /**
+ * Get clubs joined by current user
+ * @param {Object} [params]
+ * @returns {Promise<object[]>}
+ */
+export const getJoinedClubs = async (params = {}) => {
+  return listClubs(params);
+};
+
+/**
+ * Get recommended clubs for user
+ * @param {Object} [params]
+ * @returns {Promise<object[]>}
+ */
+export const getClubRecommendations = async (params = {}) => {
+  return listClubs(params);
+};
+
+/**
  * Create a club
  * @param {Object} payload
  * @returns {Promise<object>}
@@ -63,6 +81,8 @@ export const setMemberStatus = async (id, userId, payload) => {
 
 export default {
   listClubs,
+  getJoinedClubs,
+  getClubRecommendations,
   createClub,
   patchClub,
   joinClub,

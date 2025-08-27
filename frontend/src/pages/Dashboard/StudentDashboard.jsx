@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import {
   Calendar,
   Heart,
@@ -22,150 +23,128 @@ import {
   AvatarImage,
   Separator,
 } from "@components/common/ui";
+import {
+  getJoinedClubs,
+  getClubRecommendations,
+} from "@lib/api/services/clubs";
+import { getFeedPosts } from "@lib/api/services/posts";
+import { getUpcomingEvents } from "@lib/api/services/events";
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
+  const [joinedClubs, setJoinedClubs] = useState([]);
+  const [loadingClubs, setLoadingClubs] = useState(true);
+  const [errClubs, setErrClubs] = useState(null);
 
-  // Mock data for joined clubs
-  const joinedClubs = [
-    {
-      id: "1",
-      name: "Basketball Club",
-      image:
-        "https://images.unsplash.com/photo-1720716430227-82ce7abf761d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwdGVhbSUyMHNjaG9vbHxlbnwxfHx8fDE3NTU5Mjc5MDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      category: "Olahraga",
-      status: "active",
-      unreadCount: 3,
-    },
-    {
-      id: "2",
-      name: "Drama Club",
-      image:
-        "https://images.unsplash.com/photo-1572700432881-42c60fe8c869?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkcmFtYSUyMGNsdWIlMjB0aGVhdGVyfGVufDF8fHx8MTc1NTkyNzkwMXww&ixlib=rb-4.1.0&q=80&w=1080",
-      category: "Seni",
-      status: "active",
-      unreadCount: 1,
-    },
-    {
-      id: "3",
-      name: "Science Lab",
-      image:
-        "https://images.unsplash.com/photo-1605781645799-c9c7d820b4ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzY2llbmNlJTIwbGFiJTIwc3R1ZGVudHN8ZW58MXx8fHwxNzU1OTI3OTAxfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      category: "Sains",
-      status: "pending",
-    },
-  ];
+  const [feedPosts, setFeedPosts] = useState([]);
+  const [loadingPosts, setLoadingPosts] = useState(false);
+  const [errPosts, setErrPosts] = useState(null);
 
-  // Mock data for posts feed
-  const feedPosts = [
-    {
-      id: "1",
-      clubId: "1",
-      clubName: "Basketball Club",
-      clubImage:
-        "https://images.unsplash.com/photo-1720716430227-82ce7abf761d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwdGVhbSUyMHNjaG9vbHxlbnwxfHx8fDE3NTU5Mjc5MDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      author: "Sarah Chen",
-      authorAvatar:
-        "https://images.unsplash.com/photo-1494790108755-2616b68b7490?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzU1ODgyMzU4fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      timestamp: "2 hours ago",
-      content:
-        "Amazing practice session today! Our team chemistry is really improving. Can't wait for tomorrow's tournament! 🏀💪 #TeamWork #BasketballLife",
-      image:
-        "https://images.unsplash.com/photo-1703114608920-682133cc2ea2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwcHJhY3RpY2V8ZW58MXx8fHwxNzU1OTI4NzI2fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      likes: 24,
-      comments: 8,
-      isLiked: true,
-    },
-    {
-      id: "2",
-      clubId: "3",
-      clubName: "Science Lab",
-      clubImage:
-        "https://images.unsplash.com/photo-1605781645799-c9c7d820b4ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzY2llbmNlJTIwbGFiJTIwc3R1ZGVudHN8ZW58MXx8fHwxNzU1OTI3OTAxfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      author: "Mike Johnson",
-      authorAvatar:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzU1ODgyMzU5fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      timestamp: "5 hours ago",
-      content:
-        "Our chemistry project is coming along nicely! Working with acids and bases has been fascinating. Thanks to everyone who stayed late to help with the experiments. 🧪🔬",
-      image:
-        "https://images.unsplash.com/photo-1705727210721-961cc64a6895?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzY2hvb2wlMjBzY2llbmNlJTIwcHJvamVjdHxlbnwxfHx8fDE3NTU5MzIxMDl8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      likes: 15,
-      comments: 3,
-      isLiked: false,
-    },
-    {
-      id: "3",
-      clubId: "2",
-      clubName: "Drama Club",
-      clubImage:
-        "https://images.unsplash.com/photo-1572700432881-42c60fe8c869?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkcmFtYSUyMGNsdWIlMjB0aGVhdGVyfGVufDF8fHx8MTc1NTkyNzkwMXww&ixlib=rb-4.1.0&q=80&w=1080",
-      author: "Emma Davis",
-      authorAvatar:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzU1ODgyMzYwfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      timestamp: "1 day ago",
-      content:
-        "Rehearsal went amazing today! Our Romeo and Juliet performance is really coming together. The costumes arrived and they look incredible! 🎭✨ Opening night is next Friday - hope to see you all there!",
-      image:
-        "https://images.unsplash.com/photo-1748684050778-84709dc175a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkcmFtYSUyMHRoZWF0ZXIlMjBzdHVkZW50c3xlbnwxfHx8fDE3NTU5MzIxMTR8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      likes: 32,
-      comments: 12,
-      isLiked: false,
-    },
-  ];
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [loadingEvents, setLoadingEvents] = useState(false);
+  const [errEvents, setErrEvents] = useState(null);
 
-  // Mock data for upcoming events
-  const upcomingEvents = [
-    {
-      id: "1",
-      title: "Basketball Tournament",
-      clubName: "Basketball Club",
-      date: "Today",
-      time: "15:00 - 17:00",
-      location: "Sports Hall",
-      status: "today",
-    },
-    {
-      id: "2",
-      title: "Drama Performance",
-      clubName: "Drama Club",
-      date: "Tomorrow",
-      time: "19:00 - 21:00",
-      location: "Theater",
-      status: "upcoming",
-    },
-    {
-      id: "3",
-      title: "Science Fair",
-      clubName: "Science Lab",
-      date: "30 Aug",
-      time: "10:00 - 16:00",
-      location: "Main Hall",
-      status: "upcoming",
-    },
-  ];
+  const [clubRecommendations, setClubRecommendations] = useState([]);
+  const [loadingRecom, setLoadingRecom] = useState(true);
+  const [errRecom, setErrRecom] = useState(null);
 
-  // Mock data for club recommendations
-  const clubRecommendations = [
-    {
-      id: "4",
-      name: "Photography Club",
-      image:
-        "https://images.unsplash.com/photo-1574465636377-7781c5117a0c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzY2hvb2wlMjBzdHVkZW50cyUyMGdyb3VwfGVufDF8fHx8MTc1NTkzMjEwNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      category: "Seni",
-      memberCount: 16,
-      matchPercentage: 92,
-    },
-    {
-      id: "5",
-      name: "Robotics Club",
-      image:
-        "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHxyb2JvdGljcyUyMHN0dWRlbnRzfGVufDF8fHx8MTc1NTkzMjExN3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      category: "Teknologi",
-      memberCount: 12,
-      matchPercentage: 88,
-    },
-  ];
+  const normalizeClub = (c) => ({
+    id: String(c.id),
+    name: c.name ?? c.club_name,
+    image: c.logo_url ?? c.image_url ?? null,
+    category: c.category ?? c.type ?? "Unknown",
+    status: c.status ?? c.membership_status ?? "active",
+    unreadCount: c.unread_count ?? 0,
+  });
+
+  const normalizePost = (p) => ({
+    id: String(p.id),
+    clubId: String(p.club_id),
+    clubName: p.club_name ?? p.club?.name,
+    clubImage: p.club_image ?? p.club?.logo_url ?? null,
+    author: p.author_name ?? p.author?.name,
+    authorAvatar: p.author_avatar ?? p.author?.avatar_url ?? null,
+    timestamp: p.created_at,
+    content: p.body_text ?? p.body ?? p.content,
+    image: p.image_url ?? null,
+    likes: p.likes_count ?? 0,
+    comments: p.comments_count ?? 0,
+    isLiked: !!p.liked,
+  });
+
+  const normalizeEvent = (e) => ({
+    id: String(e.id),
+    title: e.title ?? e.name,
+    clubName: e.club_name ?? e.club?.name,
+    date: e.date ?? e.start_time,
+    time: e.time ?? `${e.start_time} - ${e.end_time}`,
+    location: e.location ?? e.place ?? "-",
+    status: e.status ?? "upcoming",
+  });
+
+  const normalizeRecom = (c) => ({
+    id: String(c.id),
+    name: c.name,
+    image: c.logo_url ?? c.image_url ?? null,
+    category: c.category ?? "Lainnya",
+    memberCount: c.member_count ?? 0,
+    matchPercentage: c.match ?? c.score ?? 0,
+  });
+
+  useEffect(() => {
+    (async () => {
+      setLoadingClubs(true);
+      try {
+        const raw = await getJoinedClubs();
+        setJoinedClubs(Array.isArray(raw) ? raw.map(normalizeClub) : []);
+      } catch (e) {
+        setErrClubs(e?.response?.data?.message || e.message);
+      } finally {
+        setLoadingClubs(false);
+      }
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!joinedClubs.length) return;
+    const firstId = joinedClubs[0].id;
+    (async () => {
+      setLoadingPosts(true);
+      setLoadingEvents(true);
+      try {
+        const postsRaw = await getFeedPosts(firstId);
+        setFeedPosts(Array.isArray(postsRaw) ? postsRaw.map(normalizePost) : []);
+      } catch (e) {
+        setErrPosts(e?.response?.data?.message || e.message);
+      } finally {
+        setLoadingPosts(false);
+      }
+      try {
+        const eventsRaw = await getUpcomingEvents(firstId);
+        setUpcomingEvents(Array.isArray(eventsRaw) ? eventsRaw.map(normalizeEvent) : []);
+      } catch (e) {
+        setErrEvents(e?.response?.data?.message || e.message);
+      } finally {
+        setLoadingEvents(false);
+      }
+    })();
+  }, [joinedClubs]);
+
+  useEffect(() => {
+    (async () => {
+      setLoadingRecom(true);
+      try {
+        const raw = await getClubRecommendations();
+        setClubRecommendations(
+          Array.isArray(raw) ? raw.map(normalizeRecom) : []
+        );
+      } catch (e) {
+        setErrRecom(e?.response?.data?.message || e.message);
+      } finally {
+        setLoadingRecom(false);
+      }
+    })();
+  }, []);
 
   const handleLike = (postId) => {
     console.log("Liked post:", postId);
@@ -208,33 +187,39 @@ export default function StudentDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {joinedClubs.map((club) => (
-                    <div
-                      key={club.id}
-                      className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors"
-                      onClick={() => navigate(`/clubs/${club.id}`)}
-                    >
-                      <div className="relative">
-                        <img
-                          src={club.image}
-                          alt={club.name}
-                          className="w-10 h-10 rounded-lg object-cover"
-                        />
-                        {club.unreadCount && (
-                          <span className="absolute -top-1 -right-1 bg-[#2563EB] text-white text-xs rounded-full size-5 flex items-center justify-center">
-                            {club.unreadCount}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium truncate">{club.name}</p>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          {getStatusIcon(club.status)}
-                          <span>{getStatusText(club.status)}</span>
+                  {loadingClubs ? (
+                    <p>Loading...</p>
+                  ) : errClubs ? (
+                    <p className="text-red-500">{errClubs}</p>
+                  ) : (
+                    joinedClubs.map((club) => (
+                      <div
+                        key={club.id}
+                        className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors"
+                        onClick={() => navigate(`/clubs/${club.id}`)}
+                      >
+                        <div className="relative">
+                          <img
+                            src={club.image}
+                            alt={club.name}
+                            className="w-10 h-10 rounded-lg object-cover"
+                          />
+                          {club.unreadCount && (
+                            <span className="absolute -top-1 -right-1 bg-[#2563EB] text-white text-xs rounded-full size-5 flex items-center justify-center">
+                              {club.unreadCount}
+                            </span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium truncate">{club.name}</p>
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            {getStatusIcon(club.status)}
+                            <span>{getStatusText(club.status)}</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
 
                 <Separator className="my-4" />
@@ -253,8 +238,13 @@ export default function StudentDashboard() {
           {/* Center Feed */}
           <div className="lg:col-span-6">
             <div className="space-y-6">
-              {feedPosts.map((post) => (
-                <Card key={post.id}>
+              {loadingPosts ? (
+                <p>Loading...</p>
+              ) : errPosts ? (
+                <p className="text-red-500">{errPosts}</p>
+              ) : (
+                feedPosts.map((post) => (
+                  <Card key={post.id}>
                   <CardHeader className="pb-3">
                     <div className="flex items-center gap-3">
                       <Avatar className="w-10 h-10">
@@ -326,7 +316,8 @@ export default function StudentDashboard() {
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+              ))
+              )}
             </div>
           </div>
 
@@ -378,40 +369,46 @@ export default function StudentDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {upcomingEvents.map((event) => (
-                    <div
-                      key={event.id}
-                      className="flex items-start gap-3 p-3 rounded-lg bg-muted/30"
-                    >
-                      <Calendar
-                        className={`size-4 mt-0.5 ${
-                          event.status === "today"
-                            ? "text-[#DC2626]"
-                            : "text-[#2563EB]"
-                        }`}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm leading-tight">
-                          {event.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {event.clubName}
-                        </p>
-                        <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                          <div className="flex items-center gap-1">
-                            <Clock className="size-3" />
-                            <span>
-                              {event.date} • {event.time}
-                            </span>
+                  {loadingEvents ? (
+                    <p>Loading...</p>
+                  ) : errEvents ? (
+                    <p className="text-red-500">{errEvents}</p>
+                  ) : (
+                    upcomingEvents.map((event) => (
+                      <div
+                        key={event.id}
+                        className="flex items-start gap-3 p-3 rounded-lg bg-muted/30"
+                      >
+                        <Calendar
+                          className={`size-4 mt-0.5 ${
+                            event.status === "today"
+                              ? "text-[#DC2626]"
+                              : "text-[#2563EB]"
+                          }`}
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm leading-tight">
+                            {event.title}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {event.clubName}
+                          </p>
+                          <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                            <div className="flex items-center gap-1">
+                              <Clock className="size-3" />
+                              <span>
+                                {event.date} • {event.time}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <MapPin className="size-3" />
+                            <span>{event.location}</span>
                           </div>
                         </div>
-                        <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                          <MapPin className="size-3" />
-                          <span>{event.location}</span>
-                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -423,35 +420,41 @@ export default function StudentDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {clubRecommendations.map((club) => (
-                    <div
-                      key={club.id}
-                      className="flex items-center gap-3 p-3 rounded-lg border border-border"
-                    >
-                      <img
-                        src={club.image}
-                        alt={club.name}
-                        className="w-10 h-10 rounded-lg object-cover"
-                      />
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm">{club.name}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {club.category}
-                        </p>
-                        <div className="flex items-center justify-between mt-1">
-                          <span className="text-xs text-muted-foreground">
-                            {club.memberCount} members
-                          </span>
-                          <Badge
-                            variant="secondary"
-                            className="text-xs bg-[#16A34A]/10 text-[#16A34A]"
-                          >
-                            {club.matchPercentage}% match
-                          </Badge>
+                  {loadingRecom ? (
+                    <p>Loading...</p>
+                  ) : errRecom ? (
+                    <p className="text-red-500">{errRecom}</p>
+                  ) : (
+                    clubRecommendations.map((club) => (
+                      <div
+                        key={club.id}
+                        className="flex items-center gap-3 p-3 rounded-lg border border-border"
+                      >
+                        <img
+                          src={club.image}
+                          alt={club.name}
+                          className="w-10 h-10 rounded-lg object-cover"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm">{club.name}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {club.category}
+                          </p>
+                          <div className="flex items-center justify-between mt-1">
+                            <span className="text-xs text-muted-foreground">
+                              {club.memberCount} members
+                            </span>
+                            <Badge
+                              variant="secondary"
+                              className="text-xs bg-[#16A34A]/10 text-[#16A34A]"
+                            >
+                              {club.matchPercentage}% match
+                            </Badge>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
 
                 <Button

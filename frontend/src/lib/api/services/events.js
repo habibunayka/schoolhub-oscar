@@ -16,6 +16,16 @@ export const listEvents = async (clubId, params = {}) => {
 };
 
 /**
+ * Get upcoming events (currently per club)
+ * @param {number} clubId
+ * @param {Object} [params]
+ * @returns {Promise<object[]>}
+ */
+export const getUpcomingEvents = async (clubId, params = {}) => {
+  return listEvents(clubId, params);
+};
+
+/**
  * Create event in club
  * @param {number} clubId
  * @param {Object} payload
@@ -65,6 +75,7 @@ export const checkinEvent = async (id, payload) => {
 
 export default {
   listEvents,
+  getUpcomingEvents,
   createEvent,
   rsvpEvent,
   reviewEvent,
