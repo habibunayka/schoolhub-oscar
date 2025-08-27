@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Search,
   Bell,
@@ -14,18 +15,22 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
-import { Button } from "@components/ui/button";
-import { Input } from "@components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@components/ui/card";
-import { Badge } from "@components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@components/ui/avatar";
-import { Separator } from "@components/ui/separator";
+import {
+  Button,
+  Input,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Badge,
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  Separator,
+} from "@components/common/ui";
 
-export default function StudentDashboard({
-  onViewClubProfile,
-  onCreateEvent,
-  studentName = "Alex",
-}) {
+export default function StudentDashboard({ studentName = "Alex" }) {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
   // Get current time for greeting
@@ -244,7 +249,7 @@ export default function StudentDashboard({
                 </span>
               </Button>
               <Button
-                onClick={onCreateEvent}
+                  onClick={() => navigate('/clubs/1/events/new')}
                 className="bg-[#2563EB] hover:bg-blue-700"
               >
                 <Plus className="size-4 mr-2" />
@@ -270,7 +275,7 @@ export default function StudentDashboard({
                     <div
                       key={club.id}
                       className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted/30 cursor-pointer transition-colors"
-                      onClick={() => onViewClubProfile(club.id)}
+                      onClick={() => navigate(`/clubs/${club.id}`)}
                     >
                       <div className="relative">
                         <img
