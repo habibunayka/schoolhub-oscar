@@ -21,10 +21,6 @@ export const up = (pgm) => {
         name: "idx_post_attachments_post",
     });
 
-    pgm.createIndex("announcement_attachments", ["announcement_id"], {
-        name: "idx_announcement_attachments_announcement",
-    });
-
     pgm.createIndex("notifications", ["user_id", "read_at"], {
         name: "idx_notifications_user_read",
     });
@@ -33,10 +29,6 @@ export const up = (pgm) => {
 export const down = (pgm) => {
     pgm.dropIndex("notifications", ["user_id", "read_at"], {
         name: "idx_notifications_user_read",
-    });
-
-    pgm.dropIndex("announcement_attachments", ["announcement_id"], {
-        name: "idx_announcement_attachments_announcement",
     });
 
     pgm.dropIndex("post_attachments", ["post_id"], {
