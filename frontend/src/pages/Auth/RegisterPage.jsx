@@ -8,6 +8,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { register as registerService, login as loginService } from "@lib/api/services/authentications";
 import { Button } from "@components/ui/button";
 import { Input } from "@components/ui/input";
 import { Label } from "@components/ui/label";
@@ -39,9 +41,27 @@ export default function RegisterPage({ onLogin, onBack }) {
     grade: "",
   });
 
+  const mutation = useMutation({
+    mutationFn: async () => {
+      await registerService({
+        name: formData.fullName,
+        email: formData.email,
+        password: formData.password,
+      });
+      const loginRes = await loginService({
+        email: formData.email,
+        password: formData.password,
+      });
+      return loginRes;
+    },
+    onSuccess: (data) => {
+      localStorage.setItem("token", data.token);
+      onLogin(data.user);
+    },
+  });
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Simple validation
     if (
       formData.fullName &&
       formData.email &&
@@ -50,7 +70,7 @@ export default function RegisterPage({ onLogin, onBack }) {
       formData.grade &&
       acceptTerms
     ) {
-      onLogin();
+      mutation.mutate();
     }
   };
 
@@ -244,14 +264,21 @@ export default function RegisterPage({ onLogin, onBack }) {
             </div>
 
             {/* Create Account Button */}
+            {mutation.error && (
+              <p className="text-sm text-red-600">
+                {mutation.error.userMessage || mutation.error.message}
+              </p>
+            )}
             <Button
               type="submit"
               disabled={
-                !acceptTerms || formData.password !== formData.confirmPassword
+                !acceptTerms ||
+                formData.password !== formData.confirmPassword ||
+                mutation.isLoading
               }
               className="w-full bg-[#2563EB] hover:bg-blue-700 text-white py-3 text-base font-medium group disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Create Account
+              {mutation.isLoading ? "Creating..." : "Create Account"}
               <ArrowRight className="ml-2 size-4 group-hover:translate-x-1 transition-transform" />
             </Button>
           </form>
