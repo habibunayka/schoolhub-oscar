@@ -1,23 +1,16 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Search,
-  Bell,
   Calendar,
-  Users,
-  TrendingUp,
   Heart,
   MessageCircle,
   Share,
   Clock,
   MapPin,
-  Plus,
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
 import {
   Button,
-  Input,
   Card,
   CardContent,
   CardHeader,
@@ -29,18 +22,8 @@ import {
   Separator,
 } from "@components/common/ui";
 
-export default function StudentDashboard({ studentName = "Alex" }) {
+export default function StudentDashboard() {
   const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
-
-  // Get current time for greeting
-  const currentHour = new Date().getHours();
-  const greeting =
-    currentHour < 12
-      ? "Good morning"
-      : currentHour < 17
-        ? "Good afternoon"
-        : "Good evening";
 
   // Mock data for joined clubs
   const joinedClubs = [
@@ -213,53 +196,6 @@ export default function StudentDashboard({ studentName = "Alex" }) {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Dashboard Header */}
-      <header className="bg-white border-b border-border sticky top-0 z-50">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-16">
-            {/* Left: Greeting */}
-            <div>
-              <h1 className="text-xl font-medium">
-                {greeting}, {studentName}!
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Ready to explore today's activities?
-              </p>
-            </div>
-
-            {/* Center: Search */}
-            <div className="flex-1 max-w-md mx-8">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
-                <Input
-                  placeholder="Search clubs, events, or posts..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-input-background border-border"
-                />
-              </div>
-            </div>
-
-            {/* Right: Notifications */}
-            <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" className="relative">
-                <Bell className="size-4" />
-                <span className="absolute -top-1 -right-1 bg-[#DC2626] text-white text-xs rounded-full size-5 flex items-center justify-center">
-                  3
-                </span>
-              </Button>
-              <Button
-                  onClick={() => navigate('/clubs/1/events/new')}
-                className="bg-[#2563EB] hover:bg-blue-700"
-              >
-                <Plus className="size-4 mr-2" />
-                Create Event
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
       {/* Main Content - Three Column Layout */}
       <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

@@ -12,10 +12,11 @@ try {
 }
 
 if (Navbar) {
-  test("renders logo, search, and avatar", () => {
+  test("renders logo, search, notifications, and avatar", () => {
     const html = renderToStaticMarkup(React.createElement(Navbar));
     assert(html.includes("SchoolHub"));
     assert(html.includes("aria-label=\"Search\""));
+    assert(html.includes("data-lucide=\"bell\""));
     assert(html.includes("AvatarFallback"));
   });
 } else {
