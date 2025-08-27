@@ -1,13 +1,13 @@
 import { Search, Bell, Menu, LogOut } from "lucide-react";
-import { Button } from "./button";
-import { Input } from "./input";
-import { Avatar, AvatarFallback } from "./avatar";
+import { Button } from "../forms/Button.jsx";
+import { Input } from "../forms/Input.jsx";
+import { Avatar, AvatarFallback } from "../data-display/Avatar.jsx";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "./dropdown-menu";
+} from "./DropdownMenu.jsx";
 
 export function Header({ showSearch = true, showProfile = true, onLogout }) {
   return (

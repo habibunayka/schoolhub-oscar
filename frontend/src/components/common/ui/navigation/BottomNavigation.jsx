@@ -1,5 +1,5 @@
 import { Home, Grid3X3, Calendar, User } from "lucide-react";
-import { Badge } from "./badge";
+import { Badge } from "../data-display/Badge.jsx";
 
 export function BottomNavigation() {
   const navItems = [
