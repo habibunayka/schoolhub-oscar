@@ -3,9 +3,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 let api;
 try {
-  ({ api } = await import("../../lib/api/apiClient.js"));
+  process.env.VITE_API_URL = "http://example.com";
+  api = (await import("../../lib/api/client.js")).default;
 } catch {
-  test("api client", { skip: true }, () => {});
 }
 
 if (api) {

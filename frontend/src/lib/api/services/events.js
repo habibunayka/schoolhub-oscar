@@ -1,35 +1,67 @@
-import api from "../apiClient";
-import { endpoints } from "../endpoints";
+import api from "../client.js";
+import { endpoints } from "../endpoints.js";
 
 const map = Object.fromEntries(endpoints.events.map((e) => [e.name, e]));
 
-export function listEvents(clubId, params = {}) {
+/**
+ * List events for a club
+ * @param {number} clubId
+ * @param {Object} [params]
+ * @returns {Promise<object[]>}
+ */
+export const listEvents = async (clubId, params = {}) => {
   const path = map.listEvents.path.replace(":id", clubId);
-  return api.get(path, { params }).then((r) => r.data);
-}
+  const { data } = await api.get(path, { params });
+  return data;
+};
 
-export function createEvent(clubId, payload) {
+/**
+ * Create event in club
+ * @param {number} clubId
+ * @param {Object} payload
+ * @returns {Promise<object>}
+ */
+export const createEvent = async (clubId, payload) => {
   const path = map.createEvent.path.replace(":id", clubId);
-  return api.post(path, payload).then((r) => r.data);
-}
+  const { data } = await api.post(path, payload);
+  return data;
+};
 
-export function rsvpEvent(id, payload) {
-  return api
-    .post(map.rsvpEvent.path.replace(":id", id), payload)
-    .then((r) => r.data);
-}
+/**
+ * RSVP an event
+ * @param {number} id event id
+ * @param {Object} payload
+ * @returns {Promise<object>}
+ */
+export const rsvpEvent = async (id, payload) => {
+  const path = map.rsvpEvent.path.replace(":id", id);
+  const { data } = await api.post(path, payload);
+  return data;
+};
 
-export function reviewEvent(id, payload) {
-  return api
-    .post(map.reviewEvent.path.replace(":id", id), payload)
-    .then((r) => r.data);
-}
+/**
+ * Submit review for event
+ * @param {number} id event id
+ * @param {Object} payload
+ * @returns {Promise<object>}
+ */
+export const reviewEvent = async (id, payload) => {
+  const path = map.reviewEvent.path.replace(":id", id);
+  const { data } = await api.post(path, payload);
+  return data;
+};
 
-export function checkinEvent(id, payload) {
-  return api
-    .post(map.checkinEvent.path.replace(":id", id), payload)
-    .then((r) => r.data);
-}
+/**
+ * Check-in to event
+ * @param {number} id event id
+ * @param {Object} payload
+ * @returns {Promise<object>}
+ */
+export const checkinEvent = async (id, payload) => {
+  const path = map.checkinEvent.path.replace(":id", id);
+  const { data } = await api.post(path, payload);
+  return data;
+};
 
 export default {
   listEvents,
