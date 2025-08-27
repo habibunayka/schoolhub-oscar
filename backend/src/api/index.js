@@ -11,7 +11,7 @@ import adminRoutes from "./admin/index.js";
 const r = Router();
 
 r.use(authRoutes);
-r.use(clubRoutes);
+r.use("/clubs", clubRoutes);
 r.use(eventRoutes);
 r.use(postRoutes);
 r.use(announcementRoutes);
