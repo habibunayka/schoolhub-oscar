@@ -1,18 +1,18 @@
 import { Users, MapPin } from "lucide-react";
-import { Button } from "./ui/button";
-import { Badge } from "./ui/badge";
-import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { Button } from "./button";
+import { Badge } from "./badge";
+import { ImageWithFallback } from "./ImageWithFallback";
 
-export function ClubCard({ 
+export function ClubCard({
   id,
-  name, 
-  image, 
-  memberCount, 
-  category, 
-  description, 
+  name,
+  image,
+  memberCount,
+  category,
+  description,
   location,
   isJoined = false,
-  onViewProfile
+  onViewProfile,
 }) {
   const handleCardClick = () => {
     if (onViewProfile) {
@@ -21,32 +21,30 @@ export function ClubCard({
   };
 
   return (
-    <div 
+    <div
       className="bg-card rounded-lg border border-border overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
       onClick={handleCardClick}
     >
       <div className="relative">
-        <ImageWithFallback 
-          src={image} 
+        <ImageWithFallback
+          src={image}
           alt={name}
           className="w-full h-40 object-cover"
         />
-        <Badge 
-          className="absolute top-2 left-2 bg-white/90 text-foreground hover:bg-white/90"
-        >
+        <Badge className="absolute top-2 left-2 bg-white/90 text-foreground hover:bg-white/90">
           {category}
         </Badge>
       </div>
-      
+
       <div className="p-4">
         <h3 className="font-medium mb-2 line-clamp-1">{name}</h3>
-        
+
         {description && (
           <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
             {description}
           </p>
         )}
-        
+
         <div className="flex items-center gap-4 mb-3 text-sm text-muted-foreground">
           <div className="flex items-center gap-1">
             <Users className="size-4" />
@@ -59,11 +57,11 @@ export function ClubCard({
             </div>
           )}
         </div>
-        
-        <Button 
+
+        <Button
           className={`w-full ${
-            isJoined 
-              ? "bg-[#16A34A] hover:bg-green-700" 
+            isJoined
+              ? "bg-[#16A34A] hover:bg-green-700"
               : "bg-[#2563EB] hover:bg-blue-700"
           }`}
           onClick={(e) => {
