@@ -53,3 +53,22 @@ export const createAnnouncement = async (req, res) => {
     );
     res.status(201).json({ id: rows[0].id });
 };
+
+export const updateAnnouncement = async (req, res) => {
+    const id = Number(req.params.id);
+    const { title, content_html, target } = req.body;
+    await run(
+        `UPDATE announcements SET title = $1, content_html = $2, target = $3 WHERE id = $4`,
+        [title, cleanHTML(content_html), target, id]
+    );
+    res.json({ id });
+};
+
+export const deleteAnnouncement = async (req, res) => {
+    const id = Number(req.params.id);
+    await run(
+        `UPDATE announcements SET status = 'removed' WHERE id = $1`,
+        [id]
+    );
+    res.status(204).end();
+};

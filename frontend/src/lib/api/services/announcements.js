@@ -3,22 +3,35 @@ import { endpoints } from "../endpoints";
 
 const map = Object.fromEntries(endpoints.announcements.map((e) => [e.name, e]));
 
-export function getAllAnnouncements(params = {}) {
-  return api.get(map.getAllAnnouncements.path, { params }).then((r) => r.data);
+export function list({ page = 1, limit = 10, clubId, target } = {}) {
+  const params = { limit, offset: (page - 1) * limit };
+  if (clubId) params.club_id = clubId;
+  if (target) params.target = target;
+  return api
+    .get(map.getAllAnnouncements.path, { params })
+    .then((r) => r.data);
 }
 
-export function getAnnouncementById(id) {
+export function get(id) {
   return api
     .get(map.getAnnouncementById.path.replace(":id", id))
     .then((r) => r.data);
 }
 
-export function createAnnouncement(payload) {
+export function create(payload) {
   return api.post(map.createAnnouncement.path, payload).then((r) => r.data);
 }
 
-export default {
-  getAllAnnouncements,
-  getAnnouncementById,
-  createAnnouncement,
-};
+export function update(id, payload) {
+  return api
+    .put(map.updateAnnouncement.path.replace(":id", id), payload)
+    .then((r) => r.data);
+}
+
+export function remove(id) {
+  return api
+    .delete(map.deleteAnnouncement.path.replace(":id", id))
+    .then((r) => r.data);
+}
+
+export default { list, get, create, update, remove };
