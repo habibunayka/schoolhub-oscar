@@ -20,7 +20,7 @@ async function createServer() {
 test("GET /notifications returns data", async () => {
     let calls = 0;
     __setDbMocks({
-        query: (sql, params) => {
+        query: async (sql, params) => {
             calls++;
             if (sql.includes("COUNT")) return [{ total: 0 }];
             return [];
@@ -38,12 +38,12 @@ test("GET /notifications returns data", async () => {
     assert.equal(calls, 2);
 
     server.close();
-    __setDbMocks({ query: () => [] });
+    __setDbMocks({ query: async () => [] });
 });
 
 test("GET /notifications with invalid limit triggers validation", async () => {
     let called = false;
-    __setDbMocks({ query: () => { called = true; return []; } });
+    __setDbMocks({ query: async () => { called = true; return []; } });
     const token = jwt.sign({ id: 1 }, process.env.JWT_SECRET);
 
     const { server, url } = await createServer();
@@ -54,5 +54,5 @@ test("GET /notifications with invalid limit triggers validation", async () => {
     assert.equal(called, false);
 
     server.close();
-    __setDbMocks({ query: () => [] });
+    __setDbMocks({ query: async () => [] });
 });

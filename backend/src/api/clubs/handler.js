@@ -1,35 +1,39 @@
-import { get, query, run } from "../../database/db.js";
+import { get, query, run, tx } from "../../database/db.js";
 import { cleanHTML } from "../../services/sanitize.js";
 
-export const listClubs = (req, res) => {
+export const listClubs = async (req, res) => {
     const { search = "", tag, day } = req.query; // tag/day future index
-    const rows = query(
-        `SELECT * FROM clubs WHERE is_active = 1 AND name LIKE ? ORDER BY name`,
+    const rows = await query(
+        `SELECT * FROM clubs WHERE is_active = true AND name ILIKE $1 ORDER BY name`,
         [`%${search}%`]
     );
     res.json(rows);
 };
 
-export const createClub = (req, res) => {
+export const createClub = async (req, res) => {
     const { name, slug, description, advisor_name } = req.body;
-    const r = run(
-        `INSERT INTO clubs(name, slug, description, advisor_name) VALUES (?,?,?,?)`,
-        [name, slug, cleanHTML(description || ""), advisor_name]
-    );
-    run(
-        `INSERT INTO club_members(club_id, user_id, role, status, joined_at) VALUES (?,?,?,?, datetime('now'))`,
-        [r.lastInsertRowid, req.user.id, "owner", "approved"]
-    );
-    res.status(201).json({ id: r.lastInsertRowid });
+    const id = await tx(async ({ run }) => {
+        const { rows } = await run(
+            `INSERT INTO clubs(name, slug, description, advisor_name) VALUES ($1,$2,$3,$4) RETURNING id`,
+            [name, slug, cleanHTML(description || ""), advisor_name]
+        );
+        const clubId = rows[0].id;
+        await run(
+            `INSERT INTO club_members(club_id, user_id, role, status, joined_at) VALUES ($1,$2,'owner','approved', NOW())`,
+            [clubId, req.user.id]
+        );
+        return clubId;
+    });
+    res.status(201).json({ id });
 };
 
-export const patchClub = (req, res) => {
+export const patchClub = async (req, res) => {
     const id = Number(req.params.id);
-    const club = get(`SELECT * FROM clubs WHERE id = ?`, [id]);
+    const club = await get(`SELECT * FROM clubs WHERE id = $1`, [id]);
     if (!club) return res.status(404).json({ message: "Not found" });
     const payload = req.body;
-    run(
-        `UPDATE clubs SET name = COALESCE(?,name), slug = COALESCE(?,slug), description = COALESCE(?,description), logo_url = COALESCE(?,logo_url), banner_url = COALESCE(?,banner_url), advisor_name = COALESCE(?,advisor_name) WHERE id = ?`,
+    await run(
+        `UPDATE clubs SET name = COALESCE($1,name), slug = COALESCE($2,slug), description = COALESCE($3,description), logo_url = COALESCE($4,logo_url), banner_url = COALESCE($5,banner_url), advisor_name = COALESCE($6,advisor_name) WHERE id = $7`,
         [
             payload.name,
             payload.slug,
@@ -43,11 +47,11 @@ export const patchClub = (req, res) => {
     res.json({ updated: true });
 };
 
-export const joinClub = (req, res) => {
+export const joinClub = async (req, res) => {
     const id = Number(req.params.id);
     try {
-        run(
-            `INSERT INTO club_members(club_id, user_id, role, status) VALUES (?,?, 'member','pending')`,
+        await run(
+            `INSERT INTO club_members(club_id, user_id, role, status) VALUES ($1,$2,'member','pending')`,
             [id, req.user.id]
         );
     } catch {
@@ -56,12 +60,12 @@ export const joinClub = (req, res) => {
     res.status(201).json({ status: "pending" });
 };
 
-export const setMemberStatus = (req, res) => {
+export const setMemberStatus = async (req, res) => {
     const { userId } = req.params;
     const { decision } = req.body; // 'approved'|'rejected'
-    run(
-        `UPDATE club_members SET status = ?, joined_at = CASE WHEN ?='approved' THEN datetime('now') ELSE joined_at END WHERE club_id = ? AND user_id = ?`,
-        [decision, decision, Number(req.params.id), Number(userId)]
+    await run(
+        `UPDATE club_members SET status = $1, joined_at = CASE WHEN $1='approved' THEN NOW() ELSE joined_at END WHERE club_id = $2 AND user_id = $3`,
+        [decision, Number(req.params.id), Number(userId)]
     );
     res.json({ ok: true });
 };

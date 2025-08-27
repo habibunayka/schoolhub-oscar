@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 import * as Posts from "../handler.js";
 import { __setDbMocks } from "../../../database/db.js";
 
-test("listPosts fetches posts for club", () => {
+test("listPosts fetches posts for club", async () => {
     let params;
     __setDbMocks({
-        query: (sql, p) => {
+        query: async (sql, p) => {
             params = p;
             return [{ id: 1, attachments: "[]" }];
         },
@@ -15,15 +15,15 @@ test("listPosts fetches posts for club", () => {
     let json;
     const res = { json: (d) => (json = d) };
 
-    Posts.listPosts(req, res);
+    await Posts.listPosts(req, res);
 
     assert.deepEqual(json, [{ id: 1, attachments: "[]" }]);
     assert.deepEqual(params, [2]);
-    __setDbMocks({ query: () => [] });
+    __setDbMocks({ query: async () => [] });
 });
 
-test("getPostById returns 404 when missing", () => {
-    __setDbMocks({ query: () => [] });
+test("getPostById returns 404 when missing", async () => {
+    __setDbMocks({ query: async () => [] });
     const req = { params: { id: "2", postId: "5" } };
     let status, json;
     const res = {
@@ -31,7 +31,7 @@ test("getPostById returns 404 when missing", () => {
         json: (d) => (json = d),
     };
 
-    Posts.getPostById(req, res);
+    await Posts.getPostById(req, res);
 
     assert.equal(status, 404);
     assert.deepEqual(json, { message: "Post not found" });

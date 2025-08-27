@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 import * as Clubs from "../handler.js";
 import { __setDbMocks } from "../../../database/db.js";
 
-test("listClubs queries database with search", () => {
+test("listClubs queries database with search", async () => {
     let params;
     __setDbMocks({
-        query: (sql, p) => {
+        query: async (sql, p) => {
             params = p;
             return [{ id: 1 }];
         },
@@ -16,19 +16,22 @@ test("listClubs queries database with search", () => {
     let json;
     const res = { json: (d) => (json = d) };
 
-    Clubs.listClubs(req, res);
+    await Clubs.listClubs(req, res);
 
     assert.deepEqual(json, [{ id: 1 }]);
     assert.deepEqual(params, ["%abc%"]);
-    __setDbMocks({ query: () => [] });
+    __setDbMocks({ query: async () => [] });
 });
 
-test("createClub inserts club and membership", () => {
+test("createClub inserts club and membership", async () => {
     const calls = [];
     __setDbMocks({
-        run: (sql, params) => {
+        run: async (sql, params) => {
             calls.push({ sql, params });
-            return { lastInsertRowid: 10 };
+            if (calls.length === 1) {
+                return { rowCount: 1, rows: [{ id: 10 }] };
+            }
+            return { rowCount: 1, rows: [] };
         },
     });
     const req = {
@@ -46,12 +49,12 @@ test("createClub inserts club and membership", () => {
         json: (d) => (json = d),
     };
 
-    Clubs.createClub(req, res);
+    await Clubs.createClub(req, res);
 
     assert.equal(status, 201);
     assert.deepEqual(json, { id: 10 });
     assert.equal(calls.length, 2);
     assert.ok(calls[0].sql.includes("INSERT INTO clubs"));
     assert.equal(calls[1].params[0], 10);
-    __setDbMocks({ run: () => ({ lastInsertRowid: 0 }) });
+    __setDbMocks({ run: async () => ({ rowCount: 0, rows: [] }) });
 });

@@ -9,36 +9,38 @@ export const listNotifications = async (req, res) => {
 
         const offset = (page - 1) * limit;
 
-        let sqlQuery = `SELECT * FROM notifications WHERE user_id = ?`;
-        let queryParams = [req.user.id];
+        let sqlQuery = `SELECT * FROM notifications WHERE user_id = $1`;
+        const queryParams = [req.user.id];
+        let idx = 2;
 
         if (status === "read") {
-            sqlQuery += ` AND is_read = 1`;
+            sqlQuery += ` AND is_read = true`;
         } else if (status === "unread") {
-            sqlQuery += ` AND is_read = 0`;
+            sqlQuery += ` AND is_read = false`;
         }
 
         if (type) {
-            sqlQuery += ` AND type = ?`;
+            sqlQuery += ` AND type = $${idx++}`;
             queryParams.push(type);
         }
 
-        sqlQuery += ` ORDER BY id DESC LIMIT ? OFFSET ?`;
+        sqlQuery += ` ORDER BY id DESC LIMIT $${idx++} OFFSET $${idx}`;
         queryParams.push(limit, offset);
 
         const rows = await query(sqlQuery, queryParams);
 
-        let countQuery = `SELECT COUNT(*) as total FROM notifications WHERE user_id = ?`;
-        let countParams = [req.user.id];
+        let countQuery = `SELECT COUNT(*) as total FROM notifications WHERE user_id = $1`;
+        const countParams = [req.user.id];
+        let cidx = 2;
 
         if (status === "read") {
-            countQuery += ` AND is_read = 1`;
+            countQuery += ` AND is_read = true`;
         } else if (status === "unread") {
-            countQuery += ` AND is_read = 0`;
+            countQuery += ` AND is_read = false`;
         }
 
         if (type) {
-            countQuery += ` AND type = ?`;
+            countQuery += ` AND type = $${cidx++}`;
             countParams.push(type);
         }
 

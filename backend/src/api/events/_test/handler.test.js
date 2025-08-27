@@ -3,10 +3,10 @@ import assert from "node:assert/strict";
 import * as Events from "../handler.js";
 import { __setDbMocks } from "../../../database/db.js";
 
-test("listEvents queries by club id", () => {
+test("listEvents queries by club id", async () => {
     let params;
     __setDbMocks({
-        query: (sql, p) => {
+        query: async (sql, p) => {
             params = p;
             return [{ id: 1 }];
         },
@@ -15,9 +15,9 @@ test("listEvents queries by club id", () => {
     let json;
     const res = { json: (d) => (json = d) };
 
-    Events.listEvents(req, res);
+    await Events.listEvents(req, res);
 
     assert.deepEqual(json, [{ id: 1 }]);
     assert.deepEqual(params, [5]);
-    __setDbMocks({ query: () => [] });
+    __setDbMocks({ query: async () => [] });
 });
