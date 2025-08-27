@@ -6,7 +6,7 @@ import { act } from "react-dom/test-utils";
 import { createRoot } from "react-dom/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import ClubListPage from "../ClubListPage.jsx";
-import { api } from "../../../lib/api/apiClient.js";
+import api from "../../../lib/api/client.js";
 
 function setupDom() {
   const rootElem = {

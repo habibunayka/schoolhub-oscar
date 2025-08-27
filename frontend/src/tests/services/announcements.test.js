@@ -1,8 +1,9 @@
 /* eslint-env node */
 import test from "node:test";
 import assert from "node:assert/strict";
-import api from "../../lib/api/apiClient.js";
+import api from "../../lib/api/client.js";
 import service from "../../lib/api/services/announcements.js";
+globalThis.localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 
 if (service) {
   api.defaults.adapter = (config) =>
@@ -30,7 +31,7 @@ if (service) {
     const payload = { club_id: 1, title: "t", content_html: "c", target: "all" };
     const res = await service.create(payload);
     assert.equal(res.method, "post");
-    assert.deepEqual(res.data, payload);
+    assert.deepEqual(JSON.parse(res.data), payload);
   });
 
   test("update puts payload", async () => {

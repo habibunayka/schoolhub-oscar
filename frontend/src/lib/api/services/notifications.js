@@ -1,10 +1,16 @@
-import api from "../apiClient";
-import { endpoints } from "../endpoints";
+import api from "../client.js";
+import { endpoints } from "../endpoints.js";
 
 const map = Object.fromEntries(endpoints.notifications.map((e) => [e.name, e]));
 
-export function listNotifications(params = {}) {
-  return api.get(map.listNotifications.path, { params }).then((r) => r.data);
-}
+/**
+ * List notifications for current user
+ * @param {Object} [params]
+ * @returns {Promise<object[]>}
+ */
+export const listNotifications = async (params = {}) => {
+  const { data } = await api.get(map.listNotifications.path, { params });
+  return data;
+};
 
 export default { listNotifications };

@@ -1,36 +1,65 @@
-import api from "../apiClient";
-import { endpoints } from "../endpoints";
+import api from "../client.js";
+import { endpoints } from "../endpoints.js";
 
 const map = Object.fromEntries(endpoints.clubs.map((e) => [e.name, e]));
 
-export function listClubs(params = {}) {
-  return api.get(map.listClubs.path, { params }).then((r) => r.data);
-}
+/**
+ * List clubs
+ * @param {Object} [params]
+ * @returns {Promise<object[]>}
+ */
+export const listClubs = async (params = {}) => {
+  const { data } = await api.get(map.listClubs.path, { params });
+  return data;
+};
 
-export function createClub(payload) {
-  return api.post(map.createClub.path, payload).then((r) => r.data);
-}
+/**
+ * Create a club
+ * @param {Object} payload
+ * @returns {Promise<object>}
+ */
+export const createClub = async (payload) => {
+  const { data } = await api.post(map.createClub.path, payload);
+  return data;
+};
 
-export function patchClub(id, payload) {
-  return api
-    .patch(map.patchClub.path.replace(":id", id), payload)
-    .then((r) => r.data);
-}
+/**
+ * Update club partially
+ * @param {number} id
+ * @param {Object} payload
+ * @returns {Promise<object>}
+ */
+export const patchClub = async (id, payload) => {
+  const path = map.patchClub.path.replace(":id", id);
+  const { data } = await api.patch(path, payload);
+  return data;
+};
 
-export function joinClub(id) {
-  return api
-    .post(map.joinClub.path.replace(":id", id))
-    .then((r) => r.data);
-}
+/**
+ * Join a club
+ * @param {number} id
+ * @returns {Promise<object>}
+ */
+export const joinClub = async (id) => {
+  const path = map.joinClub.path.replace(":id", id);
+  const { data } = await api.post(path);
+  return data;
+};
 
-export function setMemberStatus(id, userId, payload) {
-  return api
-    .patch(
-      map.setMemberStatus.path.replace(":id", id).replace(":userId", userId),
-      payload
-    )
-    .then((r) => r.data);
-}
+/**
+ * Update member status
+ * @param {number} id club id
+ * @param {number} userId user identifier
+ * @param {Object} payload
+ * @returns {Promise<object>}
+ */
+export const setMemberStatus = async (id, userId, payload) => {
+  const path = map.setMemberStatus.path
+    .replace(":id", id)
+    .replace(":userId", userId);
+  const { data } = await api.patch(path, payload);
+  return data;
+};
 
 export default {
   listClubs,
