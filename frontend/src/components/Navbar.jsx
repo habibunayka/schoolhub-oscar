@@ -69,7 +69,7 @@ function UserMenu() {
 
 export default function Navbar() {
   return (
-    <nav className="flex items-center justify-between p-4 gap-4">
+    <nav className="flex items-center justify-between p-4 gap-4 bg-white border-b border-border sticky top-0 z-50">
       <div className="flex items-center">
         <Link to="/" className="font-bold">
           SchoolHub
