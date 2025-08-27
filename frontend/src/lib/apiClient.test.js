@@ -17,5 +17,18 @@ test('apiClient builds url and returns data', async () => {
   });
   const res = await apiClient('/hello', { params: { a: 1 } });
   assert.equal(res.url, 'http://example.com/hello?a=1');
-  assert.equal(res.headers['Content-Type'], 'application/json');
+  assert.equal(res.headers['Content-Type'], undefined);
+});
+
+test('apiClient maps validation errors', async () => {
+  const { apiClient } = await import('./apiClient.js');
+  global.fetch = async () => ({
+    ok: false,
+    status: 400,
+    json: async () => ({ message: 'Invalid', errors: { field: 'required' } })
+  });
+  await assert.rejects(
+    () => apiClient('/x', { method: 'POST', body: {} }),
+    (err) => err.type === 'validation' && err.message === 'Invalid'
+  );
 });

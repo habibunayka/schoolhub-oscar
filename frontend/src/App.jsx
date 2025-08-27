@@ -1,7 +1,6 @@
 import { Search, Gamepad2, Palette, FlaskConical, Languages, Plus } from "lucide-react";
 import { useState } from "react";
 import { Header } from "./components/Header";
-import { ClubCard } from "./components/ClubCard";
 import { EventCard } from "./components/EventCard";
 import { BottomNavigation } from "./components/BottomNavigation";
 import { LoginPage } from "./components/LoginPage";
@@ -13,6 +12,7 @@ import { Button } from "./components/ui/button";
 import { Input } from "./components/ui/input";
 import { Badge } from "./components/ui/badge";
 import { ImageWithFallback } from "./components/figma/ImageWithFallback";
+import { ClubList } from "./components/ClubList";
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState("login");
@@ -88,46 +88,6 @@ export default function App() {
       />
     );
   }
-
-  // Mock data for clubs
-  const featuredClubs = [
-    {
-      id: "1",
-      name: "Basketball Club",
-      image: "https://images.unsplash.com/photo-1720716430227-82ce7abf761d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwdGVhbSUyMHNjaG9vbHxlbnwxfHx8fDE3NTU5Mjc5MDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      memberCount: 24,
-      category: "Olahraga",
-      description: "Join our dynamic basketball team and improve your skills while having fun with fellow athletes.",
-      location: "Sports Hall"
-    },
-    {
-      id: "2", 
-      name: "Drama Club",
-      image: "https://images.unsplash.com/photo-1572700432881-42c60fe8c869?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxkcmFtYSUyMGNsdWIlMjB0aGVhdGVyfGVufDF8fHx8MTc1NTkyNzkwMXww&ixlib=rb-4.1.0&q=80&w=1080",
-      memberCount: 18,
-      category: "Seni",
-      description: "Express yourself through acting, theater, and performance arts in our creative drama club.",
-      location: "Theater Room"
-    },
-    {
-      id: "3",
-      name: "Science Lab",
-      image: "https://images.unsplash.com/photo-1605781645799-c9c7d820b4ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzY2llbmNlJTIwbGFiJTIwc3R1ZGVudHN8ZW58MXx8fHwxNzU1OTI3OTAxfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      memberCount: 15,
-      category: "Sains",
-      description: "Explore the wonders of science through hands-on experiments and research projects.",
-      location: "Science Lab"
-    },
-    {
-      id: "4",
-      name: "Debate Society",
-      image: "https://images.unsplash.com/photo-1607586501844-9a7f11af251c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50cyUyMHNjaG9vbCUyMGFjdGl2aXRpZXN8ZW58MXx8fHwxNzU1OTI3OTAwfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      memberCount: 12,
-      category: "Bahasa", 
-      description: "Develop your public speaking and critical thinking skills through competitive debates.",
-      location: "Conference Room"
-    }
-  ];
 
   // Mock data for events
   const upcomingEvents = [
@@ -235,11 +195,7 @@ export default function App() {
               </Button>
             </div>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {featuredClubs.map((club) => (
-                <ClubCard key={club.id} {...club} onViewProfile={handleViewClubProfile} />
-              ))}
-            </div>
+            <ClubList onViewProfile={handleViewClubProfile} />
           </div>
         </section>
 
