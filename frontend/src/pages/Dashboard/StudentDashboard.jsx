@@ -23,6 +23,7 @@ import {
   AvatarImage,
   Separator,
 } from "@components/common/ui";
+import EmptyState from "@components/common/EmptyState";
 import {
   getJoinedClubs,
   getClubRecommendations,
@@ -191,6 +192,8 @@ export default function StudentDashboard() {
                     <p>Loading...</p>
                   ) : errClubs ? (
                     <p className="text-red-500">{errClubs}</p>
+                  ) : !joinedClubs.length ? (
+                    <EmptyState message="No clubs joined" />
                   ) : (
                     joinedClubs.map((club) => (
                       <div
@@ -242,6 +245,8 @@ export default function StudentDashboard() {
                 <p>Loading...</p>
               ) : errPosts ? (
                 <p className="text-red-500">{errPosts}</p>
+              ) : !feedPosts.length ? (
+                <EmptyState message="No posts available" />
               ) : (
                 feedPosts.map((post) => (
                   <Card key={post.id}>
@@ -373,6 +378,8 @@ export default function StudentDashboard() {
                     <p>Loading...</p>
                   ) : errEvents ? (
                     <p className="text-red-500">{errEvents}</p>
+                  ) : !upcomingEvents.length ? (
+                    <EmptyState message="No upcoming events" />
                   ) : (
                     upcomingEvents.map((event) => (
                       <div
@@ -424,6 +431,8 @@ export default function StudentDashboard() {
                     <p>Loading...</p>
                   ) : errRecom ? (
                     <p className="text-red-500">{errRecom}</p>
+                  ) : !clubRecommendations.length ? (
+                    <EmptyState message="No recommendations" />
                   ) : (
                     clubRecommendations.map((club) => (
                       <div
