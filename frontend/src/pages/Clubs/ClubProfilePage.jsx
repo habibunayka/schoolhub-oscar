@@ -26,6 +26,11 @@ import {
   AvatarFallback,
   AvatarImage,
   Separator,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@components/common/ui";
 
 export default function ClubProfilePage() {
@@ -57,8 +62,10 @@ export default function ClubProfilePage() {
   const posts = [
     {
       id: "1",
-      image:
+      images: [
         "https://images.unsplash.com/photo-1703114608920-682133cc2ea2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwcHJhY3RpY2V8ZW58MXx8fHwxNzU1OTI4NzI2fDA&ixlib=rb-4.1.0&q=80&w=1080",
+        "https://images.unsplash.com/photo-1521412644187-c49fa049e84d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
+      ],
       caption:
         "Great practice session today! Our new members are really stepping up their game. 🏀💪 #BasketballLife #Teamwork",
       author: "Alex Rodriguez",
@@ -71,8 +78,9 @@ export default function ClubProfilePage() {
     },
     {
       id: "2",
-      image:
+      images: [
         "https://images.unsplash.com/photo-1515326283062-ef852efa28a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwY291cnR8ZW58MXx8fHwxNzU1ODMwMzM4fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      ],
       caption:
         "Home court advantage! Looking forward to tomorrow's tournament. Come support us! 🏆",
       author: "Sarah Chen",
@@ -85,8 +93,9 @@ export default function ClubProfilePage() {
     },
     {
       id: "3",
-      image:
+      images: [
         "https://images.unsplash.com/photo-1659468551117-8255d708e197?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwdGVhbSUyMGdyb3VwfGVufDF8fHx8MTc1NTkyODcyM3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      ],
       caption:
         "Team bonding session complete! Nothing builds chemistry like some friendly competition. See you all at practice!",
       author: "Mike Johnson",
@@ -356,13 +365,33 @@ export default function ClubProfilePage() {
                         </p>
                       </div>
 
-                      <div className="w-full">
-                        <img
-                          src={post.image}
-                          alt="Post content"
-                          className="w-full h-80 object-cover"
-                        />
-                      </div>
+                      {post.images.length > 0 && (
+                        post.images.length === 1 ? (
+                          <div className="w-full">
+                            <img
+                              src={post.images[0]}
+                              alt="Post content"
+                              className="w-full h-80 object-cover"
+                            />
+                          </div>
+                        ) : (
+                          <Carousel className="w-full">
+                            <CarouselContent>
+                              {post.images.map((img, idx) => (
+                                <CarouselItem key={idx}>
+                                  <img
+                                    src={img}
+                                    alt={`Post image ${idx + 1}`}
+                                    className="w-full h-80 object-cover"
+                                  />
+                                </CarouselItem>
+                              ))}
+                            </CarouselContent>
+                            <CarouselPrevious />
+                            <CarouselNext />
+                          </Carousel>
+                        )
+                      )}
 
                       <CardContent className="pt-3">
                         <div className="flex items-center justify-between">

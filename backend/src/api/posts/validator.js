@@ -56,13 +56,13 @@ export const validateCreatePost = [
             return true;
         }),
 
-    body("attachments")
+    body("images")
         .optional()
         .isArray({ max: 10 })
-        .withMessage("Attachments must be an array with maximum 10 items")
+        .withMessage("Images must be an array with maximum 10 items")
         .custom((arr) => {
             if (!arr.every((item) => typeof item === "string")) {
-                throw new Error("All attachments must be string URLs");
+                throw new Error("All images must be string URLs");
             }
             return true;
         }),

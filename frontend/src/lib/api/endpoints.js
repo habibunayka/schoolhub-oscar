@@ -387,7 +387,7 @@ export const endpoints = {
             "body_html",
             "visibility",
             "pinned",
-            "attachments"
+            "images"
           ],
           "params": [
             "id"
