@@ -258,7 +258,7 @@ export default function StudentDashboard() {
                           alt={post.author}
                         />
                         <AvatarFallback>
-                          {post.author
+                          {(post.author ?? "Unknown")
                             .split(" ")
                             .map((n) => n[0])
                             .join("")}
