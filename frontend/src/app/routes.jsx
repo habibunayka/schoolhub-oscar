@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import AppLayout from './AppLayout';
 import RequireAuth from './RequireAuth';
+import NotificationsPage from '@/pages/Dashboard/Notification';
 
 const LoginPage = lazy(() => import('@pages/Auth/LoginPage'));
 const RegisterPage = lazy(() => import('@pages/Auth/RegisterPage'));
@@ -17,6 +18,8 @@ const EventDetail = lazy(() => import('@pages/Events/Detail'));
 const PostDetail = lazy(() => import('@pages/Posts/Detail'));
 const SearchResults = lazy(() => import('@pages/Search/ResultsPage'));
 const NotFound = lazy(() => import('@pages/NotFound'));
+const ProfilePage = lazy(() => import('@/pages/Dashboard/Profile'));
+const Notification = lazy(() => import('@/pages/Dashboard/Notification'));
 
 const withSuspense = (element) => (
   <Suspense fallback={<div>Loading...</div>}>{element}</Suspense>
@@ -39,6 +42,8 @@ export const router = createBrowserRouter([
       { path: 'announcements/:id', element: withSuspense(<RequireAuth><AnnouncementDetail /></RequireAuth>) },
       { path: 'announcements/:id/edit', element: withSuspense(<RequireAuth><AnnouncementForm /></RequireAuth>) },
       { path: 'search', element: withSuspense(<RequireAuth><SearchResults /></RequireAuth>) },
+      { path: 'profile', element: withSuspense(<RequireAuth><ProfilePage /></RequireAuth>) },
+      { path: 'notifications', element: withSuspense(<RequireAuth><Notification /></RequireAuth>) },
     ],
   },
   { path: '/login', element: withSuspense(<LoginPage />) },

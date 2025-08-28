@@ -94,11 +94,13 @@ export default function Navbar() {
           >
             <Search className="size-5" />
           </Button>
-          <Button variant="ghost" size="icon" className="relative">
+          <Button asChild variant="ghost" size="icon" className="relative">
+          <Link to="/notifications">
             <Bell className="size-5" />
             <span className="absolute -top-1 -right-1 bg-destructive text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
               3
             </span>
+            </Link>
           </Button>
           <UserMenu />
         </div>
