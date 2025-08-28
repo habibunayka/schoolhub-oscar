@@ -1,5 +1,4 @@
 import { useState, useRef } from "react";
-import { useNavigate, useParams } from "react-router-dom";
 import {
   ArrowLeft,
   Upload,
@@ -13,29 +12,8 @@ import {
   List,
   Save,
 } from "lucide-react";
-import {
-  Button,
-  Input,
-  Textarea,
-  Label,
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-  Switch,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Separator,
-  Badge,
-  ImageWithFallback,
-} from "@components/common/ui";
 
 export default function CreateEventPage() {
-  const navigate = useNavigate();
-  const { id } = useParams();
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
@@ -94,7 +72,16 @@ export default function CreateEventPage() {
 
   const handleSave = () => {
     console.log("Saving event:", formData);
-    navigate(`/clubs/${id}`);
+    alert("Event saved successfully!");
+  };
+
+  const handleSaveDraft = () => {
+    console.log("Saving draft:", formData);
+    alert("Draft saved successfully!");
+  };
+
+  const handleGoBack = () => {
+    window.history.back();
   };
 
   const formatDate = (dateStr) => {
@@ -112,123 +99,146 @@ export default function CreateEventPage() {
     return timeStr;
   };
 
+  const clubOptions = [
+    { value: "basketball", label: "Basketball Club" },
+    { value: "drama", label: "Drama Club" },
+    { value: "science", label: "Science Lab" },
+    { value: "debate", label: "Debate Society" },
+    { value: "programming", label: "Programming Club" },
+    { value: "music", label: "Music Ensemble" },
+  ];
+
+  const getClubLabel = (value) => {
+    const club = clubOptions.find(option => option.value === value);
+    return club ? club.label : value;
+  };
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b border-border sticky top-0 z-50">
-        <div className="container mx-auto px-4">
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
-                <ArrowLeft className="size-4 mr-2" />
+              <button 
+                onClick={handleGoBack}
+                className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+              >
+                <ArrowLeft className="w-4 h-4" />
                 Back
-              </Button>
+              </button>
               <div>
-                <h1 className="font-bold text-xl">Create Event</h1>
-                <p className="text-sm text-muted-foreground">
+                <h1 className="font-bold text-xl text-gray-900">Create Event</h1>
+                <p className="text-sm text-gray-600">
                   Design and publish a new event
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
-              <Button variant="outline">
-                <Save className="size-4 mr-2" />
+              <button 
+                onClick={handleSaveDraft}
+                className="flex items-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-lg transition-colors duration-200"
+              >
+                <Save className="w-4 h-4" />
                 Save Draft
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={handleSave}
-                className="bg-[#2563EB] hover:bg-blue-700"
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors duration-200"
               >
                 Publish Event
-              </Button>
+              </button>
             </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Form Panel - 60% on desktop, full width on mobile */}
           <div className="lg:col-span-3 space-y-8">
             {/* Basic Info Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Basic Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+              <div className="p-6 border-b border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900">Basic Information</h2>
+              </div>
+              <div className="p-6 space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="title">Event Title</Label>
-                  <Input
+                  <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+                    Event Title
+                  </label>
+                  <input
                     id="title"
+                    type="text"
                     placeholder="Enter event title"
                     value={formData.title}
                     onChange={(e) => handleInputChange("title", e.target.value)}
-                    className="bg-input-background border-border"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="club">Organizing Club</Label>
-                  <Select
+                  <label htmlFor="club" className="block text-sm font-medium text-gray-700">
+                    Organizing Club
+                  </label>
+                  <select
+                    id="club"
                     value={formData.club}
-                    onValueChange={(value) => handleInputChange("club", value)}
+                    onChange={(e) => handleInputChange("club", e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-white"
                   >
-                    <SelectTrigger className="bg-input-background border-border">
-                      <SelectValue placeholder="Select organizing club" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="basketball">
-                        Basketball Club
-                      </SelectItem>
-                      <SelectItem value="drama">Drama Club</SelectItem>
-                      <SelectItem value="science">Science Lab</SelectItem>
-                      <SelectItem value="debate">Debate Society</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    <option value="">Select organizing club</option>
+                    {clubOptions.map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Rich Text Editor for Description */}
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description</Label>
-                  <div className="border border-border rounded-lg bg-input-background">
+                  <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+                    Description
+                  </label>
+                  <div className="border border-gray-300 rounded-lg bg-white">
                     {/* Toolbar */}
-                    <div className="flex items-center gap-1 p-2 border-b border-border">
-                      <Button variant="ghost" size="sm">
-                        <Bold className="size-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Italic className="size-4" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <List className="size-4" />
-                      </Button>
-                      <Separator orientation="vertical" className="h-6 mx-1" />
-                      <Button variant="ghost" size="sm">
-                        <Eye className="size-4" />
-                      </Button>
+                    <div className="flex items-center gap-1 p-2 border-b border-gray-200 bg-gray-50">
+                      <button className="p-2 hover:bg-gray-200 rounded transition-colors duration-200">
+                        <Bold className="w-4 h-4" />
+                      </button>
+                      <button className="p-2 hover:bg-gray-200 rounded transition-colors duration-200">
+                        <Italic className="w-4 h-4" />
+                      </button>
+                      <button className="p-2 hover:bg-gray-200 rounded transition-colors duration-200">
+                        <List className="w-4 h-4" />
+                      </button>
+                      <div className="w-px h-6 bg-gray-300 mx-1"></div>
+                      <button className="p-2 hover:bg-gray-200 rounded transition-colors duration-200">
+                        <Eye className="w-4 h-4" />
+                      </button>
                     </div>
-                    <Textarea
+                    <textarea
                       id="description"
                       placeholder="Describe your event in detail..."
                       value={formData.description}
-                      onChange={(e) =>
-                        handleInputChange("description", e.target.value)
-                      }
-                      className="border-0 bg-transparent resize-none min-h-32"
+                      onChange={(e) => handleInputChange("description", e.target.value)}
+                      className="w-full p-3 border-0 bg-transparent resize-none min-h-32 focus:outline-none"
+                      rows={4}
                     />
                   </div>
                 </div>
 
                 {/* Image Upload */}
                 <div className="space-y-2">
-                  <Label>Event Image</Label>
+                  <label className="block text-sm font-medium text-gray-700">Event Image</label>
                   <div
                     className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
                       isDragOver
-                        ? "border-[#2563EB] bg-blue-50"
-                        : "border-border hover:border-[#2563EB]/50"
+                        ? "border-blue-500 bg-blue-50"
+                        : "border-gray-300 hover:border-blue-400"
                     }`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
@@ -241,29 +251,27 @@ export default function CreateEventPage() {
                           alt="Event preview"
                           className="w-full h-32 object-cover rounded-lg"
                         />
-                        <Button
-                          variant="outline"
-                          size="sm"
+                        <button
                           onClick={() => fileInputRef.current?.click()}
+                          className="px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-lg transition-colors duration-200"
                         >
                           Change Image
-                        </Button>
+                        </button>
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        <Upload className="size-8 mx-auto text-muted-foreground" />
+                        <Upload className="w-8 h-8 mx-auto text-gray-400" />
                         <div>
                           <p className="text-sm">
-                            <Button
-                              variant="link"
-                              className="p-0 h-auto text-[#2563EB]"
+                            <button
                               onClick={() => fileInputRef.current?.click()}
+                              className="text-blue-600 hover:text-blue-700 underline"
                             >
                               Click to upload
-                            </Button>{" "}
+                            </button>{" "}
                             or drag and drop
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-gray-500">
                             PNG, JPG up to 10MB
                           </p>
                         </div>
@@ -278,149 +286,165 @@ export default function CreateEventPage() {
                     />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Date & Time Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Date & Time</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+              <div className="p-6 border-b border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900">Date & Time</h2>
+              </div>
+              <div className="p-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="date">Date</Label>
-                    <Input
+                    <label htmlFor="date" className="block text-sm font-medium text-gray-700">
+                      Date
+                    </label>
+                    <input
                       id="date"
                       type="date"
                       value={formData.date}
-                      onChange={(e) =>
-                        handleInputChange("date", e.target.value)
-                      }
-                      className="bg-input-background border-border"
+                      onChange={(e) => handleInputChange("date", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="startTime">Start Time</Label>
-                    <Input
+                    <label htmlFor="startTime" className="block text-sm font-medium text-gray-700">
+                      Start Time
+                    </label>
+                    <input
                       id="startTime"
                       type="time"
                       value={formData.startTime}
-                      onChange={(e) =>
-                        handleInputChange("startTime", e.target.value)
-                      }
-                      className="bg-input-background border-border"
+                      onChange={(e) => handleInputChange("startTime", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="endTime">End Time</Label>
-                    <Input
+                    <label htmlFor="endTime" className="block text-sm font-medium text-gray-700">
+                      End Time
+                    </label>
+                    <input
                       id="endTime"
                       type="time"
                       value={formData.endTime}
-                      onChange={(e) =>
-                        handleInputChange("endTime", e.target.value)
-                      }
-                      className="bg-input-background border-border"
+                      onChange={(e) => handleInputChange("endTime", e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="location">Location</Label>
-                  <Input
+                  <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+                    Location
+                  </label>
+                  <input
                     id="location"
+                    type="text"
                     placeholder="Enter event location"
                     value={formData.location}
-                    onChange={(e) =>
-                      handleInputChange("location", e.target.value)
-                    }
-                    className="bg-input-background border-border"
+                    onChange={(e) => handleInputChange("location", e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                   />
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Settings Section */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Settings</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
+            <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+              <div className="p-6 border-b border-gray-200">
+                <h2 className="text-lg font-semibold text-gray-900">Settings</h2>
+              </div>
+              <div className="p-6 space-y-6">
                 <div className="space-y-2">
-                  <Label htmlFor="capacity">Capacity (Optional)</Label>
-                  <Input
+                  <label htmlFor="capacity" className="block text-sm font-medium text-gray-700">
+                    Capacity (Optional)
+                  </label>
+                  <input
                     id="capacity"
                     type="number"
                     placeholder="Maximum number of attendees"
                     value={formData.capacity}
-                    onChange={(e) =>
-                      handleInputChange("capacity", e.target.value)
-                    }
-                    className="bg-input-background border-border"
+                    onChange={(e) => handleInputChange("capacity", e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                   />
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <Label>Require RSVP</Label>
-                    <p className="text-sm text-muted-foreground">
+                    <label className="text-sm font-medium text-gray-700">Require RSVP</label>
+                    <p className="text-sm text-gray-500">
                       Attendees must confirm their attendance
                     </p>
                   </div>
-                  <Switch
-                    checked={formData.requiresRSVP}
-                    onCheckedChange={(checked) =>
-                      handleInputChange("requiresRSVP", checked)
-                    }
-                  />
+                  <button
+                    onClick={() => handleInputChange("requiresRSVP", !formData.requiresRSVP)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                      formData.requiresRSVP ? "bg-blue-600" : "bg-gray-200"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        formData.requiresRSVP ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="space-y-1">
-                    <Label>Public Event</Label>
-                    <p className="text-sm text-muted-foreground">
+                    <label className="text-sm font-medium text-gray-700">Public Event</label>
+                    <p className="text-sm text-gray-500">
                       Visible to all students in the school
                     </p>
                   </div>
-                  <Switch
-                    checked={formData.isPublic}
-                    onCheckedChange={(checked) =>
-                      handleInputChange("isPublic", checked)
-                    }
-                  />
+                  <button
+                    onClick={() => handleInputChange("isPublic", !formData.isPublic)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${
+                      formData.isPublic ? "bg-blue-600" : "bg-gray-200"
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        formData.isPublic ? "translate-x-6" : "translate-x-1"
+                      }`}
+                    />
+                  </button>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Mobile Action Buttons */}
             <div className="lg:hidden flex gap-2">
-              <Button variant="outline" className="flex-1">
-                <Save className="size-4 mr-2" />
+              <button 
+                onClick={handleSaveDraft}
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 text-gray-700 bg-white hover:bg-gray-50 rounded-lg transition-colors duration-200"
+              >
+                <Save className="w-4 h-4" />
                 Save Draft
-              </Button>
-              <Button
+              </button>
+              <button
                 onClick={handleSave}
-                className="flex-1 bg-[#2563EB] hover:bg-blue-700"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white hover:bg-blue-700 rounded-lg transition-colors duration-200"
               >
                 Publish Event
-              </Button>
+              </button>
             </div>
           </div>
 
           {/* Preview Panel - 40% on desktop, full width below form on mobile */}
           <div className="lg:col-span-2">
             <div className="lg:sticky lg:top-24">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Eye className="size-4" />
+              <div className="bg-white rounded-lg border border-gray-200 shadow-sm">
+                <div className="p-6 border-b border-gray-200">
+                  <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                    <Eye className="w-4 h-4" />
                     Live Preview
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+                  </h2>
+                </div>
+                <div className="p-6">
                   {/* Event Card Preview */}
-                  <div className="bg-card rounded-lg border border-border overflow-hidden">
+                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
                     <div className="relative">
                       {formData.image ? (
                         <img
@@ -429,46 +453,40 @@ export default function CreateEventPage() {
                           className="w-full h-32 object-cover"
                         />
                       ) : (
-                        <div className="w-full h-32 bg-muted flex items-center justify-center">
-                          <Upload className="size-8 text-muted-foreground" />
+                        <div className="w-full h-32 bg-gray-100 flex items-center justify-center">
+                          <Upload className="w-8 h-8 text-gray-400" />
                         </div>
                       )}
                       {formData.club && (
-                        <Badge className="absolute top-2 left-2 bg-[#F97316] text-white hover:bg-orange-600">
-                          {formData.club === "basketball"
-                            ? "Basketball Club"
-                            : formData.club === "drama"
-                              ? "Drama Club"
-                              : formData.club === "science"
-                                ? "Science Lab"
-                                : formData.club === "debate"
-                                  ? "Debate Society"
-                                  : formData.club}
-                        </Badge>
+                        <span className="absolute top-2 left-2 px-2 py-1 bg-orange-500 text-white text-xs font-medium rounded-full">
+                          {getClubLabel(formData.club)}
+                        </span>
                       )}
                     </div>
 
                     <div className="p-4">
-                      <h3 className="font-medium mb-2">
+                      <h3 className="font-medium mb-2 text-gray-900">
                         {formData.title || "Event Title"}
                       </h3>
 
                       {formData.description && (
-                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
-                          {formData.description}
+                        <p className="text-sm text-gray-600 mb-3">
+                          {formData.description.length > 100 
+                            ? `${formData.description.substring(0, 100)}...` 
+                            : formData.description}
                         </p>
                       )}
 
-                      <div className="space-y-2 text-sm text-muted-foreground">
+                      <div className="space-y-2 text-sm text-gray-600">
                         {formData.date && (
                           <div className="flex items-center gap-2">
-                            <Calendar className="size-4" />
+                            <Calendar className="w-4 h-4" />
                             <span>{formatDate(formData.date)}</span>
                           </div>
                         )}
                         {(formData.startTime || formData.endTime) && (
                           <div className="flex items-center gap-2">
-                            <Clock className="size-4" />
+                            <Clock className="w-4 h-4" />
                             <span>
                               {formatTime(formData.startTime)}
                               {formData.startTime && formData.endTime && " - "}
@@ -478,36 +496,35 @@ export default function CreateEventPage() {
                         )}
                         {formData.location && (
                           <div className="flex items-center gap-2">
-                            <MapPin className="size-4" />
+                            <MapPin className="w-4 h-4" />
                             <span>{formData.location}</span>
                           </div>
                         )}
                         {formData.capacity && (
                           <div className="flex items-center gap-2">
-                            <Users className="size-4" />
+                            <Users className="w-4 h-4" />
                             <span>Max {formData.capacity} attendees</span>
                           </div>
                         )}
                       </div>
 
                       <div className="mt-4">
-                        <Button
-                          className="w-full bg-[#2563EB] hover:bg-blue-700"
+                        <button
+                          className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg opacity-50 cursor-not-allowed"
                           disabled
                         >
                           {formData.requiresRSVP ? "RSVP" : "Join Event"}
-                        </Button>
+                        </button>
                       </div>
                     </div>
                   </div>
 
                   {/* Event Settings Summary */}
-                  <div className="mt-4 p-3 bg-muted/30 rounded-lg">
-                    <h4 className="font-medium text-sm mb-2">Event Settings</h4>
-                    <div className="space-y-1 text-xs text-muted-foreground">
+                  <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+                    <h4 className="font-medium text-sm mb-2 text-gray-900">Event Settings</h4>
+                    <div className="space-y-1 text-xs text-gray-600">
                       <div>
-                        • RSVP:{" "}
-                        {formData.requiresRSVP ? "Required" : "Not required"}
+                        • RSVP: {formData.requiresRSVP ? "Required" : "Not required"}
                       </div>
                       <div>
                         • Visibility: {formData.isPublic ? "Public" : "Private"}
@@ -517,8 +534,8 @@ export default function CreateEventPage() {
                       )}
                     </div>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           </div>
         </div>

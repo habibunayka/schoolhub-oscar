@@ -229,8 +229,9 @@ export default function StudentDashboard() {
 
                 <Button
                   variant="outline"
-                  className="w-full text-[#2563EB] border-[#2563EB] hover:bg-blue-50"
-                >
+                  onClick={() => navigate("/clubs")}
+                  className="w-full text-[#2563EB] border-[#2563EB] hover:bg-blue-50">
+                    
                   <Plus className="size-4 mr-2" />
                   Join More Clubs
                 </Button>
