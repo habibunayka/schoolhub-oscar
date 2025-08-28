@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { Bell, ArrowLeft, Settings, Calendar, Heart, MessageCircle, Trophy, AlertCircle, Clock, Search } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 function NotificationHeader() {
+  const navigate = useNavigate(); // ✅ inisialisasi hook
   return (
     <div className="bg-gray-50 border-b border-gray-200 px-6 py-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          <button className="p-2 hover:bg-gray-100 rounded-lg">
+          <button className="p-2 hover:bg-gray-100 rounded-lg" onClick={()=> navigate(-1)}>
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
           <div className="flex items-center space-x-3">
             <Bell className="w-6 h-6 text-blue-600" />
-            <h1 className="text-xl font-semibold text-gray-900">Notifications</h1>
+            <h1 className="text-xl font-semibold text-gray-900">Announcement</h1>
           </div>
         </div>
         <button className="p-2 hover:bg-gray-100 rounded-lg">
