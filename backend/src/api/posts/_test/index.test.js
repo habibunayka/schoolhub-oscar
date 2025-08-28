@@ -15,7 +15,7 @@ async function createServer() {
 }
 
 test("GET /clubs/:id/posts returns rows", async () => {
-    const rows = [{ id: 1, attachments: "[]" }];
+    const rows = [{ id: 1, images: "[]" }];
     let called = false;
     __setDbMocks({
         query: () => {

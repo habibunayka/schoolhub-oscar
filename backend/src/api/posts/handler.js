@@ -4,11 +4,11 @@ import { cleanHTML } from "../../services/sanitize.js";
 export const listPosts = async (req, res) => {
     const clubId = Number(req.params.id);
     const rows = await query(
-        `SELECT p.*, 
+        `SELECT p.*,
                 COALESCE(
-                    json_agg(json_build_object('id', pa.id, 'file_url', pa.file_url)) FILTER (WHERE pa.id IS NOT NULL),
+                    json_agg(pa.file_url) FILTER (WHERE pa.id IS NOT NULL),
                     '[]'
-                ) AS attachments
+                ) AS images
          FROM posts p
          LEFT JOIN post_attachments pa ON pa.post_id = p.id
          WHERE p.club_id = $1
@@ -24,11 +24,11 @@ export const getPostById = async (req, res) => {
     const clubId = Number(req.params.id);
     const postId = Number(req.params.postId);
     const row = await query(
-        `SELECT p.*, 
+        `SELECT p.*,
                 COALESCE(
-                    json_agg(json_build_object('id', pa.id, 'file_url', pa.file_url)) FILTER (WHERE pa.id IS NOT NULL),
+                    json_agg(pa.file_url) FILTER (WHERE pa.id IS NOT NULL),
                     '[]'
-                ) AS attachments
+                ) AS images
          FROM posts p
          LEFT JOIN post_attachments pa ON pa.post_id = p.id
          WHERE p.club_id = $1 AND p.id = $2
@@ -47,8 +47,12 @@ export const createPost = async (req, res) => {
     const { body_html, visibility = "public", pinned = false } = req.body;
 
     if (req.files && req.files.length > 10) {
-        return res.status(400).json({ message: "Maximum of 10 attachments allowed" });
+        return res.status(400).json({ message: "Maximum of 10 images allowed" });
     }
+
+    const extraImages = Array.isArray(req.body.images)
+        ? req.body.images
+        : req.body.images ? [req.body.images] : [];
 
     const postId = await tx(async ({ run }) => {
         const { rows } = await run(
@@ -56,6 +60,13 @@ export const createPost = async (req, res) => {
             [clubId, req.user.id, cleanHTML(body_html), visibility, pinned]
         );
         const id = rows[0].id;
+
+        for (const url of extraImages) {
+            await run(
+                `INSERT INTO post_attachments(post_id, file_url) VALUES ($1,$2)`,
+                [id, url]
+            );
+        }
 
         for (const file of req.files || []) {
             await run(
@@ -68,3 +79,4 @@ export const createPost = async (req, res) => {
 
     res.status(201).json({ id: postId });
 };
+

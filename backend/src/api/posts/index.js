@@ -24,7 +24,7 @@ r.post(
     "/clubs/:id/posts",
     auth(),
     permitClub("owner", "admin", "member"),
-    upload.array("attachments", 10),
+    upload.array("images", 10),
     validateCreatePost,
     Posts.createPost
 );

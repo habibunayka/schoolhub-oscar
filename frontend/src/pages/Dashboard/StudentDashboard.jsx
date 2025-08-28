@@ -22,6 +22,11 @@ import {
   AvatarFallback,
   AvatarImage,
   Separator,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@components/common/ui";
 import EmptyState from "@components/common/EmptyState";
 import {
@@ -67,7 +72,11 @@ export default function StudentDashboard() {
     authorAvatar: p.author_avatar ?? p.author?.avatar_url ?? null,
     timestamp: p.created_at,
     content: p.body_text ?? p.body ?? p.content,
-    image: p.image_url ?? null,
+    images: Array.isArray(p.images)
+      ? p.images
+      : p.image_url
+        ? [p.image_url]
+        : [],
     likes: p.likes_count ?? 0,
     comments: p.comments_count ?? 0,
     isLiked: !!p.liked,
@@ -283,14 +292,32 @@ export default function StudentDashboard() {
                     <p className="text-sm leading-relaxed">{post.content}</p>
                   </div>
 
-                  {post.image && (
-                    <div className="w-full">
-                      <img
-                        src={post.image}
-                        alt="Post content"
-                        className="w-full h-64 object-cover"
-                      />
-                    </div>
+                  {post.images.length > 0 && (
+                    post.images.length === 1 ? (
+                      <div className="w-full">
+                        <img
+                          src={post.images[0]}
+                          alt="Post content"
+                          className="w-full h-64 object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <Carousel className="w-full">
+                        <CarouselContent>
+                          {post.images.map((img, idx) => (
+                            <CarouselItem key={idx}>
+                              <img
+                                src={img}
+                                alt={`Post image ${idx + 1}`}
+                                className="w-full h-64 object-cover"
+                              />
+                            </CarouselItem>
+                          ))}
+                        </CarouselContent>
+                        <CarouselPrevious />
+                        <CarouselNext />
+                      </Carousel>
+                    )
                   )}
 
                   <CardContent className="pt-3">

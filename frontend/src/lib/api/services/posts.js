@@ -45,7 +45,14 @@ export const getPostById = async (clubId, postId) => {
  */
 export const createPost = async (clubId, payload) => {
   const path = map.createPost.path.replace(":id", clubId);
-  const { data } = await api.post(path, payload);
+  const form = new FormData();
+  if (payload?.body_html !== undefined) form.append("body_html", payload.body_html);
+  if (payload?.visibility !== undefined) form.append("visibility", payload.visibility);
+  if (payload?.pinned !== undefined) form.append("pinned", payload.pinned);
+  (payload?.images || []).forEach((img) => form.append("images", img));
+  const { data } = await api.post(path, form, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
   return data;
 };
 
