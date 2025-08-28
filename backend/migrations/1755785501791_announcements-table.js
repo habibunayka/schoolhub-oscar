@@ -13,8 +13,13 @@ export const up = (pgm) => {
             notNull: true,
             check: "target IN ('members','all_school')",
         },
+        status: { type: "text", default: "active" },
         scheduled_at: "timestamp",
         sent_at: "timestamp",
+        created_at: {
+            type: "timestamp",
+            default: pgm.func("CURRENT_TIMESTAMP"),
+        },
     });
 };
 
