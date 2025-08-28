@@ -38,6 +38,7 @@ export default function ClubProfilePage() {
   const [activeTab, setActiveTab] = useState("posts");
 
   // Mock club data - in real app this would be fetched based on clubId
+  // TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan.
   const clubData = {
     id: "1",
     name: "Basketball Club",

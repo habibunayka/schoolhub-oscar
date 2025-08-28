@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 
 // Dummy data
+// TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan.
 const DUMMY_CLUBS = [
   {
     id: 1,

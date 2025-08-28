@@ -99,6 +99,7 @@ export default function CreateEventPage() {
     return timeStr;
   };
 
+  // TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan.
   const clubOptions = [
     { value: "basketball", label: "Basketball Club" },
     { value: "drama", label: "Drama Club" },

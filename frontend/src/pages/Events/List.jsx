@@ -3,6 +3,7 @@ import { Search, Plus, Calendar, Clock, MapPin, Users, Edit, Trash2, Eye } from 
 import { useNavigate } from "react-router-dom";
 
 // Mock user data - biasanya dari context/auth
+// TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan.
 const CURRENT_USER = {
   id: 1,
   role: 'club_admin', // 'student', 'club_admin', 'school_admin'
@@ -10,6 +11,7 @@ const CURRENT_USER = {
 };
 
 // Dummy events data
+// TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan.
 const DUMMY_EVENTS = [
   {
     id: 1,
