@@ -62,6 +62,7 @@ export default function ClubProfilePage() {
 
   if (!clubData) return null;
 
+   {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
   const posts = [
     {
       id: "1",
@@ -156,6 +157,7 @@ export default function ClubProfilePage() {
     },
   ];
 
+   {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
   const upcomingEvents = [
     {
       id: "1",
@@ -181,12 +183,12 @@ export default function ClubProfilePage() {
   ];
 
   const handleLike = (postId) => {
-    // Handle like functionality
+    // TODO : Handle like functionality
     console.log("Liked post:", postId);
   };
 
   const handleJoinClub = () => {
-    // Handle join club functionality
+    // TODO : Handle join club functionality
     console.log("Joining club:", clubData.id);
   };
 
@@ -500,6 +502,7 @@ export default function ClubProfilePage() {
                           About {clubData.name}
                         </h3>
                         <p className="text-muted-foreground leading-relaxed">
+                           {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
                           {clubData.description} We meet every Tuesday and
                           Thursday from 4:00 PM to 6:00 PM at the Sports Hall.
                           Our club focuses on developing basketball skills,

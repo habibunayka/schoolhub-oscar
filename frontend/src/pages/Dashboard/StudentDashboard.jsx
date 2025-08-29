@@ -382,12 +382,14 @@ export default function StudentDashboard() {
                   <div>
                     <p className="text-2xl font-bold text-[#F97316]">156</p>
                     <p className="text-xs text-muted-foreground">
+                       {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
                       Activity Points
                     </p>
                   </div>
                   <div>
                     <p className="text-2xl font-bold text-[#EAB308]">4</p>
                     <p className="text-xs text-muted-foreground">
+                       {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
                       Achievements
                     </p>
                   </div>

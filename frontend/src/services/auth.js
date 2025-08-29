@@ -21,7 +21,7 @@ export const login = async (email, password) => {
     return data;
   } catch (err) {
     if (err.response?.status === 401) {
-      err.userMessage = "salah password atau email";
+      err.userMessage = "Email or password are incorrect";
     } else {
       err.userMessage = err.response?.data?.message;
     }
