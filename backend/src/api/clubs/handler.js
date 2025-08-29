@@ -29,6 +29,19 @@ export const getClub = async (req, res) => {
     res.json(row);
 };
 
+export const listMembers = async (req, res) => {
+    const id = Number(req.params.id);
+    const rows = await query(
+        `SELECT u.id, u.name, u.avatar_url, cm.role
+         FROM club_members cm
+         JOIN users u ON cm.user_id = u.id
+         WHERE cm.club_id = $1 AND cm.status = 'approved'
+         ORDER BY u.name`,
+        [id]
+    );
+    res.json(rows);
+};
+
 export const createClub = async (req, res) => {
     const { name, slug, description, advisor_name } = req.body;
     const id = await tx(async ({ run }) => {

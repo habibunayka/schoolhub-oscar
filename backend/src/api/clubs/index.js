@@ -15,6 +15,7 @@ const r = Router();
 
 r.get("/", validateListClubs, auth(true), Clubs.listClubs);
 r.get("/:id", validateGetClub, auth(true), Clubs.getClub);
+r.get("/:id/members", validateGetClub, auth(true), Clubs.listMembers);
 
 r.post(
     "/",

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getClub } from "@services/clubs.js";
+import { getClub, joinClub, listMembers } from "@services/clubs.js";
+import { listPosts } from "@services/posts.js";
+import { listEvents } from "@services/events.js";
 import {
   ArrowLeft,
   Heart,
@@ -39,6 +41,9 @@ export default function ClubProfilePage() {
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState("posts");
   const [clubData, setClubData] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [members, setMembers] = useState([]);
+  const [upcomingEvents, setUpcomingEvents] = useState([]);
 
   useEffect(() => {
     async function fetchClub() {
@@ -59,138 +64,57 @@ export default function ClubProfilePage() {
     }
     fetchClub();
   }, [id]);
+  useEffect(() => {
+    async function fetchExtras() {
+      const [postsData, membersData, eventsData] = await Promise.all([
+        listPosts(id),
+        listMembers(id),
+        listEvents(id),
+      ]);
+      setPosts(postsData);
+      setMembers(membersData);
+      setUpcomingEvents(eventsData);
+      setClubData((prev) =>
+        prev
+          ? {
+              ...prev,
+              memberCount: membersData.length,
+              stats: {
+                ...prev.stats,
+                events: eventsData.length,
+                posts: postsData.length,
+              },
+            }
+          : prev,
+      );
+    }
+    fetchExtras();
+  }, [id]);
 
   if (!clubData) return null;
 
-   {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
-  const posts = [
-    {
-      id: "1",
-      images: [
-        "https://images.unsplash.com/photo-1703114608920-682133cc2ea2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwcHJhY3RpY2V8ZW58MXx8fHwxNzU1OTI4NzI2fDA&ixlib=rb-4.1.0&q=80&w=1080",
-        "https://images.unsplash.com/photo-1521412644187-c49fa049e84d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080",
-      ],
-      caption:
-        "Great practice session today! Our new members are really stepping up their game. 🏀💪 #BasketballLife #Teamwork",
-      author: "Alex Rodriguez",
-      authorAvatar:
-        "https://images.unsplash.com/photo-1544717305-2782549b5136?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzU1ODgyMzU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      timestamp: "2 hours ago",
-      likes: 18,
-      comments: 5,
-      isLiked: false,
-    },
-    {
-      id: "2",
-      images: [
-        "https://images.unsplash.com/photo-1515326283062-ef852efa28a8?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwY291cnR8ZW58MXx8fHwxNzU1ODMwMzM4fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      ],
-      caption:
-        "Home court advantage! Looking forward to tomorrow's tournament. Come support us! 🏆",
-      author: "Sarah Chen",
-      authorAvatar:
-        "https://images.unsplash.com/photo-1494790108755-2616b68b7490?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzU1ODgyMzU4fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      timestamp: "1 day ago",
-      likes: 32,
-      comments: 12,
-      isLiked: true,
-    },
-    {
-      id: "3",
-      images: [
-        "https://images.unsplash.com/photo-1659468551117-8255d708e197?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwdGVhbSUyMGdyb3VwfGVufDF8fHx8MTc1NTkyODcyM3ww&ixlib=rb-4.1.0&q=80&w=1080",
-      ],
-      caption:
-        "Team bonding session complete! Nothing builds chemistry like some friendly competition. See you all at practice!",
-      author: "Mike Johnson",
-      authorAvatar:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzU1ODgyMzU5fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      timestamp: "3 days ago",
-      likes: 24,
-      comments: 8,
-      isLiked: false,
-    },
-  ];
-
-  {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
-  const members = [
-    {
-      id: "1",
-      name: "Alex Rodriguez",
-      avatar:
-        "https://images.unsplash.com/photo-1544717305-2782549b5136?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzU1ODgyMzU3fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      role: "Captain",
-    },
-    {
-      id: "2",
-      name: "Sarah Chen",
-      avatar:
-        "https://images.unsplash.com/photo-1494790108755-2616b68b7490?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzU1ODgyMzU4fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      role: "Co-Captain",
-    },
-    {
-      id: "3",
-      name: "Mike Johnson",
-      avatar:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzU1ODgyMzU5fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      role: "Member",
-    },
-    {
-      id: "4",
-      name: "Emma Davis",
-      avatar:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzU1ODgyMzYwfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      role: "Member",
-    },
-    {
-      id: "5",
-      name: "David Kim",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzU1ODgyMzYxfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      role: "Member",
-    },
-    {
-      id: "6",
-      name: "Lisa Wang",
-      avatar:
-        "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwcG9ydHJhaXR8ZW58MXx8fHwxNzU1ODgyMzYyfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      role: "Member",
-    },
-  ];
-
-   {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
-  const upcomingEvents = [
-    {
-      id: "1",
-      title: "Basketball Tournament",
-      date: "25 Aug 2025",
-      time: "15:00 - 17:00",
-      location: "Sports Hall",
-    },
-    {
-      id: "2",
-      title: "Team Training Session",
-      date: "28 Aug 2025",
-      time: "16:00 - 18:00",
-      location: "Outdoor Court",
-    },
-    {
-      id: "3",
-      title: "Inter-School Match",
-      date: "2 Sep 2025",
-      time: "14:00 - 16:00",
-      location: "Main Stadium",
-    },
-  ];
 
   const handleLike = (postId) => {
-    // TODO : Handle like functionality
-    console.log("Liked post:", postId);
+    setPosts((prev) =>
+      prev.map((p) =>
+        p.id === postId
+          ? {
+              ...p,
+              isLiked: !p.isLiked,
+              likes: p.likes + (p.isLiked ? -1 : 1),
+            }
+          : p,
+      ),
+    );
   };
 
-  const handleJoinClub = () => {
-    // TODO : Handle join club functionality
-    console.log("Joining club:", clubData.id);
+  const handleJoinClub = async () => {
+    try {
+      await joinClub(clubData.id);
+      setClubData({ ...clubData, isJoined: true });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -503,13 +427,7 @@ export default function ClubProfilePage() {
                           About {clubData.name}
                         </h3>
                         <p className="text-muted-foreground leading-relaxed">
-                           {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
-                          {clubData.description} We meet every Tuesday and
-                          Thursday from 4:00 PM to 6:00 PM at the Sports Hall.
-                          Our club focuses on developing basketball skills,
-                          teamwork, and sportsmanship. We participate in
-                          inter-school tournaments and organize friendly matches
-                          throughout the year.
+                          {clubData.description}
                         </p>
                       </div>
                       <Separator />
