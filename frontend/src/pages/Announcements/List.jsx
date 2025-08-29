@@ -13,6 +13,7 @@ export default function AnnouncementsList() {
   if (!data.length) return <div>No announcements</div>;
 
   return (
+    // TODO : bagusin style ini.
     <ul>
       {data.map((a) => (
         <li key={a.id}>

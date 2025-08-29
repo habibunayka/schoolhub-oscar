@@ -30,7 +30,7 @@ export default function ProfilePage() {
                 <Camera className="w-4 h-4 text-gray-600" />
               </button>
             </div>
-
+              {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Alex Rodriguez</h1>
               <p className="text-gray-600 text-lg mb-3">

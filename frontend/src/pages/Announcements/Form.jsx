@@ -40,6 +40,7 @@ export default function AnnouncementForm() {
   };
 
   return (
+    // TODO : bagusin style ini.
     <form
       onSubmit={(e) => {
         e.preventDefault();

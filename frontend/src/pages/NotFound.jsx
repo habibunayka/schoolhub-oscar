@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
+// TODO : bagusin style ini.
 export default function NotFound() {
   return (
     <div className="p-4 text-center">

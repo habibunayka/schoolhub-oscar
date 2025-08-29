@@ -13,7 +13,9 @@ export default function AnnouncementDetail() {
   if (error) return <div>Error loading announcement</div>;
   if (!data) return <div>Not found</div>;
 
+  
   return (
+    // TODO : bagusin style ini.
     <article>
       <h1>{data.title}</h1>
       <div dangerouslySetInnerHTML={{ __html: data.content_html }} />
