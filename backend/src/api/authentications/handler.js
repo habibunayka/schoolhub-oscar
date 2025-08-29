@@ -52,7 +52,6 @@ export const me = async (req, res) => {
     );
 
     if (!user) {
-        // If the token references a non-existent user, treat it as unauthorized
         return res.status(401).json({ message: "Unauthorized" });
     }
 
