@@ -1,8 +1,8 @@
 /* eslint-env node */
 import test from "node:test";
 import assert from "node:assert/strict";
-import api from "../../lib/api/client.js";
-import service from "../../lib/api/services/announcements.js";
+import api from "../../services/client.js";
+import service from "../../services/announcements.js";
 globalThis.localStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
 
 if (service) {

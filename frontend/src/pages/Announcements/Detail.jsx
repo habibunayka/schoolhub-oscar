@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import announcements from "@lib/api/services/announcements";
+import announcements from "@services/announcements.js";
 
 export default function AnnouncementDetail() {
   const { id } = useParams();

@@ -26,6 +26,7 @@ api.interceptors.response.use(
         window.location.assign("/login");
       }
     }
+    err.userMessage = err?.response?.data?.message;
     return Promise.reject(err);
   }
 );

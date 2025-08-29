@@ -32,9 +32,9 @@ import EmptyState from "@components/common/EmptyState";
 import {
   getJoinedClubs,
   getClubRecommendations,
-} from "@lib/api/services/clubs";
-import { getFeedPosts } from "@lib/api/services/posts";
-import { getUpcomingEvents } from "@lib/api/services/events";
+} from "@services/clubs.js";
+import { getFeedPosts } from "@services/posts.js";
+import { getUpcomingEvents } from "@services/events.js";
 
 export default function StudentDashboard() {
   const navigate = useNavigate();

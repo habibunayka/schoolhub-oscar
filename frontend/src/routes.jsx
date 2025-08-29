@@ -1,8 +1,7 @@
 import React, { Suspense, lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
-import AppLayout from './AppLayout';
-import RequireAuth from './RequireAuth';
-import NotificationsPage from '@/pages/Dashboard/Notification';
+import AppLayout from '@layouts/AppLayout.jsx';
+import RequireAuth from '@components/RequireAuth.jsx';
 
 const LoginPage = lazy(() => import('@pages/Auth/LoginPage'));
 const RegisterPage = lazy(() => import('@pages/Auth/RegisterPage'));
@@ -19,8 +18,8 @@ const EventDetail = lazy(() => import('@pages/Events/Detail'));
 const PostDetail = lazy(() => import('@pages/Posts/Detail'));
 const SearchResults = lazy(() => import('@pages/Search/ResultsPage'));
 const NotFound = lazy(() => import('@pages/NotFound'));
-const ProfilePage = lazy(() => import('@/pages/Dashboard/Profile'));
-const Notification = lazy(() => import('@/pages/Dashboard/Notification'));
+const ProfilePage = lazy(() => import('@pages/Dashboard/Profile'));
+const Notification = lazy(() => import('@pages/Dashboard/Notification'));
 
 const withSuspense = (element) => (
   <Suspense fallback={<div>Loading...</div>}>{element}</Suspense>

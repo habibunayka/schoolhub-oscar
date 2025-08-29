@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import announcements from "@lib/api/services/announcements";
+import announcements from "@services/announcements.js";
 
 export default function AnnouncementForm() {
   const { id } = useParams();
