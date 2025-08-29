@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import announcements from "@services/announcements.js";
 
+// TODO : Ubah data dummy dibawah menjadi data asli yang di fetch dari backend. Jika backend dan table belum dibuat, maka buatkan.
 const TARGET_OPTIONS = [
   { value: 'all', label: 'All Announcements', color: 'bg-blue-100 text-blue-800' },
   { value: 'members', label: 'Members Only', color: 'bg-green-100 text-green-800' },
@@ -370,6 +371,7 @@ export default function AnnouncementsList() {
           ))}
         </select>
 
+        {/* // TODO : Buat agar tombol ini dapat dilihat hanya dengan role admin club. */}
         {/* Create Announcement Button */}
         {currentUser?.role === 'admin' && (
           <button

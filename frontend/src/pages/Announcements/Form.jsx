@@ -4,6 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronRight, Save, X } from 'lucide-react';
 import announcements from "@services/announcements.js";
 
+// TODO : Buat agar halaman ini dapat diakses hanya dengan role admin club.
+
 const TARGET_OPTIONS = [
   { value: 'all', label: 'All Users' },
   { value: 'members', label: 'Members Only' },
@@ -98,6 +100,7 @@ export default function AnnouncementForm() {
     e.preventDefault();
     
     if (!validateForm()) {
+      // TODO : Tambahkan fungsi agar ini benar-benar dapat mengirim ke backend. Jika backend dan table belum dibuat, maka buatkan.
       return;
     }
     

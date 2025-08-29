@@ -5,6 +5,7 @@ import events from '@services/events.js';
 
 export default function EventDetailPage() {
   const { id } = useParams();
+  // TODO : Ubah data dummy dibawah menjadi data asli yang di fetch dari backend dan bagusin. Jika backend dan table belum dibuat, maka buatkan.
   const { data, isLoading, error } = useQuery({
     queryKey: ['event', id],
     queryFn: () => events.getEvent(id),

@@ -95,7 +95,6 @@ export default function ProfilePage() {
                         <button
                             className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center space-x-2"
                             onClick={() => navigate("/profile/edit")}
-                            // TODO: Bikin halaman profile edit dan backend nya sekalian.
                         >
                             <Edit3 className="w-4 h-4" />
                             <span>Edit Profile</span>

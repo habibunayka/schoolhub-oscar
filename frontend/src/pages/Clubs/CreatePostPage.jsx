@@ -14,6 +14,8 @@ import {
   Trash2
 } from "lucide-react";
 
+// TODO : Buat agar halaman ini dapat diakses hanya dengan role admin club.
+
 const VISIBILITY_OPTIONS = [
   { 
     value: 'public', 

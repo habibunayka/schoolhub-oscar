@@ -14,6 +14,8 @@ import {
   Save,
 } from "lucide-react";
 
+// TODO : Buat agar halaman ini dapat diakses hanya dengan role admin club.
+
 export default function CreateEventPage() {
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
