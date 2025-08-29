@@ -275,7 +275,7 @@ export default function ClubProfilePage() {
                               alt={post.author}
                             />
                             <AvatarFallback>
-                              {post.author
+                              {(post.author ?? "Unknown")
                                 .split(" ")
                                 .map((n) => n[0])
                                 .join("")}
@@ -545,14 +545,14 @@ export default function ClubProfilePage() {
                       <Avatar className="w-12 h-12 mx-auto mb-1">
                         <AvatarImage src={member.avatar} alt={member.name} />
                         <AvatarFallback className="text-xs">
-                          {member.name
+                          {(member.name ?? "U")
                             .split(" ")
                             .map((n) => n[0])
                             .join("")}
                         </AvatarFallback>
                       </Avatar>
                       <p className="text-xs font-medium truncate">
-                        {member.name.split(" ")[0]}
+                        {(member.name ?? "").split(" ")[0] || "Unknown"}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {member.role}
