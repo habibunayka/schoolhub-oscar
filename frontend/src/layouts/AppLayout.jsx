@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import Navbar from '@components/Navbar';
+import Navbar from '@layouts/Navbar.jsx';
 import { BottomNavigation } from '@components/common/ui';
 
 const titles = {

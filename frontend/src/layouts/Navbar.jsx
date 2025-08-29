@@ -12,7 +12,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@components/common/ui";
-import clubs from "@lib/api/services/clubs";
+import clubs from "@services/clubs.js";
 
 function GlobalSearch() {
   const timer = useRef();

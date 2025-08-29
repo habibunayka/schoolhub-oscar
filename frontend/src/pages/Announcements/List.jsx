@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
-import announcements from "@lib/api/services/announcements";
+import announcements from "@services/announcements.js";
 
 export default function AnnouncementsList() {
   const { data = [], isLoading, error } = useQuery({

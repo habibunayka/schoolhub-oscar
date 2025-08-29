@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import api from "../../lib/api/client.js";
+import { listClubs } from "@services/clubs.js";
 import {
   ArrowLeft,
   Upload,
@@ -103,7 +103,7 @@ export default function CreateEventPage() {
   const [clubOptions, setClubOptions] = useState([]);
   useEffect(() => {
     async function fetchClubs() {
-      const { data } = await api.get("/clubs");
+      const data = await listClubs();
       setClubOptions(data.map(c => ({ value: String(c.id), label: c.name })));
     }
     fetchClubs();

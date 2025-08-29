@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import api from "../../lib/api/client.js";
+import { getClub } from "@services/clubs.js";
 import {
   ArrowLeft,
   Heart,
@@ -42,7 +42,7 @@ export default function ClubProfilePage() {
 
   useEffect(() => {
     async function fetchClub() {
-      const { data } = await api.get(`/clubs/${id}`);
+      const data = await getClub(id);
       setClubData({
         id: data.id,
         name: data.name,

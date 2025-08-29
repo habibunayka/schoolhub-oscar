@@ -1,5 +1,5 @@
-import api from "../client.js";
-import { endpoints } from "../endpoints.js";
+import api from "./client.js";
+import { endpoints } from "./endpoints.js";
 
 const map = Object.fromEntries(endpoints.posts.map((e) => [e.name, e]));
 
