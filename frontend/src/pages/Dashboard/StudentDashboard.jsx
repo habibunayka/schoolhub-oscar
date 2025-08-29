@@ -1,3 +1,4 @@
+// src/pages/StudentDashboard.jsx
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import {
@@ -19,8 +20,6 @@ import {
   CardTitle,
   Badge,
   Avatar,
-  AvatarFallback,
-  AvatarImage,
   Separator,
   Carousel,
   CarouselContent,
@@ -29,6 +28,8 @@ import {
   CarouselPrevious,
 } from "@components/common/ui";
 import EmptyState from "@components/common/EmptyState";
+import SafeImage from "@components/SafeImage";
+import { getInitials } from "@utils/string";
 import {
   getJoinedClubs,
   getClubRecommendations,
@@ -193,12 +194,11 @@ export default function StudentDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Main Content - Three Column Layout */}
       <div className="container mx-auto px-4 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Sidebar - My Clubs */}
           <div className="lg:col-span-3">
-            <Card>
+            <Card className="bg-white rounded-2xl border border-gray-200 shadow-sm">
               <CardHeader>
                 <CardTitle>My Clubs</CardTitle>
               </CardHeader>
@@ -218,10 +218,11 @@ export default function StudentDashboard() {
                         onClick={() => navigate(`/clubs/${club.id}`)}
                       >
                         <div className="relative">
-                          <img
+                          <SafeImage
                             src={club.image}
                             alt={club.name}
                             className="w-10 h-10 rounded-lg object-cover"
+                            sizePx={64}
                           />
                         </div>
                         <div className="flex-1 min-w-0">
@@ -239,10 +240,9 @@ export default function StudentDashboard() {
                 <Separator className="my-4" />
 
                 <Button
-                  variant="outline"
                   onClick={() => navigate("/clubs")}
-                  className="w-full text-[#2563EB] border-[#2563EB] hover:bg-blue-50">
-                    
+                  className="w-full bg-blue-600 text-white hover:bg-blue-700"
+                >
                   <Plus className="size-4 mr-2" />
                   Join More Clubs
                 </Button>
@@ -261,97 +261,96 @@ export default function StudentDashboard() {
                 <EmptyState message="No posts available" />
               ) : (
                 feedPosts.map((post) => (
-                  <Card key={post.id}>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-10 h-10">
-                        <AvatarImage
-                          src={post.authorAvatar}
-                          alt={post.author}
-                        />
-                        <AvatarFallback>
-                          {(post.author ?? "Unknown")
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium">{post.author}</p>
-                          <Badge variant="secondary" className="text-xs">
-                            {post.clubName}
-                          </Badge>
-                        </div>
-                        <p className="text-sm text-muted-foreground">
-                          {post.timestamp}
-                        </p>
-                      </div>
-                    </div>
-                  </CardHeader>
-
-                  <div className="px-6 pb-3">
-                    <p className="text-sm leading-relaxed">{post.content}</p>
-                  </div>
-
-                  {post.images.length > 0 && (
-                    post.images.length === 1 ? (
-                      <div className="w-full">
-                        <img
-                          src={post.images[0]}
-                          alt="Post content"
-                          className="w-full h-64 object-cover"
-                        />
-                      </div>
-                    ) : (
-                      <Carousel className="w-full">
-                        <CarouselContent>
-                          {post.images.map((img, idx) => (
-                            <CarouselItem key={idx}>
-                              <img
-                                src={img}
-                                alt={`Post image ${idx + 1}`}
-                                className="w-full h-64 object-cover"
-                              />
-                            </CarouselItem>
-                          ))}
-                        </CarouselContent>
-                        <CarouselPrevious />
-                        <CarouselNext />
-                      </Carousel>
-                    )
-                  )}
-
-                  <CardContent className="pt-3">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleLike(post.id)}
-                          className="flex items-center gap-2 p-2 hover:bg-red-50 hover:text-red-600"
-                        >
-                          <Heart
-                            className={`size-4 ${post.isLiked ? "fill-red-500 text-red-500" : ""}`}
+                  <Card key={post.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm">
+                    <CardHeader className="pb-3">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="w-10 h-10">
+                          {/* use SafeImage inside Avatar to avoid broken avatar */}
+                          <SafeImage
+                            src={post.authorAvatar}
+                            alt={post.author}
+                            className="w-10 h-10 rounded-full object-cover"
+                            sizePx={64}
                           />
-                          <span className="text-sm">{post.likes}</span>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="flex items-center gap-2 p-2 hover:bg-blue-50 hover:text-blue-600"
-                        >
-                          <MessageCircle className="size-4" />
-                          <span className="text-sm">{post.comments}</span>
+                        </Avatar>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="font-medium">{post.author}</p>
+                            <Badge variant="secondary" className="text-xs">
+                              {post.clubName}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {post.timestamp}
+                          </p>
+                        </div>
+                      </div>
+                    </CardHeader>
+
+                    <div className="px-6 pb-3">
+                      <p className="text-sm leading-relaxed">{post.content}</p>
+                    </div>
+
+                    {post.images.length > 0 && (
+                      post.images.length === 1 ? (
+                        <div className="w-full">
+                          <SafeImage
+                            src={post.images[0]}
+                            alt="Post content"
+                            className="w-full h-64 object-cover"
+                            sizePx={640}
+                          />
+                        </div>
+                      ) : (
+                        <Carousel className="w-full">
+                          <CarouselContent>
+                            {post.images.map((img, idx) => (
+                              <CarouselItem key={idx}>
+                                <SafeImage
+                                  src={img}
+                                  alt={`Post image ${idx + 1}`}
+                                  className="w-full h-64 object-cover"
+                                  sizePx={640}
+                                />
+                              </CarouselItem>
+                            ))}
+                          </CarouselContent>
+                          <CarouselPrevious />
+                          <CarouselNext />
+                        </Carousel>
+                      )
+                    )}
+
+                    <CardContent className="pt-3">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleLike(post.id)}
+                            className="flex items-center gap-2 p-2 hover:bg-red-50 hover:text-red-600"
+                          >
+                            <Heart
+                              className={`size-4 ${post.isLiked ? "fill-red-500 text-red-500" : ""}`}
+                            />
+                            <span className="text-sm">{post.likes}</span>
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="flex items-center gap-2 p-2 hover:bg-blue-50 hover:text-blue-600"
+                          >
+                            <MessageCircle className="size-4" />
+                            <span className="text-sm">{post.comments}</span>
+                          </Button>
+                        </div>
+                        <Button variant="ghost" size="sm" className="p-2">
+                          <Share className="size-4" />
                         </Button>
                       </div>
-                      <Button variant="ghost" size="sm" className="p-2">
-                        <Share className="size-4" />
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
+                    </CardContent>
+                  </Card>
+                ))
               )}
             </div>
           </div>
@@ -359,7 +358,7 @@ export default function StudentDashboard() {
           {/* Right Sidebar - Widgets */}
           <div className="lg:col-span-3 space-y-6">
             {/* Quick Stats */}
-            <Card>
+            <Card className="bg-white rounded-2xl border border-gray-200 shadow-sm">
               <CardHeader>
                 <CardTitle>Quick Stats</CardTitle>
               </CardHeader>
@@ -402,7 +401,7 @@ export default function StudentDashboard() {
             </Card>
 
             {/* Upcoming Events */}
-            <Card>
+            <Card className="bg-white rounded-2xl border border-gray-200 shadow-sm">
               <CardHeader>
                 <CardTitle>Upcoming Events</CardTitle>
               </CardHeader>
@@ -455,7 +454,7 @@ export default function StudentDashboard() {
             </Card>
 
             {/* Club Recommendations */}
-            <Card>
+            <Card className="bg-white rounded-2xl border border-gray-200 shadow-sm">
               <CardHeader>
                 <CardTitle>Recommended Clubs</CardTitle>
               </CardHeader>
@@ -473,10 +472,11 @@ export default function StudentDashboard() {
                         key={club.id}
                         className="flex items-center gap-3 p-3 rounded-lg border border-border"
                       >
-                        <img
+                        <SafeImage
                           src={club.image}
                           alt={club.name}
                           className="w-10 h-10 rounded-lg object-cover"
+                          sizePx={64}
                         />
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm">{club.name}</p>
@@ -501,8 +501,8 @@ export default function StudentDashboard() {
                 </div>
 
                 <Button
-                  variant="outline"
-                  className="w-full mt-4 text-[#2563EB] border-[#2563EB] hover:bg-blue-50"
+                  onClick={() => navigate("/clubs")}
+                  className="w-full mt-4 bg-blue-600 text-white"
                 >
                   View All Recommendations
                 </Button>

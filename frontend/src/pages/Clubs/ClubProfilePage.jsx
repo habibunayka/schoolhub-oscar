@@ -1,3 +1,4 @@
+// src/pages/ClubProfilePage.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getClub, joinClub, listMembers } from "@services/clubs.js";
@@ -27,8 +28,6 @@ import {
   CardTitle,
   Badge,
   Avatar,
-  AvatarFallback,
-  AvatarImage,
   Separator,
   Carousel,
   CarouselContent,
@@ -36,6 +35,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@components/common/ui";
+
+import SafeImage from "@components/SafeImage";
+import { getInitials } from "@utils/string";
 
 export default function ClubProfilePage() {
   const navigate = useNavigate();
@@ -65,6 +67,7 @@ export default function ClubProfilePage() {
     }
     fetchClub();
   }, [id]);
+
   useEffect(() => {
     async function fetchExtras() {
       const [postsData, membersData, eventsData] = await Promise.all([
@@ -72,28 +75,27 @@ export default function ClubProfilePage() {
         listMembers(id),
         listEvents(id),
       ]);
-      setPosts(postsData);
-      setMembers(membersData);
-      setUpcomingEvents(eventsData);
+      setPosts(postsData || []);
+      setMembers(membersData || []);
+      setUpcomingEvents(eventsData || []);
       setClubData((prev) =>
         prev
           ? {
               ...prev,
-              memberCount: membersData.length,
+              memberCount: (membersData || []).length,
               stats: {
                 ...prev.stats,
-                events: eventsData.length,
-                posts: postsData.length,
+                events: (eventsData || []).length,
+                posts: (postsData || []).length,
               },
             }
-          : prev,
+          : prev
       );
     }
     fetchExtras();
   }, [id]);
 
   if (!clubData) return null;
-
 
   const handleLike = (postId) => {
     setPosts((prev) =>
@@ -104,8 +106,8 @@ export default function ClubProfilePage() {
               isLiked: !p.isLiked,
               likes: p.likes + (p.isLiked ? -1 : 1),
             }
-          : p,
-      ),
+          : p
+      )
     );
   };
 
@@ -153,10 +155,17 @@ export default function ClubProfilePage() {
 
       {/* Cover Photo Section */}
       <section className="relative">
-        <div
-          className="h-[300px] bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${clubData.coverImage})` }}
-        >
+        <div className="h-[300px] relative">
+          {/* SafeImage fills the area and provides placeholder + fallback */}
+          <SafeImage
+            src={clubData.coverImage}
+            alt={`${clubData.name} cover`}
+            wrapperClassName="absolute inset-0 w-full h-full"
+            className="w-full h-full object-cover"
+            sizePx={1200}
+            placeholderSize={64}
+            rounded={false}
+          />
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
         </div>
 
@@ -166,11 +175,17 @@ export default function ClubProfilePage() {
             <div className="flex items-end gap-6">
               {/* Club Logo */}
               <div className="relative">
-                <img
-                  src={clubData.logoImage}
-                  alt={`${clubData.name} logo`}
-                  className="w-24 h-24 rounded-xl border-4 border-white object-cover"
-                />
+                <div className="w-24 h-24 rounded-xl overflow-hidden border-4 border-white">
+                  <SafeImage
+                    src={clubData.logoImage}
+                    alt={`${clubData.name} logo`}
+                    wrapperClassName="w-full h-full"
+                    className="w-full h-full object-cover"
+                    sizePx={128}
+                    placeholderSize={40}
+                    rounded={true}
+                  />
+                </div>
               </div>
 
               {/* Club Info */}
@@ -222,11 +237,7 @@ export default function ClubProfilePage() {
       {/* Tab Navigation */}
       <section className="bg-white border-b border-border">
         <div className="container mx-auto px-4">
-          <Tabs
-            value={activeTab}
-            onValueChange={setActiveTab}
-            className="w-full"
-          >
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="h-14 bg-transparent border-0 gap-8">
               <TabsTrigger
                 value="posts"
@@ -266,21 +277,19 @@ export default function ClubProfilePage() {
               <TabsContent value="posts" className="mt-0">
                 <div className="space-y-6">
                   {posts.map((post) => (
-                    <Card key={post.id} className="overflow-hidden">
+                    <Card key={post.id} className="overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm">
                       <CardHeader className="pb-3">
                         <div className="flex items-center gap-3">
-                          <Avatar className="w-10 h-10">
-                            <AvatarImage
+                          <div className="w-10 h-10 rounded-full overflow-hidden">
+                            <SafeImage
                               src={post.authorAvatar}
                               alt={post.author}
+                              wrapperClassName="w-full h-full rounded-full"
+                              className="w-full h-full object-cover"
+                              sizePx={64}
+                              placeholderSize={28}
                             />
-                            <AvatarFallback>
-                              {(post.author ?? "Unknown")
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                            </AvatarFallback>
-                          </Avatar>
+                          </div>
                           <div>
                             <p className="font-medium">{post.author}</p>
                             <p className="text-sm text-muted-foreground">
@@ -291,18 +300,19 @@ export default function ClubProfilePage() {
                       </CardHeader>
 
                       <div className="px-6 pb-3">
-                        <p className="text-sm leading-relaxed">
-                          {post.caption}
-                        </p>
+                        <p className="text-sm leading-relaxed">{post.caption}</p>
                       </div>
 
-                      {post.images.length > 0 && (
+                      {post.images && post.images.length > 0 && (
                         post.images.length === 1 ? (
                           <div className="w-full">
-                            <img
+                            <SafeImage
                               src={post.images[0]}
                               alt="Post content"
-                              className="w-full h-80 object-cover"
+                              wrapperClassName="w-full h-80"
+                              className="w-full h-full object-cover"
+                              sizePx={800}
+                              placeholderSize={48}
                             />
                           </div>
                         ) : (
@@ -310,10 +320,13 @@ export default function ClubProfilePage() {
                             <CarouselContent>
                               {post.images.map((img, idx) => (
                                 <CarouselItem key={idx}>
-                                  <img
+                                  <SafeImage
                                     src={img}
                                     alt={`Post image ${idx + 1}`}
-                                    className="w-full h-80 object-cover"
+                                    wrapperClassName="w-full h-80"
+                                    className="w-full h-full object-cover"
+                                    sizePx={800}
+                                    placeholderSize={48}
                                   />
                                 </CarouselItem>
                               ))}
@@ -360,7 +373,7 @@ export default function ClubProfilePage() {
               <TabsContent value="events" className="mt-0">
                 <div className="space-y-4">
                   {upcomingEvents.map((event) => (
-                    <Card key={event.id}>
+                    <Card key={event.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm">
                       <CardContent className="p-6">
                         <div className="flex items-center justify-between">
                           <div>
@@ -391,26 +404,22 @@ export default function ClubProfilePage() {
               <TabsContent value="members" className="mt-0">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {members.map((member) => (
-                    <Card key={member.id}>
+                    <Card key={member.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm">
                       <CardContent className="p-4">
                         <div className="flex items-center gap-3">
-                          <Avatar className="w-12 h-12">
-                            <AvatarImage
+                          <div className="w-12 h-12 rounded-full overflow-hidden">
+                            <SafeImage
                               src={member.avatar}
                               alt={member.name}
+                              wrapperClassName="w-full h-full rounded-full"
+                              className="w-full h-full object-cover"
+                              sizePx={96}
+                              placeholderSize={36}
                             />
-                            <AvatarFallback>
-                              {member.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")}
-                            </AvatarFallback>
-                          </Avatar>
+                          </div>
                           <div>
                             <p className="font-medium">{member.name}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {member.role}
-                            </p>
+                            <p className="text-sm text-muted-foreground">{member.role}</p>
                           </div>
                         </div>
                       </CardContent>
@@ -420,13 +429,11 @@ export default function ClubProfilePage() {
               </TabsContent>
 
               <TabsContent value="about" className="mt-0">
-                <Card>
+                <Card className="bg-white rounded-2xl border border-gray-200 shadow-sm">
                   <CardContent className="p-6">
                     <div className="space-y-6">
                       <div>
-                        <h3 className="font-medium mb-3">
-                          About {clubData.name}
-                        </h3>
+                        <h3 className="font-medium mb-3">About {clubData.name}</h3>
                         <p className="text-muted-foreground leading-relaxed">
                           {clubData.description}
                         </p>
@@ -475,7 +482,7 @@ export default function ClubProfilePage() {
           {/* Sidebar - 30% */}
           <div className="lg:col-span-3 space-y-6">
             {/* Quick Stats */}
-            <Card>
+            <Card className="bg-white rounded-2xl border border-gray-200 shadow-sm">
               <CardHeader>
                 <CardTitle>Quick Stats</CardTitle>
               </CardHeader>
@@ -504,7 +511,7 @@ export default function ClubProfilePage() {
             </Card>
 
             {/* Upcoming Events */}
-            <Card>
+            <Card className="bg-white rounded-2xl border border-gray-200 shadow-sm">
               <CardHeader>
                 <CardTitle>Upcoming Events</CardTitle>
               </CardHeader>
@@ -517,15 +524,9 @@ export default function ClubProfilePage() {
                     >
                       <Calendar className="size-4 text-[#2563EB] mt-0.5" />
                       <div className="flex-1 min-w-0">
-                        <p className="font-medium text-sm leading-tight">
-                          {event.title}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {event.date}
-                        </p>
-                        <p className="text-xs text-muted-foreground">
-                          {event.location}
-                        </p>
+                        <p className="font-medium text-sm leading-tight">{event.title}</p>
+                        <p className="text-xs text-muted-foreground">{event.date}</p>
+                        <p className="text-xs text-muted-foreground">{event.location}</p>
                       </div>
                     </div>
                   ))}
@@ -534,7 +535,7 @@ export default function ClubProfilePage() {
             </Card>
 
             {/* Member Grid */}
-            <Card>
+            <Card className="bg-white rounded-2xl border border-gray-200 shadow-sm">
               <CardHeader>
                 <CardTitle>Members</CardTitle>
               </CardHeader>
@@ -542,21 +543,20 @@ export default function ClubProfilePage() {
                 <div className="grid grid-cols-3 gap-2">
                   {members.slice(0, 6).map((member) => (
                     <div key={member.id} className="text-center">
-                      <Avatar className="w-12 h-12 mx-auto mb-1">
-                        <AvatarImage src={member.avatar} alt={member.name} />
-                        <AvatarFallback className="text-xs">
-                          {(member.name ?? "U")
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </AvatarFallback>
-                      </Avatar>
+                      <div className="w-12 h-12 mx-auto mb-1 rounded-full overflow-hidden">
+                        <SafeImage
+                          src={member.avatar}
+                          alt={member.name}
+                          wrapperClassName="w-full h-full rounded-full"
+                          className="w-full h-full object-cover"
+                          sizePx={96}
+                          placeholderSize={36}
+                        />
+                      </div>
                       <p className="text-xs font-medium truncate">
                         {(member.name ?? "").split(" ")[0] || "Unknown"}
                       </p>
-                      <p className="text-xs text-muted-foreground">
-                        {member.role}
-                      </p>
+                      <p className="text-xs text-muted-foreground">{member.role}</p>
                     </div>
                   ))}
                 </div>

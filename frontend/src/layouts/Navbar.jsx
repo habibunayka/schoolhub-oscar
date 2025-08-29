@@ -14,11 +14,11 @@ import {
   DropdownMenuItem,
 } from "@components/common/ui";
 import clubs from "@services/clubs.js";
-
 function GlobalSearch() {
   const timer = useRef();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
+
   const onChange = (e) => {
     const value = e.target.value;
     setQuery(value);
@@ -27,23 +27,39 @@ function GlobalSearch() {
       if (value) clubs.listClubs({ search: value }).catch(() => {});
     }, 300);
   };
+
   const onSubmit = (e) => {
     e.preventDefault();
-    navigate(`/search?q=${encodeURIComponent(query)}`);
+    if (query.trim()) {
+      navigate(`/search?q=${encodeURIComponent(query)}`);
+    }
   };
+
   return (
-    <form className="w-full" onSubmit={onSubmit}>
+    <form className="w-full relative group" onSubmit={onSubmit}>
+      {/* Search button (icon di kiri) */}
+      <button
+        type="submit"
+        className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 
+                   flex items-center justify-center text-gray-400 
+                   hover:bg-gray-200 rounded-md transition"
+      >
+        <Search className="w-4 h-4" />
+      </button>
+
+      {/* Input */}
       <Input
         aria-label="Search"
         placeholder="Search..."
         value={query}
         onChange={onChange}
         onFocus={(e) => e.target.select()}
-        className="focus-visible:ring-1 focus-visible:ring-blue-500 focus-visible:border-blue-500"
+        className="pl-9 pr-3 focus-visible:ring-1 ml-0.5 focus-visible:ring-blue-500 focus-visible:border-blue-500"
       />
     </form>
   );
 }
+
 
 function UserMenu() {
   const { logout } = useAuth();
@@ -69,9 +85,7 @@ function UserMenu() {
         <DropdownMenuItem asChild>
           <Link to="/settings">Settings</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={handleLogout}>
-          Logout
-        </DropdownMenuItem>
+        <DropdownMenuItem onSelect={handleLogout}>Logout</DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
