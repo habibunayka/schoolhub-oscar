@@ -42,6 +42,23 @@ export const getPostById = async (req, res) => {
     res.json(row[0]);
 };
 
+export const getPost = async (req, res) => {
+    const id = Number(req.params.id);
+    const row = await query(
+        `SELECT p.*, COALESCE(json_agg(pa.file_url) FILTER (WHERE pa.id IS NOT NULL),'[]') AS images
+         FROM posts p
+         LEFT JOIN post_attachments pa ON pa.post_id = p.id
+         WHERE p.id = $1
+         GROUP BY p.id
+         LIMIT 1`,
+        [id]
+    );
+    if (!row || row.length === 0) {
+        return res.status(404).json({ message: "Post not found" });
+    }
+    res.json(row[0]);
+};
+
 export const createPost = async (req, res) => {
     const clubId = Number(req.params.id);
     const { body_html, visibility = "public", pinned = false } = req.body;

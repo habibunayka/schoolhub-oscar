@@ -1,11 +1,14 @@
 import React from 'react';
-import { 
-  Calendar, MapPin, Edit3, Camera, Trophy, Users, Activity, ArrowLeft 
+import {
+  Calendar, MapPin, Edit3, Camera, Trophy, Users, Activity, ArrowLeft
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import auth from '@services/auth.js';
 
 export default function ProfilePage() {
   const navigate = useNavigate();
+  const { data: user } = useQuery({ queryKey: ['me'], queryFn: auth.me });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -30,14 +33,15 @@ export default function ProfilePage() {
                 <Camera className="w-4 h-4 text-gray-600" />
               </button>
             </div>
-              {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">Alex Rodriguez</h1>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {user?.name || 'Loading...'}
+              </h1>
               <p className="text-gray-600 text-lg mb-3">
-                Computer Science Student • Jakarta, Indonesia
+                {user ? `Role: ${user.role_global}` : 'Fetching profile...'}
               </p>
               <p className="text-gray-700 leading-relaxed">
-                Passionate about technology, sports, and creative arts. Love connecting 
+                Passionate about technology, sports, and creative arts. Love connecting
                 with like-minded people and exploring new opportunities for growth and learning.
               </p>
 

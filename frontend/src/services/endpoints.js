@@ -138,6 +138,13 @@ export const endpoints = {
         }
       ],
       "auth": false
+    },
+    {
+      "name": "me",
+      "method": "GET",
+      "path": "/auth/me",
+      "validators": [],
+      "auth": true
     }
   ],
   "clubs": [
@@ -154,6 +161,21 @@ export const endpoints = {
             "tag",
             "day"
           ]
+        }
+      ],
+      "auth": true
+    },
+    {
+      "name": "getClub",
+      "method": "GET",
+      "path": "/clubs/:id",
+      "validators": [
+        {
+          "body": [],
+          "params": [
+            "id"
+          ],
+          "query": []
         }
       ],
       "auth": true
@@ -233,6 +255,28 @@ export const endpoints = {
     }
   ],
   "events": [
+    {
+      "name": "listAllEvents",
+      "method": "GET",
+      "path": "/events",
+      "validators": [],
+      "auth": true
+    },
+    {
+      "name": "getEvent",
+      "method": "GET",
+      "path": "/events/:id",
+      "validators": [
+        {
+          "body": [],
+          "params": [
+            "id"
+          ],
+          "query": []
+        }
+      ],
+      "auth": true
+    },
     {
       "name": "listEvents",
       "method": "GET",
@@ -350,6 +394,21 @@ export const endpoints = {
       "name": "listPosts",
       "method": "GET",
       "path": "/clubs/:id/posts",
+      "validators": [
+        {
+          "body": [],
+          "params": [
+            "id"
+          ],
+          "query": []
+        }
+      ],
+      "auth": true
+    },
+    {
+      "name": "getPost",
+      "method": "GET",
+      "path": "/posts/:id",
       "validators": [
         {
           "body": [],

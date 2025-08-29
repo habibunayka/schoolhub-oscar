@@ -22,6 +22,22 @@ export const listAllEvents = async (req, res) => {
     res.json(rows);
 };
 
+export const getEvent = async (req, res) => {
+    const id = Number(req.params.id);
+    const row = await get(
+        `SELECT e.*, c.name AS club_name, COUNT(r.id) AS participant_count
+         FROM events e
+         JOIN clubs c ON e.club_id = c.id
+         LEFT JOIN event_rsvps r ON r.event_id = e.id AND r.status = 'going'
+         WHERE e.id = $1
+         GROUP BY e.id, c.name
+         LIMIT 1`,
+        [id]
+    );
+    if (!row) return res.status(404).json({ message: "Event not found" });
+    res.json(row);
+};
+
 export const createEvent = async (req, res) => {
     const clubId = Number(req.params.id);
     const {

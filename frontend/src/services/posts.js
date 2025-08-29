@@ -38,6 +38,17 @@ export const getPostById = async (clubId, postId) => {
 };
 
 /**
+ * Get a post by id
+ * @param {number} id
+ * @returns {Promise<object>}
+ */
+export const getPost = async (id) => {
+  const path = map.getPost?.path || `/posts/${id}`;
+  const { data } = await api.get(path.replace(":id", id));
+  return data;
+};
+
+/**
  * Create a post in club
  * @param {number} clubId
  * @param {Object} payload
@@ -56,4 +67,10 @@ export const createPost = async (clubId, payload) => {
   return data;
 };
 
-export default { listPosts, getFeedPosts, getPostById, createPost };
+export default {
+  listPosts,
+  getFeedPosts,
+  getPostById,
+  createPost,
+  getPost,
+};

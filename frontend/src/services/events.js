@@ -15,6 +15,12 @@ export const listEvents = async (clubId, params = {}) => {
   return data;
 };
 
+export const getEvent = async (id) => {
+  const path = map.getEvent?.path || `/events/${id}`;
+  const { data } = await api.get(path.replace(":id", id));
+  return data;
+};
+
 /**
  * Get upcoming events (currently per club)
  * @param {number} clubId
@@ -86,4 +92,5 @@ export default {
   reviewEvent,
   checkinEvent,
   listAllEvents,
+  getEvent,
 };
