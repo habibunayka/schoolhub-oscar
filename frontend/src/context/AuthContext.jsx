@@ -1,5 +1,5 @@
 import { createContext, useState } from 'react';
-import { login as loginService } from '@services/authentications.js';
+import { login as loginService, logout as logoutService } from '@services/auth.js';
 
 export const AuthContext = createContext(null);
 
@@ -13,9 +13,17 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await logoutService();
+    } catch (_err) {
+      // ignore logout errors
+    }
     localStorage.removeItem('token');
     setToken(null);
+    if (typeof window !== 'undefined') {
+      window.location.assign('/login');
+    }
   };
 
   return (

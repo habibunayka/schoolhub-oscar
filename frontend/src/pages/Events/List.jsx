@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Plus, Calendar, Clock, MapPin, Users, Edit, Trash2, Eye } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 import { listAllEvents } from "@services/events.js";
-import { me as getCurrentUser } from "@services/authentications.js";
+import { me as getCurrentUser } from "@services/auth.js";
 
 
 const FILTER_OPTIONS = [

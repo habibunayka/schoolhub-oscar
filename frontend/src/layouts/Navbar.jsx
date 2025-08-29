@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Bell, Search, Menu, X } from "lucide-react";
+import { useAuth } from "@hooks/useAuth.js";
 
 import {
   Avatar,
@@ -45,6 +46,10 @@ function GlobalSearch() {
 }
 
 function UserMenu() {
+  const { logout } = useAuth();
+  const handleLogout = () => {
+    logout();
+  };
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -64,8 +69,8 @@ function UserMenu() {
         <DropdownMenuItem asChild>
           <Link to="/settings">Settings</Link>
         </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link to="/logout">Logout</Link>
+        <DropdownMenuItem onSelect={handleLogout}>
+          Logout
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
