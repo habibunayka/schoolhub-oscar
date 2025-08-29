@@ -1,7 +1,7 @@
 import { Users, MapPin } from "lucide-react";
 import { Button } from "../forms/Button.jsx";
 import { Badge } from "./Badge.jsx";
-import { ImageWithFallback } from "./ImageWithFallback.jsx";
+import SafeImage from "@components/SafeImage";
 
 export function ClubCard({
   id,
@@ -26,7 +26,7 @@ export function ClubCard({
       onClick={handleCardClick}
     >
       <div className="relative">
-        <ImageWithFallback
+        <SafeImage
           src={image}
           alt={name}
           className="w-full h-40 object-cover"

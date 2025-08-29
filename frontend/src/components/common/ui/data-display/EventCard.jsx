@@ -1,7 +1,7 @@
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
 import { Button } from "../forms/Button.jsx";
 import { Badge } from "./Badge.jsx";
-import { ImageWithFallback } from "./ImageWithFallback.jsx";
+import SafeImage from "@components/SafeImage";
 
 export function EventCard({
   title,
@@ -16,7 +16,7 @@ export function EventCard({
   return (
     <div className="bg-card rounded-lg border border-border overflow-hidden hover:shadow-lg transition-shadow">
       <div className="relative">
-        <ImageWithFallback
+        <SafeImage
           src={image}
           alt={title}
           className="w-full h-32 object-cover"
