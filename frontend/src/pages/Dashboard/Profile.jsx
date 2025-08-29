@@ -14,15 +14,20 @@ import { useQuery } from "@tanstack/react-query";
 import auth from "@services/auth.js";
 import { getJoinedClubs } from "@services/clubs.js";
 import { listAllEvents } from "@services/events.js";
+import { getUserStats, getAchievements } from "@services/users.js";
 
 export default function ProfilePage() {
     const navigate = useNavigate();
     const { data: user } = useQuery({ queryKey: ["me"], queryFn: auth.me });
     const { data: clubs } = useQuery({ queryKey: ["myClubs"], queryFn: getJoinedClubs });
     const { data: events } = useQuery({ queryKey: ["events"], queryFn: listAllEvents });
+    const { data: stats } = useQuery({ queryKey: ["userStats"], queryFn: getUserStats });
+    const { data: achievements } = useQuery({ queryKey: ["achievements"], queryFn: getAchievements });
 
     const activeClubsCount = Array.isArray(clubs) ? clubs.length : 0;
     const eventsJoinedCount = Array.isArray(events) ? events.length : 0;
+    const activityPoints = stats?.activity_points ?? 0;
+    const achievementsCount = stats?.achievements_count ?? 0;
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -98,7 +103,6 @@ export default function ProfilePage() {
 
                 {/* Statistics */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
-                    {/* TODO : Untuk sistem yang belum ada seperti activity point dan achievements itu buat sistem dan crud nya juga di backend, research aja dlu yang menurut lu pas atau cocok buat sistem ini taruh dimana, pokoknya harus bisa nambahin point activity dari join club, partisipasi event, dan peroleh achievement. Kalau achievement dibuat oleh admin club dan dikasih oleh admin klub nya. */}
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                         Statistics
                     </h3>
@@ -116,22 +120,16 @@ export default function ProfilePage() {
                             <div className="text-sm text-gray-600">Events Joined</div>
                         </div>
                         <div className="text-center p-4 bg-orange-50 rounded-lg">
-                            {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend dan table belum ada, buatkan. */}
                             <div className="text-2xl font-bold text-orange-600">
-                                342
+                                {activityPoints}
                             </div>
-                            <div className="text-sm text-gray-600">
-                                Activity Points
-                            </div>
+                            <div className="text-sm text-gray-600">Activity Points</div>
                         </div>
                         <div className="text-center p-4 bg-purple-50 rounded-lg">
-                            {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend dan table belum ada, buatkan. */}
                             <div className="text-2xl font-bold text-purple-600">
-                                12
+                                {achievementsCount}
                             </div>
-                            <div className="text-sm text-gray-600">
-                                Achievements
-                            </div>
+                            <div className="text-sm text-gray-600">Achievements</div>
                         </div>
                     </div>
                 </div>
@@ -174,33 +172,29 @@ export default function ProfilePage() {
 
                 {/* Recent Achievements */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
-                    {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">
                         Recent Achievements
                     </h3>
                     <div className="space-y-3">
-                        <div className="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg">
-                            <Trophy className="w-8 h-8 text-yellow-600" />
-                            <div>
-                                <div className="font-medium text-gray-900">
-                                    Tournament Winner
+                        {Array.isArray(achievements) &&
+                            achievements.slice(0, 3).map((ach) => (
+                                <div
+                                    key={ach.id}
+                                    className="flex items-center space-x-3 p-3 bg-yellow-50 rounded-lg"
+                                >
+                                    <Trophy className="w-8 h-8 text-yellow-600" />
+                                    <div>
+                                        <div className="font-medium text-gray-900">
+                                            {ach.title}
+                                        </div>
+                                        {ach.description && (
+                                            <div className="text-sm text-gray-500">
+                                                {ach.description}
+                                            </div>
+                                        )}
+                                    </div>
                                 </div>
-                                <div className="text-sm text-gray-500">
-                                    Basketball Championship
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg">
-                            <Trophy className="w-8 h-8 text-purple-600" />
-                            <div>
-                                <div className="font-medium text-gray-900">
-                                    Best Performance
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                    Drama Festival
-                                </div>
-                            </div>
-                        </div>
+                            ))}
                     </div>
                 </div>
 
