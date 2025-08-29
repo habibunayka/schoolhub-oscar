@@ -26,6 +26,14 @@ export const validateGetPostById = [
     checkValidationResult,
 ];
 
+export const validateGetPost = [
+    param("id")
+        .isInt({ min: 1 })
+        .withMessage("Post ID must be a positive integer"),
+
+    checkValidationResult,
+];
+
 export const validateCreatePost = [
     param("id")
         .isInt({ min: 1 })

@@ -4,6 +4,7 @@ import { permitClub } from "../../middlewares/rbac.js";
 import * as Events from "./handler.js";
 import {
     validateListEvents,
+    validateGetEvent,
     validateCreateEvent,
     validateRsvpEvent,
     validateCheckinEvent,
@@ -13,6 +14,7 @@ import {
 const r = Router();
 
 r.get("/events", auth(true), Events.listAllEvents);
+r.get("/events/:id", validateGetEvent, auth(true), Events.getEvent);
 r.get("/clubs/:id/events", validateListEvents, auth(true), Events.listEvents);
 
 r.post(

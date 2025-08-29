@@ -6,12 +6,14 @@ import {
     validateCreatePost,
     validateListPosts,
     validateGetPostById,
+    validateGetPost,
 } from "./validator.js";
 import { upload } from "../../services/storage.js";
 
 const r = Router();
 
 r.get("/clubs/:id/posts", auth(true), validateListPosts, Posts.listPosts);
+r.get("/posts/:id", auth(true), validateGetPost, Posts.getPost);
 
 r.get(
     "/clubs/:id/posts/:postId",

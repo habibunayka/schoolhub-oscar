@@ -13,12 +13,14 @@ export default function AnnouncementDetail() {
   if (error) return <div>Error loading announcement</div>;
   if (!data) return <div>Not found</div>;
 
-  
+
   return (
-    // TODO : bagusin style ini.
-    <article>
-      <h1>{data.title}</h1>
-      <div dangerouslySetInnerHTML={{ __html: data.content_html }} />
+    <article className="max-w-2xl mx-auto bg-white p-6 rounded shadow space-y-4">
+      <h1 className="text-2xl font-semibold">{data.title}</h1>
+      <div
+        className="prose"
+        dangerouslySetInnerHTML={{ __html: data.content_html }}
+      />
     </article>
   );
 }

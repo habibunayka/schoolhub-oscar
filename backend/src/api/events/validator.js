@@ -17,6 +17,14 @@ export const validateListEvents = [
     checkValidationResult,
 ];
 
+export const validateGetEvent = [
+    param("id")
+        .isInt({ min: 1 })
+        .withMessage("Event ID must be a positive integer"),
+
+    checkValidationResult,
+];
+
 export const validateCreateEvent = [
     param("id")
         .isInt({ min: 1 })
