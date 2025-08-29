@@ -5,6 +5,8 @@ const baseURL =
     ? import.meta.env.VITE_API_URL
     : undefined) || process.env.VITE_API_URL;
 
+export const API_BASE_URL = baseURL;
+
 const api = axios.create({
   baseURL,
   withCredentials: false,
