@@ -3,8 +3,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronRight, Save, X } from 'lucide-react';
 import announcements from "@services/announcements.js";
+import { me as getCurrentUser } from "@services/auth.js";
 
-// TODO : Buat agar halaman ini dapat diakses hanya dengan role admin club.
+// Restrict access to club admins only
 
 const TARGET_OPTIONS = [
   { value: 'all', label: 'All Users' },
@@ -18,6 +19,17 @@ export default function AnnouncementForm() {
   const editing = Boolean(id);
   const navigate = useNavigate();
   const qc = useQueryClient();
+
+  const { data: user, isLoading: isLoadingUser } = useQuery({
+    queryKey: ["auth:me"],
+    queryFn: getCurrentUser,
+  });
+
+  useEffect(() => {
+    if (!isLoadingUser && (!user?.club_id || user.role_global === 'school_admin')) {
+      navigate('/');
+    }
+  }, [user, isLoadingUser, navigate]);
 
   const { data, isLoading: isLoadingData } = useQuery({
     queryKey: ["announcements", id],
@@ -46,6 +58,12 @@ export default function AnnouncementForm() {
       });
     }
   }, [data]);
+
+  useEffect(() => {
+    if (user?.club_id && !editing) {
+      setForm((prev) => ({ ...prev, club_id: user.club_id }));
+    }
+  }, [user, editing]);
 
   const mutation = useMutation({
     mutationFn: (payload) =>
@@ -98,16 +116,13 @@ export default function AnnouncementForm() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      // TODO : Tambahkan fungsi agar ini benar-benar dapat mengirim ke backend. Jika backend dan table belum dibuat, maka buatkan.
-      return;
-    }
-    
+
+    if (!validateForm()) return;
+
     mutation.mutate(form);
   };
 
-  if (editing && isLoadingData) {
+  if (isLoadingUser || (editing && isLoadingData)) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 animate-pulse">

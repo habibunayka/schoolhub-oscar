@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
-import { 
+import {
   Search, 
   Plus, 
   Calendar, 
@@ -15,8 +15,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import announcements from "@services/announcements.js";
-
-// TODO : Ubah data dummy dibawah menjadi data asli yang di fetch dari backend. Jika backend dan table belum dibuat, maka buatkan.
+import { me as getCurrentUser } from "@services/auth.js";
 const TARGET_OPTIONS = [
   { value: 'all', label: 'All Announcements', color: 'bg-blue-100 text-blue-800' },
   { value: 'members', label: 'Members Only', color: 'bg-green-100 text-green-800' },
@@ -182,13 +181,18 @@ export default function AnnouncementsList() {
   const [filterType, setFilterType] = useState('all');
   const [searchInput, setSearchInput] = useState('');
   const navigate = useNavigate();
-
-  // Mock current user - replace with actual auth
-  const [currentUser] = useState({
-    id: 1,
-    role: 'admin',
-    club_id: 'programming'
+  const { data: user, isLoading: isLoadingUser } = useQuery({
+    queryKey: ['auth:me'],
+    queryFn: getCurrentUser,
   });
+
+  const currentUser = useMemo(() => {
+    if (!user) return null;
+    const role = user.role_global === 'school_admin'
+      ? 'admin'
+      : user.club_id ? 'club_admin' : 'student';
+    return { id: user.id, role, club_id: user.club_id };
+  }, [user]);
 
   const { data = [], isLoading, error } = useQuery({
     queryKey: ["announcements:list"],
@@ -267,7 +271,7 @@ export default function AnnouncementsList() {
     navigate('/announcements/new');
   };
 
-  if (isLoading) {
+  if (isLoading || isLoadingUser) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
@@ -320,7 +324,7 @@ export default function AnnouncementsList() {
           </div>
           <h3 className="text-xl font-medium text-gray-900 mb-2">No announcements</h3>
           <p className="text-gray-500 mb-6">No announcements are currently available.</p>
-          {currentUser?.role === 'admin' && (
+          {currentUser?.role === 'club_admin' && (
             <button
               onClick={handleCreate}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors duration-200 flex items-center gap-2 mx-auto"
@@ -371,9 +375,8 @@ export default function AnnouncementsList() {
           ))}
         </select>
 
-        {/* // TODO : Buat agar tombol ini dapat dilihat hanya dengan role admin club. */}
         {/* Create Announcement Button */}
-        {currentUser?.role === 'admin' && (
+        {currentUser?.role === 'club_admin' && (
           <button
             onClick={handleCreate}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors duration-200 flex items-center gap-2 whitespace-nowrap"
