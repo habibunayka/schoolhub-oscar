@@ -36,6 +36,7 @@ import {
 import { getFeedPosts } from "@services/posts.js";
 import { getUpcomingEvents } from "@services/events.js";
 import { getUserStats } from "@services/users.js";
+import { getAssetUrl } from "@utils";
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
@@ -60,7 +61,7 @@ export default function StudentDashboard() {
   const normalizeClub = (c) => ({
     id: String(c.id),
     name: c.name ?? c.club_name,
-    image: c.logo_url ?? c.image_url ?? null,
+    image: getAssetUrl(c.logo_url ?? c.image_url ?? null),
     category: c.category ?? c.type ?? "Unknown",
     status: c.status ?? c.membership_status ?? "active",
     unreadCount: c.unread_count ?? 0,
@@ -70,15 +71,15 @@ export default function StudentDashboard() {
     id: String(p.id),
     clubId: String(p.club_id),
     clubName: p.club_name ?? p.club?.name,
-    clubImage: p.club_image ?? p.club?.logo_url ?? null,
+    clubImage: getAssetUrl(p.club_image ?? p.club?.logo_url ?? null),
     author: p.author_name ?? p.author?.name,
-    authorAvatar: p.author_avatar ?? p.author?.avatar_url ?? null,
+    authorAvatar: getAssetUrl(p.author_avatar ?? p.author?.avatar_url ?? null),
     timestamp: p.created_at,
     content: p.body_text ?? p.body ?? p.content,
     images: Array.isArray(p.images)
-      ? p.images
+      ? p.images.map(getAssetUrl)
       : p.image_url
-        ? [p.image_url]
+        ? [getAssetUrl(p.image_url)]
         : [],
     likes: p.likes_count ?? 0,
     comments: p.comments_count ?? 0,
@@ -98,7 +99,7 @@ export default function StudentDashboard() {
   const normalizeRecom = (c) => ({
     id: String(c.id),
     name: c.name,
-    image: c.logo_url ?? c.image_url ?? null,
+    image: getAssetUrl(c.logo_url ?? c.image_url ?? null),
     category: c.category ?? "Lainnya",
     memberCount: c.member_count ?? 0,
     matchPercentage: c.match ?? c.score ?? 0,
