@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getClub, joinClub, listMembers } from "@services/clubs.js";
 import { listPosts } from "@services/posts.js";
 import { listEvents } from "@services/events.js";
+import { getAssetUrl } from "@utils";
 import {
   ArrowLeft,
   Heart,
@@ -56,8 +57,8 @@ export default function ClubProfilePage() {
         memberCount: data.member_count || 0,
         founded: data.founded || "",
         location: data.location || "",
-        coverImage: data.banner_url || "",
-        logoImage: data.logo_url || "",
+        coverImage: getAssetUrl(data.banner_url) || "",
+        logoImage: getAssetUrl(data.logo_url) || "",
         isJoined: false,
         stats: { events: 0, posts: 0, achievements: 0 },
       });

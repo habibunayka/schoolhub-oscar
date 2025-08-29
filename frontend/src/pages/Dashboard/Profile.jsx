@@ -15,6 +15,7 @@ import auth from "@services/auth.js";
 import { getJoinedClubs } from "@services/clubs.js";
 import { listAllEvents } from "@services/events.js";
 import { getUserStats, getAchievements } from "@services/users.js";
+import { getAssetUrl } from "@utils";
 
 export default function ProfilePage() {
     const navigate = useNavigate();
@@ -47,7 +48,7 @@ export default function ProfilePage() {
                             <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center overflow-hidden">
                                 {user?.avatar_url ? (
                                     <img
-                                        src={user.avatar_url}
+                                        src={getAssetUrl(user.avatar_url)}
                                         alt={user.name}
                                         className="w-full h-full object-cover"
                                     />
@@ -148,7 +149,7 @@ export default function ProfilePage() {
                                     <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
                                         {club.logo_url ? (
                                             <img
-                                                src={club.logo_url}
+                                                src={getAssetUrl(club.logo_url)}
                                                 alt={club.name}
                                                 className="w-full h-full object-cover"
                                             />

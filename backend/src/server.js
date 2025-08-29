@@ -10,7 +10,11 @@ import api from "./api/index.js";
 import "./database/db.js";
 
 const app = express();
-app.use(helmet());
+app.use(
+    helmet({
+        crossOriginResourcePolicy: { policy: "cross-origin" },
+    })
+);
 app.use(cors({ origin: env.CLIENT_ORIGIN, credentials: true }));
 app.use(compression());
 app.use(express.json({ limit: "2mb" }));

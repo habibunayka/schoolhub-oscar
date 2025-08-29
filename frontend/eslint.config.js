@@ -14,6 +14,8 @@ export default defineConfig([
     files: ["**/*.{js,jsx}"],
     plugins: {
       react,
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh,
       import: importPlugin,
     },
     extends: [
