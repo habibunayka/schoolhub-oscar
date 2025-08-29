@@ -18,7 +18,14 @@ export default function EventDetailPage() {
     <div className="p-4 space-y-2">
       <h1 className="text-2xl font-semibold">{data.title}</h1>
       <p className="text-gray-600 text-sm">
-        {new Date(data.start_at).toLocaleString()} • {data.location}
+        {(() => {
+          const d = new Date(data.start_at);
+          const year = d.getFullYear();
+          const month = String(d.getMonth() + 1).padStart(2, "0");
+          const day = String(d.getDate()).padStart(2, "0");
+          const time = d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+          return `${year}-${month}-${day} ${time}`;
+        })()} • {data.location}
       </p>
       <p>{data.description}</p>
     </div>

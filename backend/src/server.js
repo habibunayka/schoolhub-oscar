@@ -17,13 +17,11 @@ app.use(express.json({ limit: "2mb" }));
 app.use(cookieParser());
 app.use(morgan("dev"));
 
-app.use("/uploads", express.static(path.resolve("./uploads")));
+app.use("/uploads", express.static(path.join(process.cwd(), "src/uploads")));
 
 app.use("/api", api);
 
 app.get("/health", (req, res) => res.json({ ok: true }));
-
-app.use("/uploads", express.static(path.join(process.cwd(), "../uploads")));
 
 app.use((req, res, next) => {
     if (res.headersSent) return next();
