@@ -12,6 +12,7 @@ import {
 
 const r = Router();
 
+r.get("/events", auth(true), Events.listAllEvents);
 r.get("/clubs/:id/events", validateListEvents, auth(true), Events.listEvents);
 
 r.post(

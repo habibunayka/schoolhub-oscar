@@ -8,11 +8,13 @@ import {
     validatePatchClub,
     validateJoinClub,
     validateSetMemberStatus,
+    validateGetClub,
 } from "./validator.js";
 
 const r = Router();
 
 r.get("/", validateListClubs, auth(true), Clubs.listClubs);
+r.get("/:id", validateGetClub, auth(true), Clubs.getClub);
 
 r.post(
     "/",

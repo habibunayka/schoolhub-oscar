@@ -40,3 +40,20 @@ export const register = async (req, res) => {
         res.status(400).json({ message: "Email already used" });
     }
 };
+
+export const me = async (req, res) => {
+    const user = await get(
+        `SELECT id, name, role_global FROM users WHERE id = $1`,
+        [req.user.id]
+    );
+    const club = await get(
+        `SELECT club_id FROM club_members WHERE user_id = $1 AND role IN ('owner','admin') LIMIT 1`,
+        [req.user.id]
+    );
+    res.json({
+        id: user.id,
+        name: user.name,
+        role_global: user.role_global,
+        club_id: club?.club_id || null,
+    });
+};

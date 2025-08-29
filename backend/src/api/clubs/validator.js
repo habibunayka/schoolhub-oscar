@@ -34,6 +34,13 @@ export const validateListClubs = [
     checkValidationResult,
 ];
 
+export const validateGetClub = [
+    param("id")
+        .isInt({ min: 1 })
+        .withMessage("Club ID must be a positive integer"),
+    checkValidationResult,
+];
+
 export const validateCreateClub = [
     body("name")
         .notEmpty()

@@ -10,6 +10,18 @@ export const listEvents = async (req, res) => {
     res.json(rows);
 };
 
+export const listAllEvents = async (req, res) => {
+    const rows = await query(
+        `SELECT e.*, c.name AS club_name, COUNT(r.id) AS participant_count
+         FROM events e
+         JOIN clubs c ON e.club_id = c.id
+         LEFT JOIN event_rsvps r ON r.event_id = e.id AND r.status = 'going'
+         GROUP BY e.id, c.name
+         ORDER BY e.start_at`
+    );
+    res.json(rows);
+};
+
 export const createEvent = async (req, res) => {
     const clubId = Number(req.params.id);
     const {

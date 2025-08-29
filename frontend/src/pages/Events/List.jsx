@@ -1,147 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Plus, Calendar, Clock, MapPin, Users, Edit, Trash2, Eye } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
+import api from "../../lib/api/client.js";
 
-// Mock user data - biasanya dari context/auth
-// TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan.
-const CURRENT_USER = {
-  id: 1,
-  role: 'club_admin', // 'student', 'club_admin', 'school_admin'
-  clubId: 2, // jika club admin, ID club yang dia kelola
-};
-
-// Dummy events data
-// TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan.
-const DUMMY_EVENTS = [
-  {
-    id: 1,
-    title: "Programming Workshop: React Fundamentals",
-    organizer: "Programming Club",
-    organizerId: 1,
-    organizerType: "club",
-    date: "2025-09-15",
-    time: "14:00",
-    location: "Computer Lab A",
-    description: "Learn the basics of React.js with hands-on coding exercises. Perfect for beginners who want to start their web development journey.",
-    maxParticipants: 30,
-    currentParticipants: 18,
-    isJoined: false,
-    category: "workshop",
-    status: "upcoming"
-  },
-  {
-    id: 2,
-    title: "Annual Drama Performance: Romeo & Juliet",
-    organizer: "Drama Society",
-    organizerId: 2,
-    organizerType: "club",
-    date: "2025-09-20",
-    time: "19:00",
-    location: "Main Auditorium",
-    description: "Join us for a spectacular performance of Shakespeare's timeless classic. Experience the passion, tragedy, and beauty of this beloved story.",
-    maxParticipants: 200,
-    currentParticipants: 156,
-    isJoined: true,
-    category: "performance",
-    status: "upcoming"
-  },
-  {
-    id: 3,
-    title: "Basketball Championship Finals",
-    organizer: "Basketball Team",
-    organizerId: 4,
-    organizerType: "club",
-    date: "2025-09-25",
-    time: "16:00",
-    location: "Sports Complex",
-    description: "Cheer for our team in the final match of the championship. Come support our players as they compete for the trophy!",
-    maxParticipants: 500,
-    currentParticipants: 234,
-    isJoined: false,
-    category: "sports",
-    status: "upcoming"
-  },
-  {
-    id: 4,
-    title: "Science Fair 2025",
-    organizer: "School Administration",
-    organizerId: null,
-    organizerType: "school",
-    date: "2025-10-01",
-    time: "09:00",
-    location: "Exhibition Hall",
-    description: "Showcase your innovative projects and discoveries. Students from all grades are invited to participate and present their research.",
-    maxParticipants: 100,
-    currentParticipants: 67,
-    isJoined: true,
-    category: "academic",
-    status: "upcoming"
-  },
-  {
-    id: 5,
-    title: "Music Concert: Jazz Night",
-    organizer: "Music Ensemble",
-    organizerId: 5,
-    organizerType: "club",
-    date: "2025-08-15",
-    time: "20:00",
-    location: "Music Hall",
-    description: "An evening of smooth jazz and classic melodies performed by our talented music students. Relax and enjoy the music.",
-    maxParticipants: 150,
-    currentParticipants: 150,
-    isJoined: false,
-    category: "performance",
-    status: "past"
-  },
-  {
-    id: 6,
-    title: "Environmental Cleanup Drive",
-    organizer: "Environmental Club",
-    organizerId: 3,
-    organizerType: "club",
-    date: "2025-08-20",
-    time: "08:00",
-    location: "Campus Grounds",
-    description: "Help make our campus cleaner and greener. Bring gloves and water bottles. Together we can make a difference!",
-    maxParticipants: 80,
-    currentParticipants: 72,
-    isJoined: true,
-    category: "community",
-    status: "past"
-  },
-  {
-    id: 7,
-    title: "Chess Tournament Semifinals",
-    organizer: "Chess Club",
-    organizerId: 10,
-    organizerType: "club",
-    date: "2025-09-30",
-    time: "13:00",
-    location: "Library Meeting Room",
-    description: "The best chess players compete for a spot in the finals. Watch strategic gameplay and learn from the masters.",
-    maxParticipants: 40,
-    currentParticipants: 28,
-    isJoined: false,
-    category: "academic",
-    status: "upcoming"
-  },
-  {
-    id: 8,
-    title: "Parent-Teacher Conference",
-    organizer: "School Administration",
-    organizerId: null,
-    organizerType: "school",
-    date: "2025-10-05",
-    time: "10:00",
-    location: "Various Classrooms",
-    description: "Meet with teachers to discuss student progress and academic goals. Schedule individual appointments with subject teachers.",
-    maxParticipants: 300,
-    currentParticipants: 189,
-    isJoined: false,
-    category: "academic",
-    status: "upcoming"
-  }
-];
 
 const FILTER_OPTIONS = [
   { value: 'all', label: 'All Events' },
@@ -322,18 +183,49 @@ function EventCard({ event, currentUser, onJoinToggle, onEdit, onDelete, onViewD
 
 // Main Events Page
 export default function EventsPage() {
-  const [events, setEvents] = useState(DUMMY_EVENTS);
-  const [loading, setLoading] = useState(true);
+    const [events, setEvents] = useState([]);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [searchInput, setSearchInput] = useState('');
   const navigate = useNavigate();
 
-  // Simulate loading
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1200);
-    return () => clearTimeout(timer);
-  }, []);
+    useEffect(() => {
+      async function fetchData() {
+        try {
+          const [userRes, eventsRes] = await Promise.all([
+            api.get("/auth/me"),
+            api.get("/events"),
+          ]);
+          const user = userRes.data;
+          const role = user.role_global === 'school_admin'
+            ? 'school_admin'
+            : user.club_id ? 'club_admin' : 'student';
+          setCurrentUser({ id: user.id, role, clubId: user.club_id });
+          const mapped = eventsRes.data.map(e => ({
+            id: e.id,
+            title: e.title,
+            organizer: e.club_name,
+            organizerId: e.club_id,
+            organizerType: 'club',
+            date: e.start_at.slice(0,10),
+            time: e.start_at.slice(11,16),
+            location: e.location,
+            description: e.description,
+            maxParticipants: e.capacity,
+            currentParticipants: Number(e.participant_count) || 0,
+            isJoined: false,
+            category: e.visibility,
+            status: new Date(e.end_at) < new Date() ? 'past' : 'upcoming',
+          }));
+          setEvents(mapped);
+        } finally {
+          setLoading(false);
+        }
+      }
+      fetchData();
+    }, []);
 
   // Debounced search
   useEffect(() => {
@@ -398,13 +290,14 @@ export default function EventsPage() {
     );
   };
 
-  const handleCreateEvent = () => {
-    if (CURRENT_USER.role === "school_admin") {
-      navigate("/events/new");
-    } else if (CURRENT_USER.role === "club_admin") {
-      navigate(`/clubs/${CURRENT_USER.clubId}/events/new`);
-    }
-  };
+    const handleCreateEvent = () => {
+      if (!currentUser) return;
+      if (currentUser.role === "school_admin") {
+        navigate("/events/new");
+      } else if (currentUser.role === "club_admin") {
+        navigate(`/clubs/${currentUser.clubId}/events/new`);
+      }
+    };
 
   const handleEdit = (eventId) => {
     alert(`Edit event ${eventId}`);
@@ -421,11 +314,11 @@ export default function EventsPage() {
     window.location.href = `/events/${eventId}`;
   };
 
-  const canCreateEvent = CURRENT_USER.role === 'school_admin' || CURRENT_USER.role === 'club_admin';
+    const canCreateEvent = currentUser && (currentUser.role === 'school_admin' || currentUser.role === 'club_admin');
 
-  if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
+    if (loading) {
+      return (
+        <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
           <div className="h-8 bg-gray-200 rounded w-32 mb-4 animate-pulse"></div>
         </div>
@@ -443,7 +336,9 @@ export default function EventsPage() {
         </div>
       </div>
     );
-  }
+    }
+
+    if (!currentUser) return null;
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
@@ -525,7 +420,7 @@ export default function EventsPage() {
             <EventCard
               key={event.id}
               event={event}
-              currentUser={CURRENT_USER}
+              currentUser={currentUser}
               onJoinToggle={handleJoinToggle}
               onEdit={handleEdit}
               onDelete={handleDelete}

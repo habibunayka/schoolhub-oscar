@@ -4,10 +4,29 @@ import { cleanHTML } from "../../services/sanitize.js";
 export const listClubs = async (req, res) => {
     const { search = "", tag, day } = req.query; // tag/day future index
     const rows = await query(
-        `SELECT * FROM clubs WHERE is_active = true AND name ILIKE $1 ORDER BY name`,
+        `SELECT c.*, COUNT(m.id) AS member_count
+         FROM clubs c
+         LEFT JOIN club_members m ON c.id = m.club_id AND m.status = 'approved'
+         WHERE c.is_active = true AND c.name ILIKE $1
+         GROUP BY c.id
+         ORDER BY c.name`,
         [`%${search}%`]
     );
     res.json(rows);
+};
+
+export const getClub = async (req, res) => {
+    const id = Number(req.params.id);
+    const row = await get(
+        `SELECT c.*, COUNT(m.id) AS member_count
+         FROM clubs c
+         LEFT JOIN club_members m ON c.id = m.club_id AND m.status = 'approved'
+         WHERE c.id = $1
+         GROUP BY c.id`,
+        [id]
+    );
+    if (!row) return res.status(404).json({ message: "Not found" });
+    res.json(row);
 };
 
 export const createClub = async (req, res) => {
