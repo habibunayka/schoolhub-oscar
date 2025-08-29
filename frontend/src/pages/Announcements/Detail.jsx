@@ -4,8 +4,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Calendar, Clock, Edit, ChevronRight, Megaphone } from 'lucide-react';
 import announcements from "@services/announcements.js";
 
-// TODO : Tambahkan fungsi agar ini benar-benar diambil dari backend. Jika backend dan table belum dibuat, maka buatkan.
-
 const TARGET_OPTIONS = [
   { value: 'all', label: 'All Announcements', color: 'bg-blue-100 text-blue-800' },
   { value: 'members', label: 'Members Only', color: 'bg-green-100 text-green-800' },

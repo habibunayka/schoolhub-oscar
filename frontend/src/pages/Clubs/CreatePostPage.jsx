@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { 
+import { useQuery } from "@tanstack/react-query";
+import {
   ArrowLeft, 
   Upload, 
   Save, 
@@ -13,8 +14,9 @@ import {
   ChevronDown,
   Trash2
 } from "lucide-react";
+import { me as getCurrentUser } from "@services/auth.js";
 
-// TODO : Buat agar halaman ini dapat diakses hanya dengan role admin club.
+// Restrict page to club admin role
 
 const VISIBILITY_OPTIONS = [
   { 
@@ -55,6 +57,16 @@ export default function CreatePostPage() {
   });
 
   const [errors, setErrors] = useState({});
+
+  const { data: user, isLoading: isLoadingUser } = useQuery({
+    queryKey: ['auth:me'],
+    queryFn: getCurrentUser,
+  });
+
+  if (isLoadingUser) return <div className="p-4">Loading...</div>;
+  if (!user?.club_id || user.role_global === 'school_admin') {
+    return <div className="p-4">Unauthorized</div>;
+  }
 
   const handleFiles = (files) => {
     const validFiles = Array.from(files).filter(file => {

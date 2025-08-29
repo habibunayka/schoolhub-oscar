@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { listClubs } from "@services/clubs.js";
+import { me as getCurrentUser } from "@services/auth.js";
 import {
   ArrowLeft,
   Upload,
@@ -14,7 +16,7 @@ import {
   Save,
 } from "lucide-react";
 
-// TODO : Buat agar halaman ini dapat diakses hanya dengan role admin club.
+// Restrict page to club admin role
 
 export default function CreateEventPage() {
   const fileInputRef = useRef(null);
@@ -114,6 +116,16 @@ export default function CreateEventPage() {
     const club = clubOptions.find(option => option.value === value);
     return club ? club.label : value;
   };
+
+  const { data: user, isLoading: isLoadingUser } = useQuery({
+    queryKey: ['auth:me'],
+    queryFn: getCurrentUser,
+  });
+
+  if (isLoadingUser) return <div className="p-4">Loading...</div>;
+  if (!user?.club_id || user.role_global === 'school_admin') {
+    return <div className="p-4">Unauthorized</div>;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
