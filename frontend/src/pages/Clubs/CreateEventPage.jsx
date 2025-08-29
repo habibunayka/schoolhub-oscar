@@ -1,4 +1,5 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import api from "../../lib/api/client.js";
 import {
   ArrowLeft,
   Upload,
@@ -99,15 +100,14 @@ export default function CreateEventPage() {
     return timeStr;
   };
 
-  // TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan.
-  const clubOptions = [
-    { value: "basketball", label: "Basketball Club" },
-    { value: "drama", label: "Drama Club" },
-    { value: "science", label: "Science Lab" },
-    { value: "debate", label: "Debate Society" },
-    { value: "programming", label: "Programming Club" },
-    { value: "music", label: "Music Ensemble" },
-  ];
+  const [clubOptions, setClubOptions] = useState([]);
+  useEffect(() => {
+    async function fetchClubs() {
+      const { data } = await api.get("/clubs");
+      setClubOptions(data.map(c => ({ value: String(c.id), label: c.name })));
+    }
+    fetchClubs();
+  }, []);
 
   const getClubLabel = (value) => {
     const club = clubOptions.find(option => option.value === value);

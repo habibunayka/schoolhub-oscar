@@ -1,135 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-
-// Dummy data
-// TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan.
-const DUMMY_CLUBS = [
-  {
-    id: 1,
-    name: "Programming Club",
-    description: "Learn coding, build projects, and connect with fellow developers. We focus on web development, mobile apps, and competitive programming.",
-    category: "Technology",
-    members: 145,
-    logoUrl: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=100&h=100&fit=crop&crop=center",
-    isJoined: true
-  },
-  {
-    id: 2,
-    name: "Drama Society",
-    description: "Express yourself through theater, acting, and stage performance. Join us for workshops, rehearsals, and amazing productions.",
-    category: "Arts",
-    members: 89,
-    logoUrl: "https://images.unsplash.com/photo-1503095396549-807759245b35?w=100&h=100&fit=crop&crop=center",
-    isJoined: false
-  },
-  {
-    id: 3,
-    name: "Environmental Club",
-    description: "Make a difference in our planet's future. Organize clean-up drives, sustainability workshops, and green initiatives.",
-    category: "Environment",
-    members: 203,
-    logoUrl: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=100&h=100&fit=crop&crop=center",
-    isJoined: false
-  },
-  {
-    id: 4,
-    name: "Basketball Team",
-    description: "Competitive basketball team seeking passionate players. Train hard, play harder, and represent our school with pride.",
-    category: "Sports",
-    members: 32,
-    logoUrl: "https://images.unsplash.com/photo-1546519638-68e109498ffc?w=100&h=100&fit=crop&crop=center",
-    isJoined: true
-  },
-  {
-    id: 5,
-    name: "Music Ensemble",
-    description: "Create beautiful music together through various instruments and vocal performances. All skill levels welcome to join our harmony.",
-    category: "Arts",
-    members: 67,
-    logoUrl: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop&crop=center",
-    isJoined: false
-  },
-  {
-    id: 6,
-    name: "Debate Society",
-    description: "Sharpen your argumentation skills and engage in intellectual discourse on current topics and social issues.",
-    category: "Academic",
-    members: 78,
-    logoUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=center",
-    isJoined: false
-  },
-  {
-    id: 7,
-    name: "Robotics Team",
-    description: "Build and program robots for competitions. Combine engineering, programming, and creativity to solve complex challenges.",
-    category: "Technology",
-    members: 54,
-    logoUrl: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=100&h=100&fit=crop&crop=center",
-    isJoined: true
-  },
-  {
-    id: 8,
-    name: "Photography Club",
-    description: "Capture moments and tell stories through the lens. Learn techniques, share work, and explore different photography styles.",
-    category: "Arts",
-    members: 123,
-    logoUrl: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=100&h=100&fit=crop&crop=center",
-    isJoined: false
-  },
-  {
-    id: 9,
-    name: "Volunteer Service",
-    description: "Give back to the community through various service projects and charitable initiatives that make a real impact.",
-    category: "Service",
-    members: 167,
-    logoUrl: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=100&h=100&fit=crop&crop=center",
-    isJoined: false
-  },
-  {
-    id: 10,
-    name: "Chess Club",
-    description: "Strategic thinking and competitive chess play. From beginners to masters, everyone can improve their game here.",
-    category: "Academic",
-    members: 43,
-    logoUrl: "https://images.unsplash.com/photo-1528819622765-d6bcf132858a?w=100&h=100&fit=crop&crop=center",
-    isJoined: true
-  },
-  {
-    id: 11,
-    name: "Hiking Society",
-    description: "Explore nature trails and mountain peaks together. Build endurance, enjoy fresh air, and discover beautiful landscapes.",
-    category: "Sports",
-    members: 91,
-    logoUrl: "https://images.unsplash.com/photo-1551632811-561732d1e306?w=100&h=100&fit=crop&crop=center",
-    isJoined: false
-  },
-  {
-    id: 12,
-    name: "Culinary Arts",
-    description: "Discover the joy of cooking and baking. Learn recipes, techniques, and food presentation from around the world.",
-    category: "Lifestyle",
-    members: 76,
-    logoUrl: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=100&h=100&fit=crop&crop=center",
-    isJoined: false
-  },
-  {
-    id: 13,
-    name: "Science Olympiad",
-    description: "Compete in various science disciplines and represent our school in regional and national competitions.",
-    category: "Academic",
-    members: 38,
-    logoUrl: "https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=100&h=100&fit=crop&crop=center",
-    isJoined: false
-  },
-  {
-    id: 14,
-    name: "Gaming League",
-    description: "Competitive gaming across multiple platforms and titles. Join tournaments, improve skills, and connect with fellow gamers.",
-    category: "Technology",
-    members: 189,
-    logoUrl: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100&h=100&fit=crop&crop=center",
-    isJoined: true
-  }
-];
+import api from "../../lib/api/client.js";
 
 const CATEGORIES = ["Technology", "Arts", "Sports", "Academic", "Environment", "Service", "Lifestyle"];
 const SORT_OPTIONS = [
@@ -413,7 +283,7 @@ function Pagination({ currentPage, totalPages, onPageChange, className = "" }) {
 
 // Main Clubs Page Component
 export default function ClubsPage({ className = "" }) {
-  const [clubs, setClubs] = useState(DUMMY_CLUBS);
+  const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -424,10 +294,25 @@ export default function ClubsPage({ className = "" }) {
   
   const ITEMS_PER_PAGE = 9;
 
-  // Simulate loading
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1000);
-    return () => clearTimeout(timer);
+    async function fetchClubs() {
+      try {
+        const { data } = await api.get("/clubs");
+        const mapped = data.map(c => ({
+          id: c.id,
+          name: c.name,
+          description: c.description || "",
+          category: c.category || "General",
+          members: c.member_count || 0,
+          logoUrl: c.logo_url || "",
+          isJoined: false,
+        }));
+        setClubs(mapped);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchClubs();
   }, []);
 
   // Filter and sort clubs

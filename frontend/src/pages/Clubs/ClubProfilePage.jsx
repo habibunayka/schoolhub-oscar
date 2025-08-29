@@ -1,5 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import api from "../../lib/api/client.js";
 import {
   ArrowLeft,
   Heart,
@@ -35,30 +36,31 @@ import {
 
 export default function ClubProfilePage() {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [activeTab, setActiveTab] = useState("posts");
+  const [clubData, setClubData] = useState(null);
 
-  // Mock club data - in real app this would be fetched based on clubId
-  // TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan.
-  const clubData = {
-    id: "1",
-    name: "Basketball Club",
-    description:
-      "Join our dynamic basketball team and improve your skills while having fun with fellow athletes. We welcome players of all skill levels and focus on teamwork, discipline, and fun.",
-    category: "Olahraga",
-    memberCount: 24,
-    founded: "2020",
-    location: "Sports Hall",
-    coverImage:
-      "https://images.unsplash.com/photo-1659468551117-8255d708e197?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwdGVhbSUyMGdyb3VwfGVufDF8fHx8MTc1NTkyODcyM3ww&ixlib=rb-4.1.0&q=80&w=1080",
-    logoImage:
-      "https://images.unsplash.com/photo-1720716430227-82ce7abf761d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxiYXNrZXRiYWxsJTIwdGVhbSUyMHNjaG9vbHxlbnwxfHx8fDE3NTU5Mjc5MDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
-    isJoined: false,
-    stats: {
-      events: 12,
-      posts: 48,
-      achievements: 8,
-    },
-  };
+  useEffect(() => {
+    async function fetchClub() {
+      const { data } = await api.get(`/clubs/${id}`);
+      setClubData({
+        id: data.id,
+        name: data.name,
+        description: data.description || "",
+        category: data.category || "",
+        memberCount: data.member_count || 0,
+        founded: data.founded || "",
+        location: data.location || "",
+        coverImage: data.banner_url || "",
+        logoImage: data.logo_url || "",
+        isJoined: false,
+        stats: { events: 0, posts: 0, achievements: 0 },
+      });
+    }
+    fetchClub();
+  }, [id]);
+
+  if (!clubData) return null;
 
   const posts = [
     {

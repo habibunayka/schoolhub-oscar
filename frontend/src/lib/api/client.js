@@ -21,9 +21,10 @@ api.interceptors.response.use(
   (err) => {
     const status = err?.response?.status;
     if (status === 401) {
-      // TODO: kalau ada refresh token, implement; kalau tidak, clear & redirect
       globalThis.localStorage?.removeItem("token");
-      // optional: window.location.assign("/login");
+      if (typeof window !== "undefined") {
+        window.location.assign("/login");
+      }
     }
     return Promise.reject(err);
   }
