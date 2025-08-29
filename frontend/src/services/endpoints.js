@@ -236,6 +236,21 @@ export const endpoints = {
       "auth": true
     },
     {
+      "name": "listMembers",
+      "method": "GET",
+      "path": "/clubs/:id/members",
+      "validators": [
+        {
+          "body": [],
+          "params": [
+            "id"
+          ],
+          "query": []
+        }
+      ],
+      "auth": true
+    },
+    {
       "name": "setMemberStatus",
       "method": "PATCH",
       "path": "/clubs/:id/members/:userId",

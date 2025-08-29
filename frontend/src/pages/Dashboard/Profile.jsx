@@ -12,10 +12,17 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import auth from "@services/auth.js";
+import { getJoinedClubs } from "@services/clubs.js";
+import { listAllEvents } from "@services/events.js";
 
 export default function ProfilePage() {
     const navigate = useNavigate();
     const { data: user } = useQuery({ queryKey: ["me"], queryFn: auth.me });
+    const { data: clubs } = useQuery({ queryKey: ["myClubs"], queryFn: getJoinedClubs });
+    const { data: events } = useQuery({ queryKey: ["events"], queryFn: listAllEvents });
+
+    const activeClubsCount = Array.isArray(clubs) ? clubs.length : 0;
+    const eventsJoinedCount = Array.isArray(events) ? events.length : 0;
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -32,11 +39,21 @@ export default function ProfilePage() {
                 <div className="bg-white rounded-lg shadow-sm p-6">
                     <div className="flex items-start space-x-6">
                         <div className="relative">
-                            <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                                {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
-                                <span className="text-white text-4xl font-bold">
-                                    AX
-                                </span>
+                            <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center overflow-hidden">
+                                {user?.avatar_url ? (
+                                    <img
+                                        src={user.avatar_url}
+                                        alt={user.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-white text-4xl font-bold">
+                                        {user?.name
+                                            ?.split(" ")
+                                            .map((n) => n[0])
+                                            .join("")}
+                                    </span>
+                                )}
                             </div>
                             <button className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-lg hover:shadow-xl">
                                 <Camera className="w-4 h-4 text-gray-600" />
@@ -52,32 +69,28 @@ export default function ProfilePage() {
                                     : "Fetching profile..."}
                             </p>
                             <p className="text-gray-700 leading-relaxed">
-                                {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
-                                Passionate about technology, sports, and
-                                creative arts. Love connecting with like-minded
-                                people and exploring new opportunities for
-                                growth and learning.
+                                {user?.bio || "No bio provided."}
                             </p>
 
                             <div className="flex items-center space-x-6 mt-4 text-sm text-gray-600">
                                 <div className="flex items-center space-x-2">
                                     <Calendar className="w-4 h-4" />
-                                    {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
-                                    <span>Joined March 2024</span>
+                                    <span>{user?.joined_at || "-"}</span>
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <MapPin className="w-4 h-4" />
-                                    {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
-                                    <span>Jakarta, Indonesia</span>
+                                    <span>{user?.location || "-"}</span>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div className="mt-4">
-                        <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center space-x-2">
+                        <button
+                            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 flex items-center space-x-2"
+                            onClick={() => navigate("/profile/edit")}
+                        >
                             <Edit3 className="w-4 h-4" />
-                            {/* TODO : Ubah data ini agar bekerja dan buat pages edit profilenya, jika di backend belum ada, buatkan. */}
                             <span>Edit Profile</span>
                         </button>
                     </div>
@@ -91,22 +104,16 @@ export default function ProfilePage() {
                     </h3>
                     <div className="grid grid-cols-2 gap-4">
                         <div className="text-center p-4 bg-blue-50 rounded-lg">
-                            {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend dan table belum ada, buatkan. */}
                             <div className="text-2xl font-bold text-blue-600">
-                                5
+                                {activeClubsCount}
                             </div>
-                            <div className="text-sm text-gray-600">
-                                Active Clubs
-                            </div>
+                            <div className="text-sm text-gray-600">Active Clubs</div>
                         </div>
                         <div className="text-center p-4 bg-green-50 rounded-lg">
-                            {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend dan table belum ada, buatkan. */}
                             <div className="text-2xl font-bold text-green-600">
-                                28
+                                {eventsJoinedCount}
                             </div>
-                            <div className="text-sm text-gray-600">
-                                Events Joined
-                            </div>
+                            <div className="text-sm text-gray-600">Events Joined</div>
                         </div>
                         <div className="text-center p-4 bg-orange-50 rounded-lg">
                             {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend dan table belum ada, buatkan. */}
@@ -131,56 +138,37 @@ export default function ProfilePage() {
 
                 {/* My Clubs */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
-                    {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                        My Clubs
-                    </h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">My Clubs</h3>
                     <div className="space-y-3">
-                        <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50">
-                            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-                                <span className="text-orange-600 text-xl">
-                                    🏀
-                                </span>
-                            </div>
-                            <div className="flex-1">
-                                <div className="font-medium text-gray-900">
-                                    Basketball Club
+                        {Array.isArray(clubs) &&
+                            clubs.map((club) => (
+                                <div
+                                    key={club.id}
+                                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50"
+                                >
+                                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                                        {club.logo_url ? (
+                                            <img
+                                                src={club.logo_url}
+                                                alt={club.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="text-xl">
+                                                {club.name?.charAt(0)}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="font-medium text-gray-900">
+                                            {club.name}
+                                        </div>
+                                        <div className="text-sm text-gray-500">
+                                            {club.category || club.role || "Member"}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="text-sm text-gray-500">
-                                    Team Captain
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50">
-                            <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                                <span className="text-purple-600 text-xl">
-                                    🎭
-                                </span>
-                            </div>
-                            <div className="flex-1">
-                                <div className="font-medium text-gray-900">
-                                    Drama Club
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                    Active Member
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50">
-                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                                <span className="text-blue-600 text-xl">
-                                    🔬
-                                </span>
-                            </div>
-                            <div className="flex-1">
-                                <div className="font-medium text-gray-900">
-                                    Science Lab
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                    Research Assistant
-                                </div>
-                            </div>
-                        </div>
+                            ))}
                     </div>
                 </div>
 
@@ -218,44 +206,25 @@ export default function ProfilePage() {
 
                 {/* Recent Activity */}
                 <div className="bg-white rounded-lg shadow-sm p-6">
-                    {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                        Recent Activity
-                    </h3>
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
                     <div className="space-y-3">
-                        <div className="flex items-center space-x-4 p-4 bg-blue-50 rounded-lg">
-                            <Activity className="w-8 h-8 text-blue-600" />
-                            <div>
-                                <div className="font-medium">
-                                    Joined Basketball Club practice
+                        {Array.isArray(events) &&
+                            events.slice(0, 3).map((ev) => (
+                                <div
+                                    key={ev.id}
+                                    className="flex items-center space-x-4 p-4 bg-blue-50 rounded-lg"
+                                >
+                                    <Activity className="w-8 h-8 text-blue-600" />
+                                    <div>
+                                        <div className="font-medium">
+                                            {ev.title || ev.name}
+                                        </div>
+                                        <div className="text-sm text-gray-500">
+                                            {ev.start_at || ev.date}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="text-sm text-gray-500">
-                                    3 hours ago
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-4 p-4 bg-green-50 rounded-lg">
-                            <Trophy className="w-8 h-8 text-green-600" />
-                            <div>
-                                <div className="font-medium">
-                                    Achieved Tournament Winner badge
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                    2 days ago
-                                </div>
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-4 p-4 bg-purple-50 rounded-lg">
-                            <Users className="w-8 h-8 text-purple-600" />
-                            <div>
-                                <div className="font-medium">
-                                    Attended Drama Club meeting
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                    1 week ago
-                                </div>
-                            </div>
-                        </div>
+                            ))}
                     </div>
                 </div>
             </div>

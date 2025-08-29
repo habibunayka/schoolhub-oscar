@@ -58,3 +58,23 @@ test("createClub inserts club and membership", async () => {
     assert.equal(calls[1].params[0], 10);
     __setDbMocks({ run: async () => ({ rowCount: 0, rows: [] }) });
 });
+
+test("listMembers queries by club id", async () => {
+    let params;
+    __setDbMocks({
+        query: async (sql, p) => {
+            params = p;
+            return [{ id: 1 }];
+        },
+    });
+
+    const req = { params: { id: "7" } };
+    let json;
+    const res = { json: (d) => (json = d) };
+
+    await Clubs.listMembers(req, res);
+
+    assert.deepEqual(json, [{ id: 1 }]);
+    assert.deepEqual(params, [7]);
+    __setDbMocks({ query: async () => [] });
+});

@@ -65,6 +65,17 @@ export const joinClub = async (id) => {
 };
 
 /**
+ * List members of a club
+ * @param {number} id club id
+ * @returns {Promise<object[]>}
+ */
+export const listMembers = async (id) => {
+  const path = map.listMembers.path.replace(":id", id);
+  const { data } = await api.get(path);
+  return data;
+};
+
+/**
  * Update member status
  * @param {number} id club id
  * @param {number} userId user identifier
@@ -93,4 +104,5 @@ export default {
   joinClub,
   getClub,
   setMemberStatus,
+  listMembers,
 };
