@@ -6,7 +6,7 @@ import { renderToStaticMarkup } from "react-dom/server";
 
 let Navbar;
 try {
-  ({ default: Navbar } = await import("../components/Navbar.jsx"));
+  ({ default: Navbar } = await import("../layouts/Navbar.jsx"));
 } catch {
   Navbar = null;
 }

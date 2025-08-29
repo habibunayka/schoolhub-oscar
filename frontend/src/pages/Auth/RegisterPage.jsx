@@ -10,7 +10,8 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { register as registerService, login as loginService } from "@lib/api/services/authentications";
+import { register as registerService } from "@services/authentications.js";
+import { useAuth } from "@hooks/useAuth.js";
 import {
   Button,
   Input,
@@ -30,6 +31,7 @@ import {
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -48,14 +50,12 @@ export default function RegisterPage() {
         email: formData.email,
         password: formData.password,
       });
-      const loginRes = await loginService({
+      return login({
         email: formData.email,
         password: formData.password,
       });
-      return loginRes;
     },
-    onSuccess: (data) => {
-      localStorage.setItem("token", data.token);
+    onSuccess: () => {
       navigate("/dashboard");
     },
   });
@@ -129,7 +129,7 @@ export default function RegisterPage() {
                 <Input
                   id="email"
                   type="email"
-                  placeholder="Enter your school email"
+                  placeholder="Enter your email"
                   value={formData.email}
                   onChange={(e) => handleInputChange("email", e.target.value)}
                   className="pl-10 bg-input-background border-border focus:border-[#2563EB] focus:ring-[#2563EB]"
@@ -138,25 +138,22 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Grade Selection */}
+            {/* Grade Field */}
             <div className="space-y-2">
               <Label htmlFor="grade">Grade</Label>
               <div className="relative">
-                <GraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4 z-10" />
+                <GraduationCap className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground size-4" />
                 <Select
                   value={formData.grade}
                   onValueChange={(value) => handleInputChange("grade", value)}
                 >
                   <SelectTrigger className="pl-10 bg-input-background border-border focus:border-[#2563EB] focus:ring-[#2563EB]">
-                    <SelectValue placeholder="Select your grade" />
+                    <SelectValue placeholder="Select grade" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="grade-7">Grade 7</SelectItem>
-                    <SelectItem value="grade-8">Grade 8</SelectItem>
-                    <SelectItem value="grade-9">Grade 9</SelectItem>
-                    <SelectItem value="grade-10">Grade 10</SelectItem>
-                    <SelectItem value="grade-11">Grade 11</SelectItem>
-                    <SelectItem value="grade-12">Grade 12</SelectItem>
+                    <SelectItem value="10">10th Grade</SelectItem>
+                    <SelectItem value="11">11th Grade</SelectItem>
+                    <SelectItem value="12">12th Grade</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -170,11 +167,9 @@ export default function RegisterPage() {
                 <Input
                   id="password"
                   type={showPassword ? "text" : "password"}
-                  placeholder="Create a password"
+                  placeholder="Enter your password"
                   value={formData.password}
-                  onChange={(e) =>
-                    handleInputChange("password", e.target.value)
-                  }
+                  onChange={(e) => handleInputChange("password", e.target.value)}
                   className="pl-10 pr-10 bg-input-background border-border focus:border-[#2563EB] focus:ring-[#2563EB]"
                   required
                 />

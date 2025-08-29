@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 let api;
 try {
   process.env.VITE_API_URL = "http://example.com";
-  api = (await import("../../lib/api/client.js")).default;
+  api = (await import("../../services/client.js")).default;
 } catch {
 }
 

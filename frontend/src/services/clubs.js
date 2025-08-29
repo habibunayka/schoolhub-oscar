@@ -1,5 +1,5 @@
-import api from "../client.js";
-import { endpoints } from "../endpoints.js";
+import api from "./client.js";
+import { endpoints } from "./endpoints.js";
 
 const map = Object.fromEntries(endpoints.clubs.map((e) => [e.name, e]));
 
@@ -79,6 +79,11 @@ export const setMemberStatus = async (id, userId, payload) => {
   return data;
 };
 
+export const getClub = async (id) => {
+  const { data } = await api.get(`/clubs/${id}`);
+  return data;
+};
+
 export default {
   listClubs,
   getJoinedClubs,
@@ -86,5 +91,6 @@ export default {
   createClub,
   patchClub,
   joinClub,
+  getClub,
   setMemberStatus,
 };

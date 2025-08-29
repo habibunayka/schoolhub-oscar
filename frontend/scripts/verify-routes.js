@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-const routes = fs.readFileSync('src/app/routes.jsx', 'utf8');
+const routes = fs.readFileSync('src/routes.jsx', 'utf8');
 const required = [
   '/login',
   'dashboard',

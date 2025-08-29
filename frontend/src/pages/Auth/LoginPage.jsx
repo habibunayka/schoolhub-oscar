@@ -2,7 +2,7 @@ import { Eye, EyeOff, Mail, Lock, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { login as loginService } from "@lib/api/services/authentications";
+import { useAuth } from "@hooks/useAuth.js";
 import {
   Button,
   Input,
@@ -17,6 +17,7 @@ import {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [email, setEmail] = useState("");
@@ -25,9 +26,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
 
   const mutation = useMutation({
-    mutationFn: loginService,
-    onSuccess: (data) => {
-      localStorage.setItem("token", data.token);
+    mutationFn: login,
+    onSuccess: () => {
       navigate("/dashboard");
     },
     onError: (err) => {

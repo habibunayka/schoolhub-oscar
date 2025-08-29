@@ -1,5 +1,5 @@
-import api from "../client.js";
-import { endpoints } from "../endpoints.js";
+import api from "./client.js";
+import { endpoints } from "./endpoints.js";
 
 const map = Object.fromEntries(endpoints.authentications.map((e) => [e.name, e]));
 
@@ -24,4 +24,10 @@ export const register = async (payload) => {
   return data;
 };
 
-export default { login, register };
+
+export const me = async () => {
+  const { data } = await api.get('/auth/me');
+  return data;
+};
+
+export default { login, register, me };

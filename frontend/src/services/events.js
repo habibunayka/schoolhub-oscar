@@ -1,5 +1,5 @@
-import api from "../client.js";
-import { endpoints } from "../endpoints.js";
+import api from "./client.js";
+import { endpoints } from "./endpoints.js";
 
 const map = Object.fromEntries(endpoints.events.map((e) => [e.name, e]));
 
@@ -73,6 +73,11 @@ export const checkinEvent = async (id, payload) => {
   return data;
 };
 
+export const listAllEvents = async (params = {}) => {
+  const { data } = await api.get("/events", { params });
+  return data;
+};
+
 export default {
   listEvents,
   getUpcomingEvents,
@@ -80,4 +85,5 @@ export default {
   rsvpEvent,
   reviewEvent,
   checkinEvent,
+  listAllEvents,
 };

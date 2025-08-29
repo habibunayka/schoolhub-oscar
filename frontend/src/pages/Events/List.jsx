@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Plus, Calendar, Clock, MapPin, Users, Edit, Trash2, Eye } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
-import api from "../../lib/api/client.js";
+import { listAllEvents } from "@services/events.js";
+import { me as getCurrentUser } from "@services/authentications.js";
 
 
 const FILTER_OPTIONS = [
@@ -194,16 +195,15 @@ export default function EventsPage() {
     useEffect(() => {
       async function fetchData() {
         try {
-          const [userRes, eventsRes] = await Promise.all([
-            api.get("/auth/me"),
-            api.get("/events"),
+          const [user, eventsRes] = await Promise.all([
+            getCurrentUser(),
+            listAllEvents(),
           ]);
-          const user = userRes.data;
           const role = user.role_global === 'school_admin'
             ? 'school_admin'
             : user.club_id ? 'club_admin' : 'student';
           setCurrentUser({ id: user.id, role, clubId: user.club_id });
-          const mapped = eventsRes.data.map(e => ({
+          const mapped = eventsRes.map(e => ({
             id: e.id,
             title: e.title,
             organizer: e.club_name,

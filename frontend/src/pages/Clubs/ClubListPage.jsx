@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import api from "../../lib/api/client.js";
+import { listClubs } from "@services/clubs.js";
 
 const CATEGORIES = ["Technology", "Arts", "Sports", "Academic", "Environment", "Service", "Lifestyle"];
 const SORT_OPTIONS = [
@@ -297,7 +297,7 @@ export default function ClubsPage({ className = "" }) {
   useEffect(() => {
     async function fetchClubs() {
       try {
-        const { data } = await api.get("/clubs");
+        const data = await listClubs();
         const mapped = data.map(c => ({
           id: c.id,
           name: c.name,
