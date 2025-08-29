@@ -20,7 +20,11 @@ export const login = async (email, password) => {
     );
     return data;
   } catch (err) {
-    err.userMessage = err.response?.data?.message;
+    if (err.response?.status === 401) {
+      err.userMessage = "salah password atau email";
+    } else {
+      err.userMessage = err.response?.data?.message;
+    }
     throw err;
   }
 };
