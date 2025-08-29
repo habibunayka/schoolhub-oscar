@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { listClubs } from "@services/clubs.js";
+import { getAssetUrl } from "@utils";
 
 const CATEGORIES = ["Technology", "Arts", "Sports", "Academic", "Environment", "Service", "Lifestyle"];
 const SORT_OPTIONS = [
@@ -304,7 +305,7 @@ export default function ClubsPage({ className = "" }) {
           description: c.description || "",
           category: c.category || "General",
           members: c.member_count || 0,
-          logoUrl: c.logo_url || "",
+          logoUrl: getAssetUrl(c.logo_url) || "",
           isJoined: false,
         }));
         setClubs(mapped);
