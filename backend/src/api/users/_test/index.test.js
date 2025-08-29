@@ -32,3 +32,45 @@ test("GET /users/me/stats returns data", async () => {
     server.close();
     __setDbMocks({ get: async () => null });
 });
+
+test("PATCH /users/me updates profile", async () => {
+    let runCalled = false;
+    __setDbMocks({
+        run: async (sql, params) => {
+            runCalled = true;
+            assert.match(sql, /UPDATE users SET/);
+            assert.deepEqual(params, ["New Name", "Bio", "Loc", "avatar.png", 1]);
+            return { rowCount: 1 };
+        },
+        get: async () => ({
+            id: 1,
+            name: "New Name",
+            role_global: "student",
+            avatar_url: "avatar.png",
+            bio: "Bio",
+            location: "Loc",
+            joined_at: null,
+        }),
+    });
+    const token = jwt.sign({ id: 1 }, process.env.JWT_SECRET);
+    const { server, url } = await createServer();
+    const res = await fetch(`${url}/users/me`, {
+        method: "PATCH",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            name: "New Name",
+            bio: "Bio",
+            location: "Loc",
+            avatar_url: "avatar.png",
+        }),
+    });
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.equal(body.name, "New Name");
+    assert(runCalled);
+    server.close();
+    __setDbMocks({ run: async () => ({ rowCount: 0 }), get: async () => null });
+});

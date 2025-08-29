@@ -20,6 +20,7 @@ const SearchResults = lazy(() => import('@pages/Search/ResultsPage'));
 const NotFound = lazy(() => import('@pages/NotFound'));
 const ProfilePage = lazy(() => import('@pages/Dashboard/Profile'));
 const Notification = lazy(() => import('@pages/Dashboard/Notification'));
+const EditProfilePage = lazy(() => import('@pages/Dashboard/EditProfile'));
 
 const withSuspense = (element) => (
   <Suspense fallback={<div>Loading...</div>}>{element}</Suspense>
@@ -44,6 +45,7 @@ export const router = createBrowserRouter([
       { path: 'announcements/:id/edit', element: withSuspense(<RequireAuth><AnnouncementForm /></RequireAuth>) },
       { path: 'search', element: withSuspense(<RequireAuth><SearchResults /></RequireAuth>) },
       { path: 'profile', element: withSuspense(<RequireAuth><ProfilePage /></RequireAuth>) },
+      { path: 'profile/edit', element: withSuspense(<RequireAuth><EditProfilePage /></RequireAuth>) },
       { path: 'notifications', element: withSuspense(<RequireAuth><Notification /></RequireAuth>) },
     ],
   },
