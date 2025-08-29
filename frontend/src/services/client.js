@@ -20,7 +20,8 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     const status = err?.response?.status;
-    if (status === 401) {
+    const url = err?.config?.url;
+    if (status === 401 && url !== "/auth/login") {
       globalThis.localStorage?.removeItem("token");
       if (typeof window !== "undefined") {
         window.location.assign("/login");
