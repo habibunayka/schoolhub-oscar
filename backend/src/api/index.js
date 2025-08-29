@@ -7,6 +7,8 @@ import postRoutes from "./posts/index.js";
 import announcementRoutes from "./announcements/index.js";
 import notificationRoutes from "./notifications/index.js";
 import adminRoutes from "./admin/index.js";
+import userRoutes from "./users/index.js";
+import achievementRoutes from "./achievements/index.js";
 
 const r = Router();
 
@@ -17,5 +19,7 @@ r.use(postRoutes);
 r.use(announcementRoutes);
 r.use(notificationRoutes);
 r.use(adminRoutes);
+r.use(userRoutes);
+r.use(achievementRoutes);
 
 export default r;
