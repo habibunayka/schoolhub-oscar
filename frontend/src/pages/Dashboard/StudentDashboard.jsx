@@ -223,11 +223,6 @@ export default function StudentDashboard() {
                             alt={club.name}
                             className="w-10 h-10 rounded-lg object-cover"
                           />
-                          {club.unreadCount && (
-                            <span className="absolute -top-1 -right-1 bg-[#2563EB] text-white text-xs rounded-full size-5 flex items-center justify-center">
-                              {club.unreadCount}
-                            </span>
-                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium truncate">{club.name}</p>
