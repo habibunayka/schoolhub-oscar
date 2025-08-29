@@ -112,6 +112,7 @@ export default function ClubProfilePage() {
     },
   ];
 
+  {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
   const members = [
     {
       id: "1",
