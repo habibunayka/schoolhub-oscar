@@ -43,7 +43,7 @@ export const register = async (req, res) => {
 
 export const me = async (req, res) => {
     const user = await get(
-        `SELECT id, name, role_global FROM users WHERE id = $1`,
+        `SELECT id, name, role_global, avatar_url, bio, location, joined_at FROM users WHERE id = $1`,
         [req.user.id]
     );
     const club = await get(
@@ -54,6 +54,10 @@ export const me = async (req, res) => {
         id: user.id,
         name: user.name,
         role_global: user.role_global,
+        avatar_url: user.avatar_url,
+        bio: user.bio,
+        location: user.location,
+        joined_at: user.joined_at,
         club_id: club?.club_id || null,
     });
 };
