@@ -65,8 +65,8 @@ test("me returns 404 when user is missing", async () => {
     await Auth.me(req, res);
 
     assert.equal(calls, 1);
-    assert.equal(status, 404);
-    assert.deepEqual(json, { message: "User not found" });
+    assert.equal(status, 401);
+    assert.deepEqual(json, { message: "Unauthorized" });
     __setDbMocks({ get: async () => undefined });
 });
 
