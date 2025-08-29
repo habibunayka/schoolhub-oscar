@@ -42,18 +42,32 @@ export const register = async (req, res) => {
 };
 
 export const me = async (req, res) => {
+    if (!req.user?.id) {
+        return res.status(401).json({ message: "Unauthorized" });
+    }
+
     const user = await get(
-        `SELECT id, name, role_global FROM users WHERE id = $1`,
+        `SELECT id, name, role_global, avatar_url, bio, location, joined_at FROM users WHERE id = $1`,
         [req.user.id]
     );
+
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
     const club = await get(
         `SELECT club_id FROM club_members WHERE user_id = $1 AND role IN ('owner','admin') LIMIT 1`,
         [req.user.id]
     );
+
     res.json({
         id: user.id,
         name: user.name,
         role_global: user.role_global,
+        avatar_url: user.avatar_url,
+        bio: user.bio,
+        location: user.location,
+        joined_at: user.joined_at,
         club_id: club?.club_id || null,
     });
 };
