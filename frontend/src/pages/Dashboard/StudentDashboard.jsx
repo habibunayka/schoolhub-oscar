@@ -35,6 +35,7 @@ import {
 } from "@services/clubs.js";
 import { getFeedPosts } from "@services/posts.js";
 import { getUpcomingEvents } from "@services/events.js";
+import { getUserStats } from "@services/users.js";
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
@@ -53,6 +54,8 @@ export default function StudentDashboard() {
   const [clubRecommendations, setClubRecommendations] = useState([]);
   const [loadingRecom, setLoadingRecom] = useState(true);
   const [errRecom, setErrRecom] = useState(null);
+  const [activityPoints, setActivityPoints] = useState(0);
+  const [achievementsCount, setAchievementsCount] = useState(0);
 
   const normalizeClub = (c) => ({
     id: String(c.id),
@@ -107,6 +110,9 @@ export default function StudentDashboard() {
       try {
         const raw = await getJoinedClubs();
         setJoinedClubs(Array.isArray(raw) ? raw.map(normalizeClub) : []);
+        const stats = await getUserStats();
+        setActivityPoints(stats?.activity_points ?? 0);
+        setAchievementsCount(stats?.achievements_count ?? 0);
       } catch (e) {
         setErrClubs(e?.response?.data?.message || e.message);
       } finally {
@@ -380,16 +386,18 @@ export default function StudentDashboard() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-[#F97316]">156</p>
+                    <p className="text-2xl font-bold text-[#F97316]">
+                      {activityPoints}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                       {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
                       Activity Points
                     </p>
                   </div>
                   <div>
-                    <p className="text-2xl font-bold text-[#EAB308]">4</p>
+                    <p className="text-2xl font-bold text-[#EAB308]">
+                      {achievementsCount}
+                    </p>
                     <p className="text-xs text-muted-foreground">
-                       {/* TODO : Ubah data ini jadi fetch data asli dari backend, jika di backend belum ada, buatkan. */}
                       Achievements
                     </p>
                   </div>
