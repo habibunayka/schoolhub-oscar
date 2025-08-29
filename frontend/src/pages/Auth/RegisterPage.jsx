@@ -10,7 +10,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
-import { register as registerService } from "@services/authentications.js";
+import { register as registerService } from "@services/auth.js";
 import { useAuth } from "@hooks/useAuth.js";
 import {
   Button,
