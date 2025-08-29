@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import posts from '@services/posts.js';
+import SafeImage from '@components/SafeImage';
 
 export default function PostDetailPage() {
   const { id } = useParams();
@@ -20,7 +21,7 @@ export default function PostDetailPage() {
       {data.images?.length ? (
         <div className="grid grid-cols-2 gap-2">
           {data.images.map((img) => (
-            <img key={img} src={img} alt="" className="rounded" />
+            <SafeImage key={img} src={img} alt="Post image" className="rounded" />
           ))}
         </div>
       ) : null}
