@@ -5,5 +5,4 @@ export * from './Carousel.jsx';
 export * from './Chart.jsx';
 export * from './ClubCard.jsx';
 export * from './EventCard.jsx';
-export * from './ImageWithFallback.jsx';
 export * from './Table.jsx';
