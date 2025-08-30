@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getClub, joinClub, leaveClub, listMembers, listJoinRequests, setMemberStatus } from "@services/clubs.js";
 import { listPosts, likePost, unlikePost } from "@services/posts.js";
-import { listEvents } from "@services/events.js";
+import { listEvents, rsvpEvent } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
 import { getAssetUrl } from "@utils";
 import {
@@ -38,6 +38,7 @@ import {
   CarouselPrevious,
   EventCard,
 } from "@components/common/ui";
+import EventCard from "@components/events/EventCard.jsx";
 import useConfirm from "@hooks/useConfirm.jsx";
 
 import SafeImage from "@components/SafeImage";
@@ -132,15 +133,18 @@ export default function ClubProfilePage() {
           return {
             id: e.id,
             title: e.title,
+            organizer: e.club_name,
+            organizerId: e.club_id,
+            startAt: e.start_at,
             date: start.toLocaleDateString("id-ID"),
-            time: start.toLocaleTimeString("id-ID", {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
+            time: start.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
             location: e.location,
-            image: getAssetUrl(e.image_url) || "",
-            attendeeCount: Number(e.participant_count) || 0,
-            isRSVPed: e.rsvp_status === "going",
+            description: e.description,
+            imageUrl: getAssetUrl(e.image_url) || "",
+            maxParticipants: e.capacity,
+            currentParticipants: Number(e.participant_count) || 0,
+            isJoined: e.rsvp_status === "going",
+            status: new Date(e.end_at) < new Date() ? "past" : "upcoming",
           };
         })
       );
@@ -258,6 +262,31 @@ export default function ClubProfilePage() {
       console.error(e);
       toast.error('Failed to update request');
     }
+  };
+
+  const handleEventJoinToggle = async (eventId, isJoined) => {
+    try {
+      const { participant_count, rsvp_status } = await rsvpEvent(eventId, {
+        status: isJoined ? "declined" : "going",
+      });
+      setUpcomingEvents((prev) =>
+        prev.map((e) =>
+          e.id === eventId
+            ? {
+                ...e,
+                isJoined: rsvp_status === "going",
+                currentParticipants: Number(participant_count) || e.currentParticipants,
+              }
+            : e
+        )
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleViewEventDetails = (eventId) => {
+    navigate(`/events/${eventId}`);
   };
 
   const handleCreateEvent = () => {
@@ -572,14 +601,10 @@ export default function ClubProfilePage() {
               {upcomingEvents.map((event) => (
                 <EventCard
                   key={event.id}
-                  title={event.title}
-                  clubName={clubData.name}
-                  date={event.date}
-                  time={event.time}
-                  location={event.location}
-                  image={event.image}
-                  attendeeCount={event.attendeeCount}
-                  isRSVPed={event.isRSVPed}
+                  event={event}
+                  currentUser={currentUser}
+                  onJoinToggle={handleEventJoinToggle}
+                  onViewDetails={handleViewEventDetails}
                 />
               ))}
             </div>
