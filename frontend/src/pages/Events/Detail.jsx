@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getEvent, rsvpEvent } from "@services/events.js";
+import { getEvent, rsvpEvent, updateEvent as apiUpdateEvent, deleteEvent as apiDeleteEvent } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
 import {
@@ -48,6 +48,9 @@ export default function EventDetailPage() {
   const participantCount = Number(data.participant_count) || 0;
   const isFull =
     data.capacity != null && participantCount >= data.capacity;
+  const canEdit =
+    role === "school_admin" || (role === "club_admin" && data.club_id === user?.club_id);
+  const canDelete = role === "school_admin";
 
   const handleJoinToggle = async () => {
     const updated = await rsvpEvent(id, { status: isJoined ? "declined" : "going" });
@@ -56,6 +59,24 @@ export default function EventDetailPage() {
       participant_count: updated.participant_count,
       rsvp_status: updated.rsvp_status,
     }));
+  };
+
+  const handleEdit = async () => {
+    const newTitle = prompt("Edit title", data.title);
+    if (newTitle && newTitle !== data.title) {
+      await apiUpdateEvent(id, { title: newTitle });
+      queryClient.setQueryData(["event", id], (old) => ({
+        ...old,
+        title: newTitle,
+      }));
+    }
+  };
+
+  const handleDelete = async () => {
+    if (window.confirm("Are you sure you want to delete this event?")) {
+      await apiDeleteEvent(id);
+      window.location.href = "/events";
+    }
   };
 
   const formatDate = (iso) => {
@@ -122,51 +143,69 @@ export default function EventDetailPage() {
           )}
         </div>
 
-        {canJoin && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <button
-                disabled={isFull && !isJoined}
-                className={`w-full px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
-                  isJoined
-                    ? "bg-red-600 text-white hover:bg-red-700"
-                    : isFull
-                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                    : "bg-blue-600 text-white hover:bg-blue-700"
-                }`}
-              >
-                {isJoined ? "Cancel RSVP" : isFull ? "Full" : "RSVP"}
-              </button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  {isJoined ? "Cancel RSVP?" : "RSVP to event?"}
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  {isJoined
-                    ? "Are you sure you want to cancel your RSVP?"
-                    : "Confirm your attendance by RSVP."}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                {!isFull && (
-                  <AlertDialogAction
-                    onClick={handleJoinToggle}
-                    className={
-                      isJoined
-                        ? "bg-red-600 text-white hover:bg-red-700"
-                        : "bg-blue-600 text-white hover:bg-blue-700"
-                    }
-                  >
-                    {isJoined ? "Cancel RSVP" : "RSVP"}
-                  </AlertDialogAction>
-                )}
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
+        <div className="flex gap-2">
+          {canJoin && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <button
+                  disabled={isFull && !isJoined}
+                  className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-colors ${
+                    isJoined
+                      ? "bg-red-600 text-white hover:bg-red-700"
+                      : isFull
+                      ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                      : "bg-blue-600 text-white hover:bg-blue-700"
+                  }`}
+                >
+                  {isJoined ? "Cancel RSVP" : isFull ? "Full" : "RSVP"}
+                </button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>
+                    {isJoined ? "Cancel RSVP?" : "RSVP to event?"}
+                  </AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {isJoined
+                      ? "Are you sure you want to cancel your RSVP?"
+                      : "Confirm your attendance by RSVP."}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  {!isFull && (
+                    <AlertDialogAction
+                      onClick={handleJoinToggle}
+                      className={
+                        isJoined
+                          ? "bg-red-600 text-white hover:bg-red-700"
+                          : "bg-blue-600 text-white hover:bg-blue-700"
+                      }
+                    >
+                      {isJoined ? "Cancel RSVP" : "RSVP"}
+                    </AlertDialogAction>
+                  )}
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+          {canEdit && (
+            <button
+              onClick={handleEdit}
+              className="px-4 py-2 rounded-lg font-medium text-sm border border-blue-300 text-blue-700 hover:bg-blue-50"
+            >
+              Edit
+            </button>
+          )}
+          {canDelete && (
+            <button
+              onClick={handleDelete}
+              className="px-4 py-2 rounded-lg font-medium text-sm border border-red-300 text-red-700 hover:bg-red-50"
+            >
+              Delete
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
