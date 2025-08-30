@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Calendar, Clock, MapPin, Users, Edit, Trash2, Eye } from 'lucide-react';
-import { listAllEvents, rsvpEvent, getEvent } from "@services/events.js";
+import { listAllEvents, rsvpEvent } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
 import {
   AlertDialog,
@@ -251,6 +251,7 @@ export default function EventsPage() {
             time: e.start_at.slice(11,16),
             location: e.location,
             description: e.description,
+            imageUrl: e.image_url,
             maxParticipants: e.capacity,
             currentParticipants: Number(e.participant_count) || 0,
             isJoined: e.rsvp_status === 'going',
@@ -314,10 +315,9 @@ export default function EventsPage() {
 
   const handleJoinToggle = async (eventId, isJoined) => {
     try {
-      await rsvpEvent(eventId, {
+      const updated = await rsvpEvent(eventId, {
         status: isJoined ? 'declined' : 'going',
       });
-      const updated = await getEvent(eventId);
       setEvents(prev =>
         prev.map(event =>
           event.id === eventId

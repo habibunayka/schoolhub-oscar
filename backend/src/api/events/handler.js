@@ -63,9 +63,10 @@ export const createEvent = async (req, res) => {
         capacity = null,
         require_rsvp = true,
         visibility = "public",
+        image_url = null,
     } = req.body;
     const { rows } = await run(
-        `INSERT INTO events(club_id, title, description, location, start_at, end_at, capacity, require_rsvp, visibility) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING id`,
+        `INSERT INTO events(club_id, title, description, location, start_at, end_at, capacity, require_rsvp, visibility, image_url) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING id`,
         [
             clubId,
             title,
@@ -76,6 +77,7 @@ export const createEvent = async (req, res) => {
             capacity,
             require_rsvp,
             visibility,
+            image_url,
         ]
     );
     const eventId = rows[0].id;
@@ -117,7 +119,16 @@ export const rsvpEvent = async (req, res) => {
             [status, eventId, req.user.id]
         );
     }
-    res.json({ ok: true });
+    const row = await get(
+        `SELECT COUNT(r.id) AS participant_count, rsvp.status AS rsvp_status
+         FROM events e
+         LEFT JOIN event_rsvps r ON r.event_id = e.id AND r.status = 'going'
+         LEFT JOIN event_rsvps rsvp ON rsvp.event_id = e.id AND rsvp.user_id = $2
+         WHERE e.id = $1
+         GROUP BY rsvp.status`,
+        [eventId, req.user.id]
+    );
+    res.json(row);
 };
 
 export const reviewEvent = async (req, res) => {

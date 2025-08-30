@@ -96,12 +96,18 @@ export const validateCreateEvent = [
         .isBoolean()
         .withMessage("Require RSVP must be a boolean value"),
 
-    body("visibility")
-        .optional()
-        .isIn(["public", "private", "members_only"])
-        .withMessage(
-            "Visibility must be one of: public, private, members_only"
-        ),
+      body("visibility")
+          .optional()
+          .isIn(["public", "private", "members_only"])
+          .withMessage(
+              "Visibility must be one of: public, private, members_only"
+          ),
+
+      body("image_url")
+          .optional()
+          .isString()
+          .isLength({ max: 1000 })
+          .withMessage("Image URL must be a string"),
 
     checkValidationResult,
 ];
