@@ -21,31 +21,11 @@ export const up = (pgm) => {
         },
     });
 
-    pgm.createTable("event_rsvps", {
-        id: "id",
-        event_id: {
-            type: "integer",
-            notNull: true,
-            references: "events",
-            onDelete: "cascade",
-        },
-        user_id: {
-            type: "integer",
-            notNull: true,
-            references: "users",
-            onDelete: "cascade",
-        },
-        status: {
-            type: "text",
-            notNull: true,
-            check: "status IN ('going','interested','declined')",
-        },
-        checked_in_at: "timestamp",
-        checkin_code: "text",
+    pgm.createIndex("events", ["club_id", "start_at"], {
+        name: "idx_events_club_id_start_at",
     });
 };
 
 export const down = (pgm) => {
-    pgm.dropTable("event_rsvps");
     pgm.dropTable("events");
 };
