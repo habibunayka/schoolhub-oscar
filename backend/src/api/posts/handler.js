@@ -4,19 +4,24 @@ import { sendNotification } from "../../services/notifications.js";
 
 export const listPosts = async (req, res) => {
     const clubId = Number(req.params.id);
+    const userId = req.user?.id || 0;
     const rows = await query(
-        `SELECT p.*,
-                COALESCE(
-                    json_agg(pa.file_url) FILTER (WHERE pa.id IS NOT NULL),
-                    '[]'
-                ) AS images
+        `SELECT p.id, p.club_id, p.author_id, p.body_html, p.visibility, p.status, p.created_at, p.pinned,
+                c.name AS club_name, c.logo_url AS club_image,
+                u.name AS author_name, u.avatar_url AS author_avatar,
+                COALESCE(json_agg(pa.file_url) FILTER (WHERE pa.id IS NOT NULL), '[]') AS images,
+                COUNT(pl.id) AS likes_count,
+                COALESCE(BOOL_OR(pl.user_id = $2), false) AS liked
          FROM posts p
+         JOIN clubs c ON c.id = p.club_id
+         LEFT JOIN users u ON u.id = p.author_id
          LEFT JOIN post_attachments pa ON pa.post_id = p.id
+         LEFT JOIN post_likes pl ON pl.post_id = p.id
          WHERE p.club_id = $1
-         GROUP BY p.id
+         GROUP BY p.id, c.name, c.logo_url, u.name, u.avatar_url
          ORDER BY p.created_at DESC
          LIMIT 50`,
-        [clubId]
+        [clubId, userId]
     );
     res.json(rows);
 };
@@ -24,18 +29,23 @@ export const listPosts = async (req, res) => {
 export const getPostById = async (req, res) => {
     const clubId = Number(req.params.id);
     const postId = Number(req.params.postId);
+    const userId = req.user?.id || 0;
     const row = await query(
-        `SELECT p.*,
-                COALESCE(
-                    json_agg(pa.file_url) FILTER (WHERE pa.id IS NOT NULL),
-                    '[]'
-                ) AS images
+        `SELECT p.id, p.club_id, p.author_id, p.body_html, p.visibility, p.status, p.created_at, p.pinned,
+                c.name AS club_name, c.logo_url AS club_image,
+                u.name AS author_name, u.avatar_url AS author_avatar,
+                COALESCE(json_agg(pa.file_url) FILTER (WHERE pa.id IS NOT NULL), '[]') AS images,
+                COUNT(pl.id) AS likes_count,
+                COALESCE(BOOL_OR(pl.user_id = $3), false) AS liked
          FROM posts p
+         JOIN clubs c ON c.id = p.club_id
+         LEFT JOIN users u ON u.id = p.author_id
          LEFT JOIN post_attachments pa ON pa.post_id = p.id
+         LEFT JOIN post_likes pl ON pl.post_id = p.id
          WHERE p.club_id = $1 AND p.id = $2
-         GROUP BY p.id
+         GROUP BY p.id, c.name, c.logo_url, u.name, u.avatar_url
          LIMIT 1`,
-        [clubId, postId]
+        [clubId, postId, userId]
     );
     if (!row || row.length === 0) {
         return res.status(404).json({ message: "Post not found" });
@@ -45,14 +55,23 @@ export const getPostById = async (req, res) => {
 
 export const getPost = async (req, res) => {
     const id = Number(req.params.id);
+    const userId = req.user?.id || 0;
     const row = await query(
-        `SELECT p.*, COALESCE(json_agg(pa.file_url) FILTER (WHERE pa.id IS NOT NULL),'[]') AS images
+        `SELECT p.id, p.club_id, p.author_id, p.body_html, p.visibility, p.status, p.created_at, p.pinned,
+                c.name AS club_name, c.logo_url AS club_image,
+                u.name AS author_name, u.avatar_url AS author_avatar,
+                COALESCE(json_agg(pa.file_url) FILTER (WHERE pa.id IS NOT NULL), '[]') AS images,
+                COUNT(pl.id) AS likes_count,
+                COALESCE(BOOL_OR(pl.user_id = $2), false) AS liked
          FROM posts p
+         JOIN clubs c ON c.id = p.club_id
+         LEFT JOIN users u ON u.id = p.author_id
          LEFT JOIN post_attachments pa ON pa.post_id = p.id
+         LEFT JOIN post_likes pl ON pl.post_id = p.id
          WHERE p.id = $1
-         GROUP BY p.id
+         GROUP BY p.id, c.name, c.logo_url, u.name, u.avatar_url
          LIMIT 1`,
-        [id]
+        [id, userId]
     );
     if (!row || row.length === 0) {
         return res.status(404).json({ message: "Post not found" });

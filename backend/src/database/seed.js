@@ -5,6 +5,7 @@ const seed = async () => {
     await run(`TRUNCATE TABLE
         event_reviews,
         notifications,
+        post_likes,
         announcements,
         event_rsvps,
         events,
@@ -12,6 +13,7 @@ const seed = async () => {
         posts,
         club_members,
         clubs,
+        club_categories,
         users
         RESTART IDENTITY CASCADE`);
 
@@ -30,18 +32,28 @@ const seed = async () => {
         ["Bob", "bob@example.com", passwordHash, "/uploads/avatar-bob.png"]
     );
 
+    const [{ id: catSportsId }] = await query(
+        "INSERT INTO club_categories (name) VALUES ($1) RETURNING id",
+        ["Sports"]
+    );
+    const [{ id: catArtsId }] = await query(
+        "INSERT INTO club_categories (name) VALUES ($1) RETURNING id",
+        ["Arts"]
+    );
+
     const [{ id: club1Id }] = await query(
-        "INSERT INTO clubs (name, slug, description, logo_url) VALUES ($1,$2,$3,$4) RETURNING id",
+        "INSERT INTO clubs (name, slug, description, logo_url, category_id) VALUES ($1,$2,$3,$4,$5) RETURNING id",
         [
             "Chess Club",
             "chess-club",
             "All about chess",
             "/uploads/logo-chess.png",
+            catSportsId,
         ]
     );
     const [{ id: club2Id }] = await query(
-        "INSERT INTO clubs (name, slug, description, logo_url) VALUES ($1,$2,$3,$4) RETURNING id",
-        ["Music Club", "music-club", "We love music", "/uploads/logo-music.png"]
+        "INSERT INTO clubs (name, slug, description, logo_url, category_id) VALUES ($1,$2,$3,$4,$5) RETURNING id",
+        ["Music Club", "music-club", "We love music", "/uploads/logo-music.png", catArtsId]
     );
 
     await run(
@@ -61,7 +73,7 @@ const seed = async () => {
         "INSERT INTO posts (club_id, author_id, body_html) VALUES ($1,$2,$3) RETURNING id",
         [club1Id, user1Id, "<p>Welcome to our club!</p>"]
     );
-    await query(
+    const [{ id: post2Id }] = await query(
         "INSERT INTO posts (club_id, author_id, body_html) VALUES ($1,$2,$3) RETURNING id",
         [club2Id, user2Id, "<p>Music is life.</p>"]
     );
@@ -69,6 +81,15 @@ const seed = async () => {
     await run(
         "INSERT INTO post_attachments (post_id, file_url) VALUES ($1,$2)",
         [post1Id, "/uploads/post-welcome.png"]
+    );
+
+    await run(
+        "INSERT INTO post_likes (post_id, user_id) VALUES ($1,$2)",
+        [post1Id, user2Id]
+    );
+    await run(
+        "INSERT INTO post_likes (post_id, user_id) VALUES ($1,$2)",
+        [post2Id, user1Id]
     );
 
     const now = new Date();

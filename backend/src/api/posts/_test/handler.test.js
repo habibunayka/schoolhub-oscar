@@ -8,17 +8,17 @@ test("listPosts fetches posts for club", async () => {
     __setDbMocks({
         query: async (sql, p) => {
             params = p;
-            return [{ id: 1, images: "[]" }];
+            return [{ id: 1, images: "[]", likes_count: 0, liked: false }];
         },
     });
-    const req = { params: { id: "2" } };
+    const req = { params: { id: "2" }, user: { id: 42 } };
     let json;
     const res = { json: (d) => (json = d) };
 
     await Posts.listPosts(req, res);
 
-    assert.deepEqual(json, [{ id: 1, images: "[]" }]);
-    assert.deepEqual(params, [2]);
+    assert.deepEqual(json, [{ id: 1, images: "[]", likes_count: 0, liked: false }]);
+    assert.deepEqual(params, [2, 42]);
     __setDbMocks({ query: async () => [] });
 });
 
