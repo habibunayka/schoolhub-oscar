@@ -35,18 +35,23 @@ test("GET /users/me/stats returns data", async () => {
 
 test("PATCH /users/me updates profile", async () => {
     let runCalled = false;
+    let avatarUrl;
     __setDbMocks({
         run: async (sql, params) => {
             runCalled = true;
+            avatarUrl = params[3];
             assert.match(sql, /UPDATE users SET/);
-            assert.deepEqual(params, ["New Name", "Bio", "Loc", "avatar.png", 1]);
+            assert.equal(params[0], "New Name");
+            assert.equal(params[1], "Bio");
+            assert.equal(params[2], "Loc");
+            assert.match(avatarUrl, /^\/uploads\//);
             return { rowCount: 1 };
         },
         get: async () => ({
             id: 1,
             name: "New Name",
             role_global: "student",
-            avatar_url: "avatar.png",
+            avatar_url: avatarUrl,
             bio: "Bio",
             location: "Loc",
             joined_at: null,
@@ -54,22 +59,20 @@ test("PATCH /users/me updates profile", async () => {
     });
     const token = jwt.sign({ id: 1 }, process.env.JWT_SECRET);
     const { server, url } = await createServer();
+    const form = new FormData();
+    form.append("name", "New Name");
+    form.append("bio", "Bio");
+    form.append("location", "Loc");
+    form.append("avatar", new Blob(["dummy"], { type: "image/png" }), "avatar.png");
     const res = await fetch(`${url}/users/me`, {
         method: "PATCH",
-        headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-            name: "New Name",
-            bio: "Bio",
-            location: "Loc",
-            avatar_url: "avatar.png",
-        }),
+        headers: { Authorization: `Bearer ${token}` },
+        body: form,
     });
     assert.equal(res.status, 200);
     const body = await res.json();
     assert.equal(body.name, "New Name");
+    assert(body.avatar_url.startsWith("/uploads/"));
     assert(runCalled);
     server.close();
     __setDbMocks({ run: async () => ({ rowCount: 0 }), get: async () => null });
