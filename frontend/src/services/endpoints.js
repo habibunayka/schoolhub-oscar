@@ -159,7 +159,8 @@ export const endpoints = {
           "query": [
             "search",
             "tag",
-            "day"
+            "day",
+            "membership"
           ]
         }
       ],
@@ -223,6 +224,21 @@ export const endpoints = {
     {
       "name": "joinClub",
       "method": "POST",
+      "path": "/clubs/:id/join",
+      "validators": [
+        {
+          "body": [],
+          "params": [
+            "id"
+          ],
+          "query": []
+        }
+      ],
+      "auth": true
+    },
+    {
+      "name": "leaveClub",
+      "method": "DELETE",
       "path": "/clubs/:id/join",
       "validators": [
         {
@@ -466,6 +482,60 @@ export const endpoints = {
           "params": [
             "id"
           ],
+          "query": []
+        }
+      ],
+      "auth": true
+    }
+  ],
+  "clubCategories": [
+    {
+      "name": "listCategories",
+      "method": "GET",
+      "path": "/club-categories",
+      "validators": [
+        {
+          "body": [],
+          "params": [],
+          "query": ["withClubs"]
+        }
+      ],
+      "auth": true
+    },
+    {
+      "name": "createCategory",
+      "method": "POST",
+      "path": "/club-categories",
+      "validators": [
+        {
+          "body": ["name"],
+          "params": [],
+          "query": []
+        }
+      ],
+      "auth": true
+    },
+    {
+      "name": "patchCategory",
+      "method": "PATCH",
+      "path": "/club-categories/:id",
+      "validators": [
+        {
+          "body": ["name"],
+          "params": ["id"],
+          "query": []
+        }
+      ],
+      "auth": true
+    },
+    {
+      "name": "deleteCategory",
+      "method": "DELETE",
+      "path": "/club-categories/:id",
+      "validators": [
+        {
+          "body": [],
+          "params": ["id"],
           "query": []
         }
       ],

@@ -2,15 +2,40 @@ import { get, query, run, tx } from "../../database/db.js";
 import { cleanHTML } from "../../services/sanitize.js";
 
 export const listClubs = async (req, res) => {
-    const { search = "", tag, day } = req.query; // tag/day future index
+    const { search = "", membership } = req.query;
+    const userId = req.user?.id;
+
+    let membershipFilter = "";
+    if (membership === "joined") {
+        membershipFilter = userId
+            ? "AND EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = c.id AND cm.user_id = $2 AND cm.status = 'approved')"
+            : "AND FALSE";
+    } else if (membership === "recommended") {
+        membershipFilter = userId
+            ? "AND NOT EXISTS (SELECT 1 FROM club_members cm WHERE cm.club_id = c.id AND cm.user_id = $2 AND cm.status = 'approved')"
+            : "";
+    }
+
+    const params = [`%${search}%`];
+    let userJoin = "", groupExtra = "", isMemberSelect = ", false AS is_member";
+    if (userId) {
+        params.push(userId);
+        userJoin =
+            "LEFT JOIN club_members me ON c.id = me.club_id AND me.user_id = $2 AND me.status = 'approved'";
+        isMemberSelect = ", CASE WHEN me.id IS NULL THEN false ELSE true END AS is_member";
+        groupExtra = ", me.id";
+    }
+
     const rows = await query(
-        `SELECT c.*, COUNT(m.id) AS member_count
+        `SELECT c.*, cat.name AS category_name, COUNT(m.id) AS member_count${isMemberSelect}
          FROM clubs c
+         LEFT JOIN club_categories cat ON c.category_id = cat.id
          LEFT JOIN club_members m ON c.id = m.club_id AND m.status = 'approved'
-         WHERE c.is_active = true AND c.name ILIKE $1
-         GROUP BY c.id
+         ${userJoin}
+         WHERE c.is_active = true AND c.name ILIKE $1 ${membershipFilter}
+         GROUP BY c.id, cat.name${groupExtra}
          ORDER BY c.name`,
-        [`%${search}%`]
+        params
     );
     res.json(rows);
 };
@@ -43,11 +68,11 @@ export const listMembers = async (req, res) => {
 };
 
 export const createClub = async (req, res) => {
-    const { name, slug, description, advisor_name } = req.body;
+    const { name, slug, description, advisor_name, category_id } = req.body;
     const id = await tx(async ({ run }) => {
         const { rows } = await run(
-            `INSERT INTO clubs(name, slug, description, advisor_name) VALUES ($1,$2,$3,$4) RETURNING id`,
-            [name, slug, cleanHTML(description || ""), advisor_name]
+            `INSERT INTO clubs(name, slug, description, advisor_name, category_id) VALUES ($1,$2,$3,$4,$5) RETURNING id`,
+            [name, slug, cleanHTML(description || ""), advisor_name, category_id]
         );
         const clubId = rows[0].id;
         await run(
@@ -65,7 +90,7 @@ export const patchClub = async (req, res) => {
     if (!club) return res.status(404).json({ message: "Not found" });
     const payload = req.body;
     await run(
-        `UPDATE clubs SET name = COALESCE($1,name), slug = COALESCE($2,slug), description = COALESCE($3,description), logo_url = COALESCE($4,logo_url), banner_url = COALESCE($5,banner_url), advisor_name = COALESCE($6,advisor_name) WHERE id = $7`,
+        `UPDATE clubs SET name = COALESCE($1,name), slug = COALESCE($2,slug), description = COALESCE($3,description), logo_url = COALESCE($4,logo_url), banner_url = COALESCE($5,banner_url), advisor_name = COALESCE($6,advisor_name), category_id = COALESCE($7,category_id) WHERE id = $8`,
         [
             payload.name,
             payload.slug,
@@ -73,6 +98,7 @@ export const patchClub = async (req, res) => {
             payload.logo_url,
             payload.banner_url,
             payload.advisor_name,
+            payload.category_id,
             id,
         ]
     );
@@ -90,6 +116,17 @@ export const joinClub = async (req, res) => {
         return res.status(409).json({ message: "Already requested or member" });
     }
     res.status(201).json({ status: "pending" });
+};
+
+export const leaveClub = async (req, res) => {
+    const id = Number(req.params.id);
+    const result = await run(
+        `DELETE FROM club_members WHERE club_id = $1 AND user_id = $2`,
+        [id, req.user.id]
+    );
+    if (result.rowCount === 0)
+        return res.status(404).json({ message: "Not a member" });
+    res.json({ left: true });
 };
 
 export const setMemberStatus = async (req, res) => {

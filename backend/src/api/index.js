@@ -9,6 +9,7 @@ import notificationRoutes from "./notifications/index.js";
 import adminRoutes from "./admin/index.js";
 import userRoutes from "./users/index.js";
 import achievementRoutes from "./achievements/index.js";
+import clubCategoryRoutes from "./clubCategories/index.js";
 
 const r = Router();
 
@@ -21,5 +22,6 @@ r.use(notificationRoutes);
 r.use(adminRoutes);
 r.use(userRoutes);
 r.use(achievementRoutes);
+r.use("/club-categories", clubCategoryRoutes);
 
 export default r;

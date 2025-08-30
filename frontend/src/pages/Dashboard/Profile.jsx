@@ -140,7 +140,6 @@ export default function ProfilePage() {
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">My Clubs</h3>
                     <div className="space-y-3">
 
-                        {/* TODO : Buat ini itu benar-benar club yang dia udah join, bukan semua club. Buat endpoint nya kalau diperlukan. */}
                         {Array.isArray(clubs) &&
                             clubs.map((club) => (
                                 <div
@@ -165,7 +164,7 @@ export default function ProfilePage() {
                                             {club.name}
                                         </div>
                                         <div className="text-sm text-gray-500">
-                                            {club.category || club.role || "Member"}
+                                            {club.category_name || club.role || "Member"}
                                         </div>
                                     </div>
                                 </div>
