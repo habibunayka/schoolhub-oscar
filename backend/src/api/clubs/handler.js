@@ -132,14 +132,22 @@ export const patchClub = async (req, res) => {
 
 export const joinClub = async (req, res) => {
     const id = Number(req.params.id);
-    try {
-        await run(
-            `INSERT INTO club_members(club_id, user_id, role, status) VALUES ($1,$2,'member','pending')`,
+    const result = await run(
+        `INSERT INTO club_members(club_id, user_id, role, status)
+         VALUES ($1,$2,'member','pending')
+         ON CONFLICT (club_id, user_id) DO NOTHING
+         RETURNING status`,
+        [id, req.user.id]
+    );
+
+    if (result.rowCount === 0) {
+        const row = await get(
+            `SELECT status FROM club_members WHERE club_id = $1 AND user_id = $2`,
             [id, req.user.id]
         );
-    } catch {
-        return res.status(409).json({ message: "Already requested or member" });
+        return res.status(200).json({ status: row?.status });
     }
+
     res.status(201).json({ status: "pending" });
 };
 

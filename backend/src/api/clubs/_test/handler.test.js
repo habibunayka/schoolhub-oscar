@@ -78,3 +78,43 @@ test("listMembers queries by club id", async () => {
     assert.deepEqual(params, [7]);
     __setDbMocks({ query: async () => [] });
 });
+
+test("joinClub inserts membership", async () => {
+    __setDbMocks({
+        run: async () => ({ rowCount: 1, rows: [{ status: "pending" }] }),
+    });
+    const req = { params: { id: "3" }, user: { id: 2 } };
+    let status, json;
+    const res = {
+        status: (c) => ((status = c), res),
+        json: (d) => (json = d),
+    };
+
+    await Clubs.joinClub(req, res);
+
+    assert.equal(status, 201);
+    assert.deepEqual(json, { status: "pending" });
+    __setDbMocks({ run: async () => ({ rowCount: 0, rows: [] }) });
+});
+
+test("joinClub returns existing status if already joined", async () => {
+    __setDbMocks({
+        run: async () => ({ rowCount: 0, rows: [] }),
+        get: async () => ({ status: "approved" }),
+    });
+    const req = { params: { id: "3" }, user: { id: 2 } };
+    let status, json;
+    const res = {
+        status: (c) => ((status = c), res),
+        json: (d) => (json = d),
+    };
+
+    await Clubs.joinClub(req, res);
+
+    assert.equal(status, 200);
+    assert.deepEqual(json, { status: "approved" });
+    __setDbMocks({
+        run: async () => ({ rowCount: 0, rows: [] }),
+        get: async () => undefined,
+    });
+});
