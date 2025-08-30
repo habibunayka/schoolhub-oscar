@@ -4,6 +4,7 @@ import { listAllEvents, rsvpEvent, updateEvent as apiUpdateEvent, deleteEvent as
 import { me as getCurrentUser } from "@services/auth.js";
 import EventCard from "@components/events/EventCard.jsx";
 import useConfirm from "@hooks/useConfirm.jsx";
+import { getAssetUrl } from "@utils";
 
 
 const FILTER_OPTIONS = [
@@ -78,7 +79,7 @@ export default function EventsPage() {
             startAt: e.start_at,
             location: e.location,
             description: e.description,
-            imageUrl: e.image_url,
+            imageUrl: getAssetUrl(e.image_url) || "",
             maxParticipants: e.capacity,
             currentParticipants: Number(e.participant_count) || 0,
             isJoined: e.rsvp_status === 'going',

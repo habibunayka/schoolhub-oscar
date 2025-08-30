@@ -16,6 +16,7 @@ import {
   AlertDialogAction,
 } from "@components/common/ui/feedback";
 import SafeImage from "@/components/SafeImage";
+import { getAssetUrl } from "@utils";
 
 export default function EventDetailPage() {
   const { id } = useParams();
@@ -94,13 +95,11 @@ export default function EventDetailPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm space-y-4">
-        {data.image_url && (
-          <SafeImage
-            src={data.image_url}
-            alt={data.title}
-            className="w-full object-cover rounded-md"
-          />
-        )}
+        <SafeImage
+          src={getAssetUrl(data.image_url)}
+          alt={data.title}
+          className="w-full object-cover rounded-md"
+        />
         <div className="flex justify-between items-start">
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl font-semibold mb-1">{data.title}</h1>
