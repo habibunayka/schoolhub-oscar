@@ -36,6 +36,7 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
+  EventCard,
 } from "@components/common/ui";
 import useConfirm from "@hooks/useConfirm.jsx";
 
@@ -125,7 +126,24 @@ export default function ClubProfilePage() {
           avatar: getAssetUrl(r.avatar_url) || "",
         }))
       );
-      setUpcomingEvents(eventsData || []);
+      setUpcomingEvents(
+        (eventsData || []).map((e) => {
+          const start = new Date(e.start_at);
+          return {
+            id: e.id,
+            title: e.title,
+            date: start.toLocaleDateString("id-ID"),
+            time: start.toLocaleTimeString("id-ID", {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            location: e.location,
+            image: getAssetUrl(e.image_url) || "",
+            attendeeCount: Number(e.participant_count) || 0,
+            isRSVPed: e.rsvp_status === "going",
+          };
+        })
+      );
       setClubData((prev) =>
         prev
           ? {
@@ -540,45 +558,32 @@ export default function ClubProfilePage() {
 
               <TabsContent value="events" className="mt-0">
                 <div className="space-y-4">
-                  {isClubAdmin && (
-                    <div className="flex justify-end">
-                      <Button
-                        onClick={handleCreateEvent}
-                        className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white"
-                      >
-                        <Plus className="size-4" />
-                        Create Event
-                      </Button>
-                    </div>
-                  )}
-                  {upcomingEvents.map((event) => (
-                    <Card key={event.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm">
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h3 className="font-medium mb-2">{event.title}</h3>
-                            <div className="space-y-1 text-sm text-muted-foreground">
-                              <div className="flex items-center gap-2">
-                                <Calendar className="size-4" />
-                                <span>{event.date}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Calendar className="size-4" />
-                                <span>{event.time}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <MapPin className="size-4" />
-                                <span>{event.location}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <Button>RSVP</Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+              {isClubAdmin && (
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handleCreateEvent}
+                    className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white"
+                  >
+                    <Plus className="size-4" />
+                    Create Event
+                  </Button>
                 </div>
-              </TabsContent>
+              )}
+              {upcomingEvents.map((event) => (
+                <EventCard
+                  key={event.id}
+                  title={event.title}
+                  clubName={clubData.name}
+                  date={event.date}
+                  time={event.time}
+                  location={event.location}
+                  image={event.image}
+                  attendeeCount={event.attendeeCount}
+                  isRSVPed={event.isRSVPed}
+                />
+              ))}
+            </div>
+          </TabsContent>
 
               <TabsContent value="members" className="mt-0">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
