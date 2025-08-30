@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Calendar, Clock, Edit, ChevronRight, Megaphone } from 'lucide-react';
 import announcements from "@services/announcements.js";
+import { me as getCurrentUser } from "@services/auth.js";
 
 const TARGET_OPTIONS = [
   { value: 'all', label: 'All Announcements', color: 'bg-blue-100 text-blue-800' },
@@ -14,10 +15,15 @@ const TARGET_OPTIONS = [
 export default function AnnouncementDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["announcements", id],
     queryFn: () => announcements.get(id),
+  });
+
+  const { data: user } = useQuery({
+    queryKey: ["auth:me"],
+    queryFn: getCurrentUser,
   });
 
   const formatDate = (dateStr) => {
@@ -140,16 +146,17 @@ export default function AnnouncementDetail() {
           >
             Back to List
           </button>
-          
+
           {/* Show edit button if user has permission */}
-          <button
-            onClick={() => navigate(`/announcements/${id}/edit`)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2"
-          >
-            {/* TODO : Buat tombol ini hanya terlihat untuk admin sekolah. */}
-            <Edit className="w-4 h-4" />
-            Edit
-          </button>
+          {user?.role_global === 'school_admin' && (
+            <button
+              onClick={() => navigate(`/announcements/${id}/edit`)}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2"
+            >
+              <Edit className="w-4 h-4" />
+              Edit
+            </button>
+          )}
         </div>
       </article>
     </div>

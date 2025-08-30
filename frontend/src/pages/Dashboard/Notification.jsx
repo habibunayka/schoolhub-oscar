@@ -31,7 +31,10 @@ function NotificationHeader() {
                         </h1>
                     </div>
                 </div>
-                <button className="p-2 hover:bg-gray-100 rounded-lg">
+                <button
+                    className="p-2 hover:bg-gray-100 rounded-lg"
+                    onClick={() => navigate('/settings')}
+                >
                     <Settings className="w-5 h-5 text-gray-600" />
                 </button>
             </div>
@@ -117,25 +120,45 @@ export default function NotificationsPage() {
         fetchNotifications();
     }, []);
 
+    const isEmpty =
+        grouped.today.length === 0 &&
+        grouped.yesterday.length === 0 &&
+        grouped.thisWeek.length === 0;
+
     return (
         <div className="min-h-screen bg-gray-50">
             <NotificationHeader />
             <div className="max-w-4xl mx-auto">
-                <NotificationSection title="Today">
-                    {grouped.today.map((notification, index) => (
-                        <NotificationItem key={index} {...notification} />
-                    ))}
-                </NotificationSection>
-                <NotificationSection title="Yesterday">
-                    {grouped.yesterday.map((notification, index) => (
-                        <NotificationItem key={index} {...notification} />
-                    ))}
-                </NotificationSection>
-                <NotificationSection title="This Week">
-                    {grouped.thisWeek.map((notification, index) => (
-                        <NotificationItem key={index} {...notification} />
-                    ))}
-                </NotificationSection>
+                {isEmpty ? (
+                    <div className="text-center py-16">
+                        <Bell className="w-12 h-12 mx-auto text-gray-400 mb-4" />
+                        <p className="text-gray-500">No notifications</p>
+                    </div>
+                ) : (
+                    <>
+                        {grouped.today.length > 0 && (
+                            <NotificationSection title="Today">
+                                {grouped.today.map((notification, index) => (
+                                    <NotificationItem key={index} {...notification} />
+                                ))}
+                            </NotificationSection>
+                        )}
+                        {grouped.yesterday.length > 0 && (
+                            <NotificationSection title="Yesterday">
+                                {grouped.yesterday.map((notification, index) => (
+                                    <NotificationItem key={index} {...notification} />
+                                ))}
+                            </NotificationSection>
+                        )}
+                        {grouped.thisWeek.length > 0 && (
+                            <NotificationSection title="This Week">
+                                {grouped.thisWeek.map((notification, index) => (
+                                    <NotificationItem key={index} {...notification} />
+                                ))}
+                            </NotificationSection>
+                        )}
+                    </>
+                )}
             </div>
         </div>
     );
