@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getClub, joinClub, listMembers, listJoinRequests, setMemberStatus } from "@services/clubs.js";
 import { listPosts } from "@services/posts.js";
 import { listEvents } from "@services/events.js";
+import { me as getCurrentUser } from "@services/auth.js";
 import { getAssetUrl } from "@utils";
 import {
   ArrowLeft,
@@ -15,6 +16,7 @@ import {
   MapPin,
   Settings,
   UserPlus,
+  Plus,
 } from "lucide-react";
 import {
   Button,
@@ -50,6 +52,7 @@ export default function ClubProfilePage() {
   const [upcomingEvents, setUpcomingEvents] = useState([]);
   const [requests, setRequests] = useState([]);
   const [canViewRequests, setCanViewRequests] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     async function fetchClub() {
@@ -120,6 +123,24 @@ export default function ClubProfilePage() {
     fetchExtras();
   }, [id]);
 
+  useEffect(() => {
+    async function fetchCurrentUser() {
+      try {
+        const user = await getCurrentUser();
+        const role =
+          user.role_global === 'school_admin'
+            ? 'school_admin'
+            : user.club_id
+              ? 'club_admin'
+              : 'student';
+        setCurrentUser({ id: user.id, role, clubId: user.club_id });
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    fetchCurrentUser();
+  }, []);
+
   if (!clubData) return null;
 
   const handleLike = (postId) => {
@@ -168,6 +189,15 @@ export default function ClubProfilePage() {
       toast.error('Failed to update request');
     }
   };
+
+  const handleCreateEvent = () => {
+    navigate(`/clubs/${id}/events/new`);
+  };
+
+  const canCreateEvent =
+    currentUser &&
+    currentUser.role === 'club_admin' &&
+    String(currentUser.clubId) === id;
 
   return (
     <div className="min-h-screen bg-background">
@@ -435,6 +465,14 @@ export default function ClubProfilePage() {
 
               <TabsContent value="events" className="mt-0">
                 <div className="space-y-4">
+                  {canCreateEvent && (
+                    <div className="flex justify-end">
+                      <Button onClick={handleCreateEvent} className="flex items-center gap-2">
+                        <Plus className="size-4" />
+                        Create Event
+                      </Button>
+                    </div>
+                  )}
                   {upcomingEvents.map((event) => (
                     <Card key={event.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm">
                       <CardContent className="p-6">

@@ -5,7 +5,7 @@ import { ChevronRight, Save, X } from 'lucide-react';
 import announcements from "@services/announcements.js";
 import { me as getCurrentUser } from "@services/auth.js";
 
-// Restrict access to club admins only
+// Restrict access to school admins only
 
 const TARGET_OPTIONS = [
   { value: 'all', label: 'All Users' },
@@ -26,7 +26,7 @@ export default function AnnouncementForm() {
   });
 
   useEffect(() => {
-    if (!isLoadingUser && (!user?.club_id || user.role_global === 'school_admin')) {
+    if (!isLoadingUser && user?.role_global !== 'school_admin') {
       navigate('/');
     }
   }, [user, isLoadingUser, navigate]);
@@ -60,8 +60,8 @@ export default function AnnouncementForm() {
   }, [data]);
 
   useEffect(() => {
-    if (user?.club_id && !editing) {
-      setForm((prev) => ({ ...prev, club_id: user.club_id }));
+    if (user?.role_global === 'school_admin' && !editing) {
+      setForm((prev) => ({ ...prev, club_id: 'school' }));
     }
   }, [user, editing]);
 
