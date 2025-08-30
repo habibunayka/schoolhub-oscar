@@ -43,6 +43,18 @@ export const createEvent = async (clubId, payload) => {
   return data;
 };
 
+export const updateEvent = async (id, payload) => {
+  const path = map.updateEvent?.path || `/events/${id}`;
+  const { data } = await api.put(path.replace(":id", id), payload);
+  return data;
+};
+
+export const deleteEvent = async (id) => {
+  const path = map.deleteEvent?.path || `/events/${id}`;
+  const { data } = await api.delete(path.replace(":id", id));
+  return data;
+};
+
 /**
  * RSVP an event
  * @param {number} id event id
@@ -88,6 +100,8 @@ export default {
   listEvents,
   getUpcomingEvents,
   createEvent,
+  updateEvent,
+  deleteEvent,
   rsvpEvent,
   reviewEvent,
   checkinEvent,

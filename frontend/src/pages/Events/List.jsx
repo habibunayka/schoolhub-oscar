@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
-import { listAllEvents, rsvpEvent } from "@services/events.js";
+import { listAllEvents, rsvpEvent, updateEvent as apiUpdateEvent, deleteEvent as apiDeleteEvent } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
 import EventCard from "@components/events/EventCard.jsx";
 import useConfirm from "@hooks/useConfirm.jsx";
@@ -164,12 +164,18 @@ export default function EventsPage() {
 
   const { confirm, ConfirmDialog } = useConfirm();
 
-  const handleEdit = (eventId) => {
-    alert(`Edit event ${eventId}`);
+  const handleEdit = async (eventId) => {
+    const current = events.find(e => e.id === eventId);
+    const newTitle = prompt('Edit title', current?.title);
+    if (newTitle && newTitle !== current?.title) {
+      await apiUpdateEvent(eventId, { title: newTitle });
+      setEvents(prev => prev.map(e => e.id === eventId ? { ...e, title: newTitle } : e));
+    }
   };
 
   const handleDelete = async (eventId) => {
     if (await confirm('Are you sure you want to delete this event?')) {
+      await apiDeleteEvent(eventId);
       setEvents(prev => prev.filter(event => event.id !== eventId));
     }
   };

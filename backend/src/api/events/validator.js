@@ -187,6 +187,14 @@ export const validateUpdateEvent = [
     checkValidationResult,
 ];
 
+export const validateDeleteEvent = [
+    param("id")
+        .isInt({ min: 1 })
+        .withMessage("Event ID must be a positive integer"),
+
+    checkValidationResult,
+];
+
 export const validateRsvpEvent = [
     param("id")
         .isInt({ min: 1 })
