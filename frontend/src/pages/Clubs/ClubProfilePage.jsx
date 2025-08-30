@@ -36,7 +36,6 @@ import {
   CarouselItem,
   CarouselNext,
   CarouselPrevious,
-  EventCard,
 } from "@components/common/ui";
 import EventCard from "@components/events/EventCard.jsx";
 import useConfirm from "@hooks/useConfirm.jsx";
