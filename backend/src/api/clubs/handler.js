@@ -46,11 +46,12 @@ export const listClubs = async (req, res) => {
 export const getClub = async (req, res) => {
     const id = Number(req.params.id);
     const row = await get(
-        `SELECT c.*, COUNT(m.id) AS member_count
+        `SELECT c.*, cat.name AS category, COUNT(m.id) AS member_count
          FROM clubs c
+         LEFT JOIN club_categories cat ON c.category_id = cat.id
          LEFT JOIN club_members m ON c.id = m.club_id AND m.status = 'approved'
          WHERE c.id = $1
-         GROUP BY c.id`,
+         GROUP BY c.id, cat.name`,
         [id]
     );
     if (!row) return res.status(404).json({ message: "Not found" });
@@ -84,11 +85,18 @@ export const listRequests = async (req, res) => {
 };
 
 export const createClub = async (req, res) => {
-    const { name, slug, description, advisor_name, category_id } = req.body;
+    const { name, slug, description, advisor_name, category_id, location } = req.body;
     const id = await tx(async ({ run }) => {
         const { rows } = await run(
-            `INSERT INTO clubs(name, slug, description, advisor_name, category_id) VALUES ($1,$2,$3,$4,$5) RETURNING id`,
-            [name, slug, cleanHTML(description || ""), advisor_name, category_id]
+            `INSERT INTO clubs(name, slug, description, advisor_name, category_id, location) VALUES ($1,$2,$3,$4,$5,$6) RETURNING id`,
+            [
+                name,
+                slug,
+                cleanHTML(description || ""),
+                advisor_name,
+                category_id,
+                location,
+            ]
         );
         const clubId = rows[0].id;
         await run(
@@ -106,7 +114,7 @@ export const patchClub = async (req, res) => {
     if (!club) return res.status(404).json({ message: "Not found" });
     const payload = req.body;
     await run(
-        `UPDATE clubs SET name = COALESCE($1,name), slug = COALESCE($2,slug), description = COALESCE($3,description), logo_url = COALESCE($4,logo_url), banner_url = COALESCE($5,banner_url), advisor_name = COALESCE($6,advisor_name), category_id = COALESCE($7,category_id) WHERE id = $8`,
+        `UPDATE clubs SET name = COALESCE($1,name), slug = COALESCE($2,slug), description = COALESCE($3,description), logo_url = COALESCE($4,logo_url), banner_url = COALESCE($5,banner_url), advisor_name = COALESCE($6,advisor_name), category_id = COALESCE($7,category_id), location = COALESCE($8,location) WHERE id = $9`,
         [
             payload.name,
             payload.slug,
@@ -115,6 +123,7 @@ export const patchClub = async (req, res) => {
             payload.banner_url,
             payload.advisor_name,
             payload.category_id,
+            payload.location,
             id,
         ]
     );

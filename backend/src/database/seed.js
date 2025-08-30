@@ -12,6 +12,7 @@ const seed = async () => {
         posts,
         club_members,
         clubs,
+        club_categories,
         users
         RESTART IDENTITY CASCADE`);
 
@@ -30,18 +31,38 @@ const seed = async () => {
         ["Bob", "bob@example.com", passwordHash, "/uploads/avatar-bob.png"]
     );
 
+    const [{ id: academicCatId }] = await query(
+        "INSERT INTO club_categories (name) VALUES ($1) RETURNING id",
+        ["Academic"]
+    );
+    const [{ id: artsCatId }] = await query(
+        "INSERT INTO club_categories (name) VALUES ($1) RETURNING id",
+        ["Arts"]
+    );
+
     const [{ id: club1Id }] = await query(
-        "INSERT INTO clubs (name, slug, description, logo_url) VALUES ($1,$2,$3,$4) RETURNING id",
+        "INSERT INTO clubs (name, slug, description, logo_url, advisor_name, category_id, location) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id",
         [
             "Chess Club",
             "chess-club",
             "All about chess",
             "/uploads/logo-chess.png",
+            "Mr. Smith",
+            academicCatId,
+            "Room 101",
         ]
     );
     const [{ id: club2Id }] = await query(
-        "INSERT INTO clubs (name, slug, description, logo_url) VALUES ($1,$2,$3,$4) RETURNING id",
-        ["Music Club", "music-club", "We love music", "/uploads/logo-music.png"]
+        "INSERT INTO clubs (name, slug, description, logo_url, advisor_name, category_id, location) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id",
+        [
+            "Music Club",
+            "music-club",
+            "We love music",
+            "/uploads/logo-music.png",
+            "Mrs. Johnson",
+            artsCatId,
+            "Auditorium",
+        ]
     );
 
     await run(
