@@ -253,6 +253,7 @@ export default function StudentDashboard() {
           {/* Center Feed */}
           <div className="lg:col-span-6">
             <div className="space-y-6">
+              {/* Fix semua bug yang ada. Buat like nya bekerja, habus komentarnya. */}
               {loadingPosts ? (
                 <p>Loading...</p>
               ) : errPosts ? (

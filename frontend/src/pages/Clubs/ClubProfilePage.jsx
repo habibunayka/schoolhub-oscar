@@ -277,6 +277,7 @@ export default function ClubProfilePage() {
               <TabsContent value="posts" className="mt-0">
                 <div className="space-y-6">
                   {posts.map((post) => (
+                    // Buat ini benar-benar posts yang real, ada beberapa bug disini seperti caption nya gaada. Dan buat like nya bekerja, habus komentarnya.
                     <Card key={post.id} className="overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm">
                       <CardHeader className="pb-3">
                         <div className="flex items-center gap-3">

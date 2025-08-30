@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { listClubs, joinClub, leaveClub } from "@services/clubs.js";
 import { listCategories } from "@services/clubCategories.js";
 import { getAssetUrl } from "@utils";
+import SafeImage from '@/components/SafeImage';
 
 const SORT_OPTIONS = [
   { value: "name", label: "Name A-Z" },
@@ -57,7 +58,7 @@ function ClubCard({ club, onJoinToggle, className = "" }) {
       aria-labelledby={`club-${club.id}-name`}
     >
       <div className="flex items-center gap-4 mb-4">
-        <img 
+        <SafeImage 
           src={club.logoUrl} 
           alt={`${club.name} logo`}
           className="w-16 h-16 rounded-full object-cover border-2 border-gray-100"
@@ -86,6 +87,7 @@ function ClubCard({ club, onJoinToggle, className = "" }) {
       </div>
       
       <div className="flex gap-2">
+        {/* TODO : Buat tombolnya ini jika ditekan maka akan muncul notifikasi konfirmasi berupa apakah anda ingin join klub ini. Jangan langsung ke join, buat statusnya request dan buat halaman requests di bagian club profile yang hanya bisa dilihat admin club. Jika belum ada backend nya buat. */}
         <button
           onClick={handleJoinToggle}
           className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
