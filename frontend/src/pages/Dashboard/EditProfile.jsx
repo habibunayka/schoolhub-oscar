@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import auth from "@services/auth.js";
 import { updateProfile } from "@services/users.js";
+import { getAssetUrl } from "@utils";
 
 export default function EditProfilePage() {
   const navigate = useNavigate();
@@ -228,6 +229,15 @@ export default function EditProfilePage() {
                 onChange={handleFileChange}
                 className="w-full border border-gray-300 rounded-lg p-2"
               />
+              {!selectedImage && user?.avatar_url && (
+                <div className="mt-4 flex justify-center">
+                  <img
+                    src={getAssetUrl(user.avatar_url)}
+                    alt="Current avatar"
+                    className="w-16 h-16 rounded-full object-cover border"
+                  />
+                </div>
+              )}
               {selectedImage && (
                 <div className="mt-4 flex flex-col items-center space-y-4">
                   <AvatarPreview

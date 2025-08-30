@@ -49,7 +49,15 @@ export const createClub = async (payload) => {
  */
 export const patchClub = async (id, payload) => {
   const path = map.patchClub.path.replace(":id", id);
-  const { data } = await api.patch(path, payload);
+  const isFormData = payload instanceof FormData;
+  const config = isFormData
+    ? {}
+    : { headers: { "Content-Type": "application/json" } };
+  const { data } = await api.patch(
+    path,
+    isFormData ? payload : JSON.stringify(payload),
+    config
+  );
   return data;
 };
 
