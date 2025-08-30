@@ -36,8 +36,18 @@ r.patch(
     "/:id",
     validatePatchClub,
     auth(),
-    permitClub("owner", "admin"),
+    (req, res, next) => {
+        if (req.user.role_global === "school_admin") return next();
+        return permitClub("owner", "admin")(req, res, next);
+    },
     Clubs.patchClub
+);
+r.delete(
+    "/:id",
+    validateGetClub,
+    auth(),
+    permitGlobal("school_admin"),
+    Clubs.deleteClub
 );
 
 r.post("/:id/join", validateJoinClub, auth(), Clubs.joinClub);

@@ -69,8 +69,8 @@ export default function ClubProfilePage() {
         location: data.location || "",
         coverImage: getAssetUrl(data.banner_url) || "",
         logoImage: getAssetUrl(data.logo_url) || "",
-        isJoined: false,
-        isRequested: false,
+        isJoined: data.membership_status === "approved",
+        isRequested: data.membership_status === "pending",
         stats: { events: 0, posts: 0, achievements: 0 },
       });
     }

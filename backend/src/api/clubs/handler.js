@@ -45,14 +45,28 @@ export const listClubs = async (req, res) => {
 
 export const getClub = async (req, res) => {
     const id = Number(req.params.id);
+    const userId = req.user?.id;
+    const params = [id];
+    let userJoin = "",
+        membershipSelect = ", NULL AS membership_status, false AS is_member",
+        groupExtra = "";
+    if (userId) {
+        params.push(userId);
+        userJoin =
+            "LEFT JOIN club_members me ON c.id = me.club_id AND me.user_id = $2";
+        membershipSelect =
+            ", me.status AS membership_status, CASE WHEN me.status = 'approved' THEN true ELSE false END AS is_member";
+        groupExtra = ", me.id, me.status";
+    }
     const row = await get(
-        `SELECT c.*, cat.name AS category, COUNT(m.id) AS member_count
+        `SELECT c.*, cat.name AS category, COUNT(m.id) AS member_count${membershipSelect}
          FROM clubs c
          LEFT JOIN club_categories cat ON c.category_id = cat.id
          LEFT JOIN club_members m ON c.id = m.club_id AND m.status = 'approved'
+         ${userJoin}
          WHERE c.id = $1
-         GROUP BY c.id, cat.name`,
-        [id]
+         GROUP BY c.id, cat.name${groupExtra}`,
+        params
     );
     if (!row) return res.status(404).json({ message: "Not found" });
     res.json(row);
@@ -170,4 +184,10 @@ export const setMemberStatus = async (req, res) => {
         [decision, Number(req.params.id), Number(userId)]
     );
     res.json({ ok: true });
+};
+
+export const deleteClub = async (req, res) => {
+    const id = Number(req.params.id);
+    await run(`UPDATE clubs SET is_active = false WHERE id = $1`, [id]);
+    res.json({ deleted: true });
 };
