@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { getEvent, rsvpEvent } from "@services/events.js";
+import { getEvent, rsvpEvent, updateEvent, deleteEvent } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
 import {
@@ -48,6 +48,10 @@ export default function EventDetailPage() {
   const participantCount = Number(data.participant_count) || 0;
   const isFull =
     data.capacity != null && participantCount >= data.capacity;
+  const canEdit =
+    role === "school_admin" ||
+    (role === "club_admin" && data.club_id === user?.club_id);
+  const canDelete = canEdit;
 
   const handleJoinToggle = async () => {
     const updated = await rsvpEvent(id, { status: isJoined ? "declined" : "going" });
@@ -56,6 +60,19 @@ export default function EventDetailPage() {
       participant_count: updated.participant_count,
       rsvp_status: updated.rsvp_status,
     }));
+  };
+
+  const handleEdit = async () => {
+    const title = prompt("Edit title", data.title);
+    if (!title || title === data.title) return;
+    await updateEvent(id, { title });
+    queryClient.setQueryData(["event", id], (old) => ({ ...old, title }));
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this event?")) return;
+    await deleteEvent(id);
+    window.location.href = "/events";
   };
 
   const formatDate = (iso) => {
@@ -85,13 +102,31 @@ export default function EventDetailPage() {
             <h1 className="text-2xl font-semibold mb-1">{data.title}</h1>
             <p className="text-blue-600 font-medium">{data.club_name}</p>
           </div>
-          <span
-            className={`px-2 py-1 text-xs font-medium rounded-full ${
-              isPast ? "bg-gray-100 text-gray-600" : "bg-green-100 text-green-700"
-            }`}
-          >
-            {isPast ? "Past" : "Upcoming"}
-          </span>
+          <div className="flex items-center gap-2">
+            {canEdit && (
+              <button
+                onClick={handleEdit}
+                className="px-4 py-2 rounded-lg font-medium text-sm border border-blue-300 text-blue-700 hover:bg-blue-50 transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              >
+                Edit
+              </button>
+            )}
+            {canDelete && (
+              <button
+                onClick={handleDelete}
+                className="px-4 py-2 rounded-lg font-medium text-sm border border-red-300 text-red-700 hover:bg-red-50 transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2"
+              >
+                Delete
+              </button>
+            )}
+            <span
+              className={`px-2 py-1 text-xs font-medium rounded-full ${
+                isPast ? "bg-gray-100 text-gray-600" : "bg-green-100 text-green-700"
+              }`}
+            >
+              {isPast ? "Past" : "Upcoming"}
+            </span>
+          </div>
         </div>
 
         <div className="flex flex-col gap-2 text-sm text-gray-600">

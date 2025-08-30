@@ -207,3 +207,18 @@ export const updateEvent = async (req, res) => {
     );
     res.json({ updated: true });
 };
+
+export const deleteEvent = async (req, res) => {
+    const eventId = Number(req.params.id);
+    const event = await get(`SELECT club_id FROM events WHERE id = $1`, [eventId]);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+    const member = await get(
+        `SELECT role, status FROM club_members WHERE club_id = $1 AND user_id = $2`,
+        [event.club_id, req.user.id]
+    );
+    if (!member || member.status !== "approved" || !["owner", "admin"].includes(member.role)) {
+        return res.status(403).json({ message: "Forbidden" });
+    }
+    await run(`DELETE FROM events WHERE id = $1`, [eventId]);
+    res.json({ deleted: true });
+};

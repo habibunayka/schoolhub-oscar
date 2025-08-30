@@ -1,16 +1,5 @@
 import React from "react";
 import { Calendar, Clock, MapPin, Users, Eye, Edit, Trash2, Globe, Lock } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@components/common/ui/feedback";
 import SafeImage from "@components/SafeImage";
 
 /**
@@ -21,7 +10,6 @@ import SafeImage from "@components/SafeImage";
 export default function EventCard({
   event,
   currentUser,
-  onJoinToggle,
   onEdit,
   onDelete,
   onViewDetails,
@@ -31,9 +19,9 @@ export default function EventCard({
   const canEdit =
     role === "school_admin" ||
     (role === "club_admin" && event.organizerId === currentUser?.clubId);
-  const canDelete = role === "school_admin";
-  const canJoin =
-    role === "student" && !isPastEvent && onJoinToggle && event.requireRsvp;
+  const canDelete =
+    role === "school_admin" ||
+    (role === "club_admin" && event.organizerId === currentUser?.clubId);
 
   const visibilityIcon =
     event.visibility === "public" ? Globe : event.visibility === "private" ? Lock : null;
@@ -122,52 +110,6 @@ export default function EventCard({
 
       {/* Action Buttons */}
       <div className="flex gap-2">
-        {canJoin && (
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <button
-                disabled={isFull && !event.isJoined}
-                className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
-                  event.isJoined
-                    ? "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500"
-                    : isFull
-                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
-                    : "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500"
-                }`}
-              >
-                {event.isJoined ? "Cancel RSVP" : isFull ? "Full" : "RSVP"}
-              </button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle>
-                  {event.isJoined ? "Cancel RSVP?" : "RSVP to event?"}
-                </AlertDialogTitle>
-                <AlertDialogDescription>
-                  {event.isJoined
-                    ? "Are you sure you want to cancel your RSVP?"
-                    : "Confirm your attendance by RSVPing."}
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                {!isFull && (
-                  <AlertDialogAction
-                    onClick={() => onJoinToggle(event.id, event.isJoined)}
-                    className={
-                      event.isJoined
-                        ? "bg-red-600 text-white hover:bg-red-700"
-                        : "bg-blue-600 text-white hover:bg-blue-700"
-                    }
-                  >
-                    {event.isJoined ? "Cancel RSVP" : "RSVP"}
-                  </AlertDialogAction>
-                )}
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        )}
-
         {onViewDetails && (
           <button
             onClick={() => onViewDetails(event.id)}

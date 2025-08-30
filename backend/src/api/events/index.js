@@ -10,6 +10,7 @@ import {
     validateRsvpEvent,
     validateCheckinEvent,
     validateReviewEvent,
+    validateDeleteEvent,
 } from "./validator.js";
 
 const r = Router();
@@ -43,6 +44,13 @@ r.post(
     auth(),
     permitClub("owner", "admin"),
     Events.checkinEvent
+);
+
+r.delete(
+    "/events/:id",
+    validateDeleteEvent,
+    auth(),
+    Events.deleteEvent
 );
 
 export default r;

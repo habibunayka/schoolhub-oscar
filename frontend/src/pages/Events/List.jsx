@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search } from 'lucide-react';
-import { listAllEvents, rsvpEvent } from "@services/events.js";
+import { listAllEvents, updateEvent, deleteEvent } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
 import EventCard from "@components/events/EventCard.jsx";
 import useConfirm from "@hooks/useConfirm.jsx";
@@ -141,36 +141,31 @@ export default function EventsPage() {
     });
   }, [events, searchQuery, filterType]);
 
-  const handleJoinToggle = async (eventId, isJoined) => {
+
+  const { confirm, ConfirmDialog } = useConfirm();
+
+  const handleEdit = async (eventId) => {
+    const event = events.find(e => e.id === eventId);
+    const title = prompt('Edit title', event.title);
+    if (!title || title === event.title) return;
     try {
-      const updated = await rsvpEvent(eventId, {
-        status: isJoined ? 'declined' : 'going',
-      });
+      await updateEvent(eventId, { title });
       setEvents(prev =>
-        prev.map(event =>
-          event.id === eventId
-            ? {
-                ...event,
-                isJoined: updated.rsvp_status === 'going',
-                currentParticipants: Number(updated.participant_count) || 0,
-              }
-            : event
-        )
+        prev.map(e => (e.id === eventId ? { ...e, title } : e))
       );
     } catch (e) {
       console.error(e);
     }
   };
 
-  const { confirm, ConfirmDialog } = useConfirm();
-
-  const handleEdit = (eventId) => {
-    alert(`Edit event ${eventId}`);
-  };
-
   const handleDelete = async (eventId) => {
     if (await confirm('Are you sure you want to delete this event?')) {
-      setEvents(prev => prev.filter(event => event.id !== eventId));
+      try {
+        await deleteEvent(eventId);
+        setEvents(prev => prev.filter(event => event.id !== eventId));
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 
@@ -280,7 +275,6 @@ export default function EventsPage() {
               key={event.id}
               event={event}
               currentUser={currentUser}
-              onJoinToggle={handleJoinToggle}
               onEdit={handleEdit}
               onDelete={handleDelete}
               onViewDetails={handleViewDetails}
