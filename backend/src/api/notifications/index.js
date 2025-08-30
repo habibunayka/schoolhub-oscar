@@ -12,4 +12,16 @@ r.get(
     Notifications.listNotifications
 );
 
+r.post(
+    "/notifications/read-all",
+    auth(),
+    Notifications.markAllRead
+);
+
+r.post(
+    "/notifications/:id/read",
+    auth(),
+    Notifications.markNotificationRead
+);
+
 export default r;

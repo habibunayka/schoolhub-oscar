@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Bell, Search, Menu, X } from "lucide-react";
 import { useAuth } from "@hooks/useAuth.js";
+import useUnreadNotifications from "../hooks/useUnreadNotifications.js";
 
 import {
   Avatar,
@@ -157,6 +158,7 @@ function DesktopNavLinks() {
 export default function Navbar() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
+  const unreadCount = useUnreadNotifications();
 
   return (
     <nav className="w-full bg-white/80 backdrop-blur shadow-sm sticky top-0 z-50">
@@ -218,9 +220,11 @@ export default function Navbar() {
           >
             <Link to="/notifications">
               <Bell className="size-5" />
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
-                3
-              </span>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center animate-pulse">
+                  {unreadCount}
+                </span>
+              )}
             </Link>
           </Button>
           <UserMenu />

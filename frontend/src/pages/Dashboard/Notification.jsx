@@ -1,17 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     Bell,
     ArrowLeft,
     Settings,
     Calendar,
-    Heart,
     MessageCircle,
-    Trophy,
     AlertCircle,
     Clock,
-    Search,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import api from "../../services/client.js";
+import { triggerNotificationsUpdate } from "../../hooks/useUnreadNotifications.js";
 
 function NotificationHeader() {
     const navigate = useNavigate(); // ✅ inisialisasi hook
@@ -96,99 +95,134 @@ function NotificationSection({ title, children }) {
 }
 
 export default function NotificationsPage() {
-    const [searchQuery, setSearchQuery] = useState("");
+    const [grouped, setGrouped] = useState({
+        today: [],
+        yesterday: [],
+        thisWeek: [],
+    });
 
-    // TODO : Buat notifikasi ini benar-benar bekerja, jika belum ada endpoint nya silakan segera dibuat.
-    const todayNotifications = [
-        {
-            icon: <Calendar className="w-5 h-5 text-orange-600" />,
-            iconBg: "bg-orange-100",
-            title: "Event Reminder",
-            description: "Basketball Tournament starts in 30 minutes",
-            club: "Basketball Club",
-            time: "30 minutes ago",
-            isUnread: true,
-        },
-        {
-            icon: <Heart className="w-5 h-5 text-pink-600" />,
-            iconBg: "bg-pink-100",
-            title: "New Like",
-            description: "Mike Johnson liked your post in Science Lab",
-            club: "Science Lab",
-            time: "2 hours ago",
-            isUnread: true,
-        },
-    ];
-
-    // TODO : Buat notifikasi ini benar-benar bekerja, jika belum ada endpoint nya silakan segera dibuat.
-    const yesterdayNotifications = [
-        {
-            icon: <MessageCircle className="w-5 h-5 text-blue-600" />,
-            iconBg: "bg-blue-100",
-            title: "New Post",
-            description:
-                "Drama Club shared a new post about upcoming performance",
-            club: "Drama Club",
-            time: "Yesterday at 4:30 PM",
-        },
-        {
-            icon: <Trophy className="w-5 h-5 text-yellow-600" />,
-            iconBg: "bg-yellow-100",
-            title: "Achievement Unlocked",
-            description:
-                "You've earned the 'Active Member' badge for participating in 5 events",
-            time: "Yesterday at 2:15 PM",
-        },
-    ];
-
-    // TODO : Buat notifikasi ini benar-benar bekerja, jika belum ada endpoint nya silakan segera dibuat.
-    const thisWeekNotifications = [
-        {
-            icon: <AlertCircle className="w-5 h-5 text-orange-600" />,
-            iconBg: "bg-orange-100",
-            title: "Event Updated",
-            description: "Science Fair location has been changed to Main Hall",
-            club: "Science Lab",
-            time: "3 days ago",
-        },
-        {
-            icon: <MessageCircle className="w-5 h-5 text-green-600" />,
-            iconBg: "bg-green-100",
-            title: "New Comment",
-            description: "Emma Davis commented on your Basketball Club post",
-            club: "Basketball Club",
-            time: "4 days ago",
-        },
-    ];
+    useEffect(() => {
+        const fetchNotifications = async () => {
+            try {
+                const res = await api.get("/notifications", { params: { limit: 100 } });
+                const list = res.data.data || [];
+                const groupedData = groupByDate(list);
+                setGrouped(groupedData);
+                await api.post("/notifications/read-all");
+                triggerNotificationsUpdate();
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchNotifications();
+    }, []);
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Notification Header */}
             <NotificationHeader />
-
-            {/* Notifications Content */}
             <div className="max-w-4xl mx-auto">
-                {/* Today Section */}
                 <NotificationSection title="Today">
-                    {todayNotifications.map((notification, index) => (
+                    {grouped.today.map((notification, index) => (
                         <NotificationItem key={index} {...notification} />
                     ))}
                 </NotificationSection>
-
-                {/* Yesterday Section */}
                 <NotificationSection title="Yesterday">
-                    {yesterdayNotifications.map((notification, index) => (
+                    {grouped.yesterday.map((notification, index) => (
                         <NotificationItem key={index} {...notification} />
                     ))}
                 </NotificationSection>
-
-                {/* This Week Section */}
                 <NotificationSection title="This Week">
-                    {thisWeekNotifications.map((notification, index) => (
+                    {grouped.thisWeek.map((notification, index) => (
                         <NotificationItem key={index} {...notification} />
                     ))}
                 </NotificationSection>
             </div>
         </div>
     );
+}
+
+function timeAgo(date) {
+    const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (diff < 60) return `${diff} seconds ago`;
+    const mins = Math.floor(diff / 60);
+    if (mins < 60) return `${mins} minutes ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours} hours ago`;
+    const days = Math.floor(hours / 24);
+    return `${days} days ago`;
+}
+
+function mapNotification(n) {
+    const createdAt = new Date(n.created_at);
+    const base = {
+        time: timeAgo(createdAt),
+        isUnread: !n.is_read,
+    };
+    const p = n.payload || {};
+    switch (n.type) {
+        case "event_created":
+            return {
+                ...base,
+                icon: <Calendar className="w-5 h-5 text-orange-600" />,
+                iconBg: "bg-orange-100",
+                title: "New Event",
+                description: p.event_title,
+                club: p.club_name,
+            };
+        case "club_announcement":
+            return {
+                ...base,
+                icon: <AlertCircle className="w-5 h-5 text-blue-600" />,
+                iconBg: "bg-blue-100",
+                title: "Club Announcement",
+                description: p.title,
+                club: p.club_name,
+            };
+        case "school_announcement":
+            return {
+                ...base,
+                icon: <AlertCircle className="w-5 h-5 text-purple-600" />,
+                iconBg: "bg-purple-100",
+                title: "School Announcement",
+                description: p.title,
+            };
+        case "post_created":
+            return {
+                ...base,
+                icon: <MessageCircle className="w-5 h-5 text-green-600" />,
+                iconBg: "bg-green-100",
+                title: "New Post",
+                description: `New post in ${p.club_name}`,
+                club: p.club_name,
+            };
+        default:
+            return {
+                ...base,
+                icon: <AlertCircle className="w-5 h-5 text-gray-600" />,
+                iconBg: "bg-gray-100",
+                title: n.type,
+                description: p.title || "",
+            };
+    }
+}
+
+function groupByDate(list) {
+    const today = [];
+    const yesterday = [];
+    const thisWeek = [];
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfYesterday = new Date(startOfToday);
+    startOfYesterday.setDate(startOfYesterday.getDate() - 1);
+    const startOfWeek = new Date(startOfToday);
+    startOfWeek.setDate(startOfWeek.getDate() - 7);
+
+    for (const n of list) {
+        const createdAt = new Date(n.created_at);
+        const mapped = mapNotification(n);
+        if (createdAt >= startOfToday) today.push(mapped);
+        else if (createdAt >= startOfYesterday) yesterday.push(mapped);
+        else if (createdAt >= startOfWeek) thisWeek.push(mapped);
+    }
+    return { today, yesterday, thisWeek };
 }

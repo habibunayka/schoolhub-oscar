@@ -26,3 +26,36 @@ test("listNotifications returns data and pagination", async () => {
     assert.equal(calls, 2);
     __setDbMocks({ query: async () => [] });
 });
+
+test("markNotificationRead updates row", async () => {
+    let called = false;
+    __setDbMocks({
+        run: async (sql, params) => {
+            called = true;
+            assert.ok(sql.includes("UPDATE notifications"));
+            assert.equal(params[0], 1);
+            assert.equal(params[1], 2);
+        },
+    });
+    const req = { params: { id: 1 }, user: { id: 2 } };
+    const res = { json: () => {}, status: () => res };
+    await Notifications.markNotificationRead(req, res);
+    assert.equal(called, true);
+    __setDbMocks({ run: async () => {}, query: async () => [] });
+});
+
+test("markAllRead updates rows", async () => {
+    let called = false;
+    __setDbMocks({
+        run: async (sql, params) => {
+            called = true;
+            assert.ok(sql.includes("UPDATE notifications"));
+            assert.equal(params[0], 3);
+        },
+    });
+    const req = { user: { id: 3 } };
+    const res = { json: () => {}, status: () => res };
+    await Notifications.markAllRead(req, res);
+    assert.equal(called, true);
+    __setDbMocks({ run: async () => {}, query: async () => [] });
+});
