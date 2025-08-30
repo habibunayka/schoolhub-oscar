@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getClub, joinClub, leaveClub, listMembers, listJoinRequests, setMemberStatus, setMemberRole } from "@services/clubs.js";
 import { listPosts, likePost, unlikePost } from "@services/posts.js";
-import { listEvents, rsvpEvent } from "@services/events.js";
+import { listEvents, updateEvent, deleteEvent } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
 import { getAssetUrl } from "@utils";
 import {
@@ -272,29 +272,32 @@ export default function ClubProfilePage() {
     }
   };
 
-  const handleEventJoinToggle = async (eventId, isJoined) => {
-    try {
-      const { participant_count, rsvp_status } = await rsvpEvent(eventId, {
-        status: isJoined ? "declined" : "going",
-      });
-      setUpcomingEvents((prev) =>
-        prev.map((e) =>
-          e.id === eventId
-            ? {
-                ...e,
-                isJoined: rsvp_status === "going",
-                currentParticipants: Number(participant_count) || e.currentParticipants,
-              }
-            : e
-        )
-      );
-    } catch (e) {
-      console.error(e);
+  const handleViewEventDetails = (eventId) => {
+    navigate(`/events/${eventId}`);
+  };
+
+  const handleEventEdit = async (eventId) => {
+    const event = upcomingEvents.find(e => e.id === eventId);
+    const title = prompt('Edit event title', event?.title || '');
+    if (title && title !== event?.title) {
+      try {
+        await updateEvent(eventId, { title });
+        setUpcomingEvents(prev => prev.map(e => e.id === eventId ? { ...e, title } : e));
+      } catch (e) {
+        console.error(e);
+      }
     }
   };
 
-  const handleViewEventDetails = (eventId) => {
-    navigate(`/events/${eventId}`);
+  const handleEventDelete = async (eventId) => {
+    if (await confirm('Are you sure you want to delete this event?')) {
+      try {
+        await deleteEvent(eventId);
+        setUpcomingEvents(prev => prev.filter(e => e.id !== eventId));
+      } catch (e) {
+        console.error(e);
+      }
+    }
   };
 
   const handleCreateEvent = () => {
@@ -528,7 +531,8 @@ export default function ClubProfilePage() {
                   key={event.id}
                   event={event}
                   currentUser={currentUser}
-                  onJoinToggle={handleEventJoinToggle}
+                  onEdit={handleEventEdit}
+                  onDelete={handleEventDelete}
                   onViewDetails={handleViewEventDetails}
                 />
               ))}
