@@ -316,10 +316,16 @@ export default function ClubProfilePage() {
             </div>
 
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                <Settings className="size-4 mr-2" />
-                Settings
-              </Button>
+              {isClubAdmin && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate(`/clubs/${id}/settings`)}
+                >
+                  <Settings className="size-4 mr-2" />
+                  Settings
+                </Button>
+              )}
               <Button variant="outline" size="sm">
                 <Share className="size-4 mr-2" />
                 Share
