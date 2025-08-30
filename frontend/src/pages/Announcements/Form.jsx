@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { ChevronRight, Save, X } from 'lucide-react';
@@ -46,6 +46,8 @@ export default function AnnouncementForm() {
   });
 
   const [errors, setErrors] = useState({});
+  const editorRef = useRef(null);
+  const quillRef = useRef(null);
 
   useEffect(() => {
     if (data) {
@@ -64,6 +66,26 @@ export default function AnnouncementForm() {
       setForm((prev) => ({ ...prev, club_id: 'school' }));
     }
   }, [user, editing]);
+
+  useEffect(() => {
+    if (editorRef.current && window.Quill && !quillRef.current) {
+      quillRef.current = new window.Quill(editorRef.current, { theme: 'snow' });
+      quillRef.current.root.innerHTML = form.content_html;
+      quillRef.current.on('text-change', () => {
+        const html = quillRef.current.root.innerHTML;
+        setForm((prev) => ({ ...prev, content_html: html }));
+        if (errors.content_html) {
+          setErrors((prev) => ({ ...prev, content_html: null }));
+        }
+      });
+    }
+  }, [form.content_html, errors.content_html]);
+
+  useEffect(() => {
+    if (quillRef.current && quillRef.current.root.innerHTML !== form.content_html) {
+      quillRef.current.root.innerHTML = form.content_html;
+    }
+  }, [form.content_html]);
 
   const mutation = useMutation({
     mutationFn: (payload) =>
@@ -102,7 +124,8 @@ export default function AnnouncementForm() {
       newErrors.title = 'Title is required';
     }
     
-    if (!form.content_html.trim()) {
+    const plain = form.content_html.replace(/<(.|\n)*?>/g, '').trim();
+    if (!plain) {
       newErrors.content_html = 'Content is required';
     }
     
@@ -215,13 +238,9 @@ export default function AnnouncementForm() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Content <span className="text-red-500">*</span>
             </label>
-            <textarea
-              name="content_html"
-              placeholder="Write your announcement content here..."
-              value={form.content_html}
-              onChange={onChange}
-              rows={8}
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 resize-vertical ${
+            <div
+              ref={editorRef}
+              className={`bg-white border rounded-lg ${
                 errors.content_html ? 'border-red-500' : 'border-gray-300'
               }`}
             />
@@ -229,7 +248,7 @@ export default function AnnouncementForm() {
               <p className="mt-1 text-sm text-red-600">{errors.content_html}</p>
             )}
             <p className="mt-1 text-xs text-gray-500">
-              You can use HTML tags for formatting (e.g., &lt;p&gt;, &lt;strong&gt;, &lt;ul&gt;, &lt;li&gt;, etc.)
+              Use the editor toolbar to format your announcement content.
             </p>
           </div>
 
