@@ -143,6 +143,7 @@ export default function ClubProfilePage() {
             maxParticipants: e.capacity,
             currentParticipants: Number(e.participant_count) || 0,
             isJoined: e.rsvp_status === "going",
+            visibility: e.visibility,
             status: new Date(e.end_at) < new Date() ? "past" : "upcoming",
           };
         })

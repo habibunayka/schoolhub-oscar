@@ -1,5 +1,5 @@
 import React from "react";
-import { Calendar, Clock, MapPin, Users, Eye, Edit, Trash2 } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, Eye, Edit, Trash2, Globe, Lock } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -34,6 +34,9 @@ export default function EventCard({
   const canDelete = role === "school_admin";
   const canJoin = role === "student" && !isPastEvent && onJoinToggle;
 
+  const visibilityIcon =
+    event.visibility === "public" ? Globe : event.visibility === "private" ? Lock : null;
+
   const dateObj = new Date(event.startAt);
   const date = dateObj.toLocaleDateString("id-ID");
   const time = dateObj.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
@@ -62,13 +65,24 @@ export default function EventCard({
           </h3>
           <p className="text-sm text-blue-600 font-medium">{event.organizer}</p>
         </div>
-        <span
-          className={`px-2 py-1 text-xs font-medium rounded-full ${
-            isPastEvent ? "bg-gray-100 text-gray-600" : "bg-green-100 text-green-700"
-          }`}
-        >
-          {isPastEvent ? "Past" : "Upcoming"}
-        </span>
+        <div className="flex items-center gap-2">
+          {visibilityIcon && (
+            <span className="p-1 bg-white rounded-full shadow">
+              <visibilityIcon
+                className={`w-4 h-4 ${
+                  event.visibility === "public" ? "text-green-600" : "text-red-600"
+                }`}
+              />
+            </span>
+          )}
+          <span
+            className={`px-2 py-1 text-xs font-medium rounded-full ${
+              isPastEvent ? "bg-gray-100 text-gray-600" : "bg-green-100 text-green-700"
+            }`}
+          >
+            {isPastEvent ? "Past" : "Upcoming"}
+          </span>
+        </div>
       </div>
 
       {/* Event Details */}

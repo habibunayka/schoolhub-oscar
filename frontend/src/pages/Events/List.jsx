@@ -82,7 +82,7 @@ export default function EventsPage() {
             maxParticipants: e.capacity,
             currentParticipants: Number(e.participant_count) || 0,
             isJoined: e.rsvp_status === 'going',
-            category: e.visibility,
+            visibility: e.visibility,
             status: new Date(e.end_at) < new Date() ? 'past' : 'upcoming',
           }));
           setEvents(mapped);

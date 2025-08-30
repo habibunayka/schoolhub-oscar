@@ -414,22 +414,25 @@ export default function CreateEventPage() {
                 </div>
                 <div className="p-6">
                   {/* Event Card Preview */}
-                  <EventCard
-                    title={formData.title || "Event Title"}
-                    clubName={formData.club ? getClubLabel(formData.club) : "Club"}
-                    date={formData.date ? formatDate(formData.date) : ""}
-                    time={
-                      formData.startTime || formData.endTime
+                    <EventCard
+                      title={formData.title || "Event Title"}
+                      clubName={user?.club_name || "Club"}
+                      description={formData.description || ""}
+                      date={formData.date ? formatDate(formData.date) : ""},
+                      time={
+                        formData.startTime || formData.endTime
                         ? `${formatTime(formData.startTime)}${
                             formData.startTime && formData.endTime ? " - " : ""
                           }${formatTime(formData.endTime)}`
                         : ""
                     }
-                    location={formData.location || ""}
-                    image={formData.image || undefined}
-                    attendeeCount={formData.capacity ? Number(formData.capacity) : 0}
-                    isRSVPed={false}
-                  />
+                      location={formData.location || ""}
+                      image={formData.image || undefined}
+                      attendeeCount={formData.capacity ? Number(formData.capacity) : 0}
+                      isRSVPed={false}
+                      visibility={formData.isPublic ? "public" : "private"}
+                      hideButton
+                    />
 
                   {/* Event Settings Summary */}
                   <div className="mt-4 p-3 bg-gray-50 rounded-lg">
