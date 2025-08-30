@@ -1,7 +1,7 @@
 // src/pages/ClubProfilePage.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getClub, joinClub, listMembers, listJoinRequests, setMemberStatus } from "@services/clubs.js";
+import { getClub, joinClub, leaveClub, listMembers, listJoinRequests, setMemberStatus } from "@services/clubs.js";
 import { listPosts } from "@services/posts.js";
 import { listEvents } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
@@ -163,12 +163,30 @@ export default function ClubProfilePage() {
     if (clubData.isJoined || clubData.isRequested) return;
     if (!(await confirm(`Request to join ${clubData.name}?`))) return;
     try {
-      await joinClub(clubData.id);
-      setClubData({ ...clubData, isRequested: true });
-      toast.success('Join request sent');
+      const res = await joinClub(clubData.id);
+      if (res.status === 'approved') {
+        setClubData({ ...clubData, isJoined: true, isRequested: false });
+        toast.success('Joined club');
+      } else {
+        setClubData({ ...clubData, isRequested: true });
+        toast.success('Join request sent');
+      }
     } catch (e) {
       console.error(e);
       toast.error('Failed to send request');
+    }
+  };
+
+  const handleLeaveClub = async () => {
+    if (!clubData.isJoined) return;
+    if (!(await confirm(`Leave ${clubData.name}?`))) return;
+    try {
+      await leaveClub(clubData.id);
+      setClubData({ ...clubData, isJoined: false, isRequested: false });
+      toast.success('Left club');
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to leave club');
     }
   };
 
@@ -304,14 +322,14 @@ export default function ClubProfilePage() {
               {/* Join Button */}
               <div>
                 <Button
-                  onClick={handleJoinClub}
-                  disabled={clubData.isRequested}
-                  className="bg-[#2563EB] hover:bg-blue-700 text-white px-8 disabled:bg-gray-300 disabled:text-gray-600"
+                  onClick={clubData.isJoined ? handleLeaveClub : handleJoinClub}
+                  disabled={clubData.isRequested && !clubData.isJoined}
+                  className={`${clubData.isJoined ? 'bg-red-600 hover:bg-red-700' : 'bg-[#2563EB] hover:bg-blue-700'} text-white px-8 disabled:bg-gray-300 disabled:text-gray-600`}
                   size="lg"
                 >
                   <UserPlus className="size-4 mr-2" />
                   {clubData.isJoined
-                    ? "Joined"
+                    ? "Leave Club"
                     : clubData.isRequested
                       ? "Requested"
                       : "Join Club"}
