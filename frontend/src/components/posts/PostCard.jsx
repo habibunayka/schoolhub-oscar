@@ -13,6 +13,7 @@ import {
   CarouselPrevious,
 } from "@components/common/ui";
 import SafeImage from "@components/SafeImage";
+import { formatDateTime } from "@utils";
 
 export default function PostCard({ post, onLike, onComment, onShare, hideActions = false }) {
   if (!post) return null;
@@ -52,7 +53,7 @@ export default function PostCard({ post, onLike, onComment, onShare, hideActions
                 </Badge>
               )}
             </div>
-            <p className="text-sm text-muted-foreground">{timestamp}</p>
+            <p className="text-sm text-muted-foreground">{formatDateTime(timestamp)}</p>
           </div>
         </div>
       </CardHeader>

@@ -12,7 +12,7 @@ import {
 import { getFeedPosts, likePost, unlikePost } from "@services/posts.js";
 import { getUpcomingEvents } from "@services/events.js";
 import { getUserStats } from "@services/users.js";
-import { getAssetUrl } from "@utils";
+import { getAssetUrl, formatDate, formatTime } from "@utils";
 import PostCard from "@components/posts/PostCard.jsx";
 
 export default function StudentDashboard() {
@@ -65,15 +65,33 @@ export default function StudentDashboard() {
     isLiked: !!p.liked,
   });
 
-  const normalizeEvent = (e) => ({
-    id: String(e.id),
-    title: e.title ?? e.name,
-    clubName: e.club_name ?? e.club?.name,
-    date: e.date ?? e.start_time,
-    time: e.time ?? `${e.start_time} - ${e.end_time}`,
-    location: e.location ?? e.place ?? "-",
-    status: e.status ?? "upcoming",
-  });
+  const normalizeEvent = (e) => {
+    const start = e.start_at || e.start_time || e.date;
+    const end = e.end_at || e.end_time;
+    const date = formatDate(start);
+    const startTime = formatTime(start);
+    const endTime = end ? formatTime(end) : "";
+    const time = endTime ? `${startTime} - ${endTime}` : startTime;
+    let status = e.status;
+    if (!status && start) {
+      const now = new Date();
+      const startDate = new Date(start);
+      status = startDate.toDateString() === now.toDateString()
+        ? "today"
+        : startDate < now
+          ? "past"
+          : "upcoming";
+    }
+    return {
+      id: String(e.id),
+      title: e.title ?? e.name,
+      clubName: e.club_name ?? e.club?.name,
+      date,
+      time,
+      location: e.location ?? e.place ?? "-",
+      status,
+    };
+  };
 
   const normalizeRecom = (c) => ({
     id: String(c.id),
