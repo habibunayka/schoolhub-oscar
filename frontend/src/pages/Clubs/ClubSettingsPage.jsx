@@ -12,7 +12,7 @@ export default function ClubSettingsPage() {
     name: "",
     slug: "",
     description: "",
-    advisor_name: "",
+    leader_name: "",
     category_id: "",
     location: "",
   });
@@ -39,7 +39,7 @@ export default function ClubSettingsPage() {
           name: club.name || "",
           slug: club.slug || "",
           description: club.description || "",
-          advisor_name: club.advisor_name || "",
+          leader_name: club.advisor_name || "",
           category_id: club.category_id ? String(club.category_id) : "",
           location: club.location || "",
         });
@@ -110,7 +110,7 @@ export default function ClubSettingsPage() {
       formData.append("name", form.name);
       formData.append("slug", form.slug);
       formData.append("description", form.description);
-      formData.append("advisor_name", form.advisor_name);
+      formData.append("advisor_name", form.leader_name);
       if (form.category_id) formData.append("category_id", form.category_id);
       if (form.location) formData.append("location", form.location);
       if (selectedLogo && logoViewportRef.current) {
@@ -231,10 +231,10 @@ export default function ClubSettingsPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1 text-gray-700">Advisor Name</label>
+              <label className="block text-sm font-medium mb-1 text-gray-700">Leader Name</label>
               <input
-                name="advisor_name"
-                value={form.advisor_name}
+                name="leader_name"
+                value={form.leader_name}
                 onChange={handleChange}
                 required
                 className="w-full border border-gray-300 rounded-lg p-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"

@@ -77,3 +77,23 @@ test("PATCH /users/me updates profile", async () => {
     server.close();
     __setDbMocks({ run: async () => ({ rowCount: 0 }), get: async () => null });
 });
+
+test("GET /users returns list", async () => {
+    __setDbMocks({
+        query: async (sql, params) => {
+            assert.match(sql, /FROM users/);
+            assert.equal(params[0], "%john%");
+            return [{ id: 1, name: "John" }];
+        },
+    });
+    const token = jwt.sign({ id: 1 }, process.env.JWT_SECRET);
+    const { server, url } = await createServer();
+    const res = await fetch(`${url}/users?search=john`, {
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    assert.equal(res.status, 200);
+    const body = await res.json();
+    assert.deepEqual(body, [{ id: 1, name: "John" }]);
+    server.close();
+    __setDbMocks({ query: async () => [] });
+});

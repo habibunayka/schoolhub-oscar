@@ -9,7 +9,7 @@ export default function CreateClubPage() {
     name: "",
     slug: "",
     description: "",
-    advisor_name: "",
+    leader_name: "",
     category_id: "",
   });
   const [categories, setCategories] = useState([]);
@@ -31,7 +31,12 @@ export default function CreateClubPage() {
     e.preventDefault();
     setError("");
     try {
-      const payload = { ...form, category_id: form.category_id || null };
+      const payload = {
+        ...form,
+        advisor_name: form.leader_name,
+        category_id: form.category_id || null,
+      };
+      delete payload.leader_name;
       const { id } = await createClub(payload);
       navigate(`/clubs/${id}`);
     } catch (err) {
@@ -65,10 +70,10 @@ export default function CreateClubPage() {
           />
         </div>
         <div>
-          <label className="block mb-1 font-medium">Advisor Name</label>
+          <label className="block mb-1 font-medium">Leader Name</label>
           <input
-            name="advisor_name"
-            value={form.advisor_name}
+            name="leader_name"
+            value={form.leader_name}
             onChange={handleChange}
             required
             className="w-full border p-2 rounded"

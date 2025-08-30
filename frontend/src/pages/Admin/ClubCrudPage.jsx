@@ -9,6 +9,7 @@ import {
   getClub,
 } from "@services/clubs.js";
 import { listCategories } from "@services/clubCategories.js";
+import { searchUsers } from "@services/users.js";
 import useConfirm from "@hooks/useConfirm.jsx";
 
 export default function ClubCrudPage() {
@@ -17,10 +18,11 @@ export default function ClubCrudPage() {
   const [form, setForm] = useState({
     name: "",
     slug: "",
-    advisor_name: "",
+    leader_name: "",
     category_id: "",
     description: "",
   });
+  const [userOptions, setUserOptions] = useState([]);
   const [editingId, setEditingId] = useState(null);
   const [error, setError] = useState("");
   const { confirm, ConfirmDialog } = useConfirm();
@@ -45,11 +47,26 @@ export default function ClubCrudPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleLeaderChange = async (e) => {
+    const value = e.target.value;
+    setForm({ ...form, leader_name: value });
+    if (value.length >= 2) {
+      try {
+        const users = await searchUsers(value);
+        setUserOptions(users);
+      } catch (err) {
+        console.error(err);
+      }
+    } else {
+      setUserOptions([]);
+    }
+  };
+
   const resetForm = () => {
     setForm({
       name: "",
       slug: "",
-      advisor_name: "",
+      leader_name: "",
       category_id: "",
       description: "",
     });
@@ -61,7 +78,12 @@ export default function ClubCrudPage() {
     e.preventDefault();
     setError("");
     try {
-      const payload = { ...form, category_id: form.category_id || null };
+      const payload = {
+        ...form,
+        advisor_name: form.leader_name,
+        category_id: form.category_id || null,
+      };
+      delete payload.leader_name;
       if (editingId) {
         await patchClub(editingId, payload);
         const updated = await getClub(editingId);
@@ -84,7 +106,7 @@ export default function ClubCrudPage() {
     setForm({
       name: club.name || "",
       slug: club.slug || "",
-      advisor_name: club.advisor_name || "",
+      leader_name: club.advisor_name || "",
       category_id: club.category_id || "",
       description: club.description || "",
     });
@@ -136,13 +158,19 @@ export default function ClubCrudPage() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Advisor</label>
+              <label className="block text-sm font-medium mb-1">Leader</label>
               <input
-                name="advisor_name"
-                value={form.advisor_name}
-                onChange={handleChange}
+                name="leader_name"
+                list="user-options"
+                value={form.leader_name}
+                onChange={handleLeaderChange}
                 className="w-full border border-gray-300 p-2 rounded"
               />
+              <datalist id="user-options">
+                {userOptions.map((u) => (
+                  <option key={u.id} value={u.name} />
+                ))}
+              </datalist>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Category</label>
