@@ -48,7 +48,6 @@ export default function EditProfilePage() {
         };
         reader.readAsDataURL(file);
     };
-
     const getClientPoint = (e) => {
         if ("touches" in e) {
             return { x: e.touches[0].clientX, y: e.touches[0].clientY };
