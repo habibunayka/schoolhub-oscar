@@ -13,6 +13,7 @@ const CreatePostPage = lazy(() => import('@pages/Clubs/CreatePostPage'));
 const CreateClubPage = lazy(() => import('@pages/Clubs/CreateClubPage'));
 const ClubSettingsPage = lazy(() => import('@pages/Clubs/ClubSettingsPage'));
 const ClubCrudPage = lazy(() => import('@pages/Admin/ClubCrudPage'));
+const CategoryCrudPage = lazy(() => import('@pages/Admin/CategoryCrudPage'));
 const StudentDashboard = lazy(() => import('@pages/Dashboard/StudentDashboard'));
 const AnnouncementsList = lazy(() => import('@pages/Announcements/List'));
 const AnnouncementDetail = lazy(() => import('@pages/Announcements/Detail'));
@@ -56,6 +57,7 @@ export const router = createBrowserRouter([
       { path: 'notifications', element: withSuspense(<RequireAuth><Notification /></RequireAuth>) },
       { path: 'settings', element: withSuspense(<RequireAuth><SettingsPage /></RequireAuth>) },
       { path: 'admin/clubs', element: withSuspense(<RequireAuth><RequireSchoolAdmin><ClubCrudPage /></RequireSchoolAdmin></RequireAuth>) },
+      { path: 'admin/categories', element: withSuspense(<RequireAuth><RequireSchoolAdmin><CategoryCrudPage /></RequireSchoolAdmin></RequireAuth>) },
     ],
   },
   { path: '/login', element: withSuspense(<LoginPage />) },
