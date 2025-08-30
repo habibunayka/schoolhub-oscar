@@ -513,6 +513,68 @@ export const endpoints = {
         }
       ],
       "auth": true
+    },
+    {
+      "name": "likePost",
+      "method": "POST",
+      "path": "/posts/:id/likes",
+      "validators": [
+        {
+          "body": [],
+          "params": [
+            "id"
+          ],
+          "query": []
+        }
+      ],
+      "auth": true
+    },
+    {
+      "name": "unlikePost",
+      "method": "DELETE",
+      "path": "/posts/:id/likes",
+      "validators": [
+        {
+          "body": [],
+          "params": [
+            "id"
+          ],
+          "query": []
+        }
+      ],
+      "auth": true
+    },
+    {
+      "name": "listComments",
+      "method": "GET",
+      "path": "/posts/:id/comments",
+      "validators": [
+        {
+          "body": [],
+          "params": [
+            "id"
+          ],
+          "query": []
+        }
+      ],
+      "auth": true
+    },
+    {
+      "name": "createComment",
+      "method": "POST",
+      "path": "/posts/:id/comments",
+      "validators": [
+        {
+          "body": [
+            "body_html"
+          ],
+          "params": [
+            "id"
+          ],
+          "query": []
+        }
+      ],
+      "auth": true
     }
   ],
   "clubCategories": [

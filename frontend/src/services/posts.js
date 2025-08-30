@@ -67,10 +67,55 @@ export const createPost = async (clubId, payload) => {
   return data;
 };
 
+/**
+ * Like a post
+ * @param {number} postId
+ */
+export const likePost = async (postId) => {
+  const path = map.likePost?.path?.replace(":id", postId) || `/posts/${postId}/likes`;
+  const { data } = await api.post(path);
+  return data;
+};
+
+/**
+ * Unlike a post
+ * @param {number} postId
+ */
+export const unlikePost = async (postId) => {
+  const path = map.unlikePost?.path?.replace(":id", postId) || `/posts/${postId}/likes`;
+  const { data } = await api.delete(path);
+  return data;
+};
+
+/**
+ * List comments for a post
+ * @param {number} postId
+ */
+export const listComments = async (postId) => {
+  const path = map.listComments?.path?.replace(":id", postId) || `/posts/${postId}/comments`;
+  const { data } = await api.get(path);
+  return data;
+};
+
+/**
+ * Create a comment on a post
+ * @param {number} postId
+ * @param {string} body_html
+ */
+export const createComment = async (postId, body_html) => {
+  const path = map.createComment?.path?.replace(":id", postId) || `/posts/${postId}/comments`;
+  const { data } = await api.post(path, { body_html });
+  return data;
+};
+
 export default {
   listPosts,
   getFeedPosts,
   getPostById,
   createPost,
   getPost,
+  likePost,
+  unlikePost,
+  listComments,
+  createComment,
 };
