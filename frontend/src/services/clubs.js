@@ -81,6 +81,12 @@ export const listMembers = async (id) => {
   return data;
 };
 
+export const listJoinRequests = async (id) => {
+  const path = map.listJoinRequests.path.replace(":id", id);
+  const { data } = await api.get(path);
+  return data;
+};
+
 /**
  * Update member status
  * @param {number} id club id
@@ -112,4 +118,5 @@ export default {
   getClub,
   setMemberStatus,
   listMembers,
+  listJoinRequests,
 };

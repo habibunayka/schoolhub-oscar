@@ -3,6 +3,7 @@ import { listClubs, joinClub, leaveClub } from "@services/clubs.js";
 import { listCategories } from "@services/clubCategories.js";
 import { getAssetUrl } from "@utils";
 import SafeImage from '@/components/SafeImage';
+import { toast } from 'sonner';
 
 const SORT_OPTIONS = [
   { value: "name", label: "Name A-Z" },
@@ -42,7 +43,9 @@ function ClubCardSkeleton({ className = "" }) {
 function ClubCard({ club, onJoinToggle, className = "" }) {
   const handleJoinToggle = (e) => {
     e.stopPropagation();
-    onJoinToggle(club.id);
+    if (!club.isRequested) {
+      onJoinToggle(club.id);
+    }
   };
 
   const handleViewDetails = (e) => {
@@ -87,17 +90,25 @@ function ClubCard({ club, onJoinToggle, className = "" }) {
       </div>
       
       <div className="flex gap-2">
-        {/* TODO : Buat tombolnya ini jika ditekan maka akan muncul notifikasi konfirmasi berupa apakah anda ingin join klub ini. Jangan langsung ke join, buat statusnya request dan buat halaman requests di bagian club profile yang hanya bisa dilihat admin club. Jika belum ada backend nya buat. */}
         <button
           onClick={handleJoinToggle}
+          disabled={club.isRequested}
           className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
             club.isJoined
               ? 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500'
-              : 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500'
+              : club.isRequested
+                ? 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500'
           }`}
-          aria-label={club.isJoined ? `Leave ${club.name}` : `Join ${club.name}`}
+          aria-label={
+            club.isJoined
+              ? `Leave ${club.name}`
+              : club.isRequested
+                ? `Request pending for ${club.name}`
+                : `Join ${club.name}`
+          }
         >
-          {club.isJoined ? 'Leave' : 'Join'}
+          {club.isJoined ? 'Leave' : club.isRequested ? 'Requested' : 'Join'}
         </button>
         <button
           onClick={handleViewDetails}
@@ -310,7 +321,8 @@ export default function ClubsPage({ className = "" }) {
           category: c.category_name || "General",
           members: Number(c.member_count) || 0,
           logoUrl: getAssetUrl(c.logo_url) || "",
-          isJoined: Boolean(c.is_member),
+          isJoined: c.membership_status === 'approved',
+          isRequested: c.membership_status === 'pending',
         }));
         setClubs(mapped);
       } finally {
@@ -380,23 +392,33 @@ export default function ClubsPage({ className = "" }) {
     if (!club) return;
     try {
       if (club.isJoined) {
+        if (!window.confirm(`Leave ${club.name}?`)) return;
         await leaveClub(clubId);
+        setClubs(prev =>
+          prev.map(c =>
+            c.id === clubId
+              ? { ...c, isJoined: false, members: c.members - 1 }
+              : c
+          )
+        );
+        toast.success(`Left ${club.name}`);
+      } else if (club.isRequested) {
+        toast.info('Join request pending');
       } else {
+        if (!window.confirm(`Request to join ${club.name}?`)) return;
         await joinClub(clubId);
+        setClubs(prev =>
+          prev.map(c =>
+            c.id === clubId
+              ? { ...c, isRequested: true }
+              : c
+          )
+        );
+        toast.success('Join request sent');
       }
-      setClubs(prev =>
-        prev.map(c =>
-          c.id === clubId
-            ? {
-                ...c,
-                isJoined: !c.isJoined,
-                members: c.isJoined ? c.members - 1 : c.members + 1,
-              }
-            : c
-        )
-      );
     } catch (e) {
       console.error(e);
+      toast.error('Action failed');
     }
   };
 

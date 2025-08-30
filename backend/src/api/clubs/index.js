@@ -16,6 +16,13 @@ const r = Router();
 r.get("/", validateListClubs, auth(true), Clubs.listClubs);
 r.get("/:id", validateGetClub, auth(true), Clubs.getClub);
 r.get("/:id/members", validateGetClub, auth(true), Clubs.listMembers);
+r.get(
+    "/:id/requests",
+    validateGetClub,
+    auth(),
+    permitClub("owner", "admin"),
+    Clubs.listRequests
+);
 
 r.post(
     "/",
