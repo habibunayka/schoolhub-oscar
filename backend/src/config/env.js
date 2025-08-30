@@ -10,11 +10,4 @@ export const env = {
     DB_USER: process.env.DB_USER,
     DB_PASSWORD: process.env.DB_PASSWORD,
     DB_NAME: process.env.DB_NAME,
-    S3: {
-        ENDPOINT: process.env.S3_ENDPOINT,
-        REGION: process.env.S3_REGION,
-        BUCKET: process.env.S3_BUCKET,
-        ACCESS_KEY: process.env.S3_ACCESS_KEY,
-        SECRET_KEY: process.env.S3_SECRET_KEY,
-    },
 };
