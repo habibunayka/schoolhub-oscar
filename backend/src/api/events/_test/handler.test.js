@@ -18,6 +18,6 @@ test("listEvents queries by club id", async () => {
     await Events.listEvents(req, res);
 
     assert.deepEqual(json, [{ id: 1 }]);
-    assert.deepEqual(params, [5]);
+    assert.deepEqual(params, [5, null]);
     __setDbMocks({ query: async () => [] });
 });
