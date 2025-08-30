@@ -1,7 +1,7 @@
 // src/pages/ClubProfilePage.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getClub, joinClub, leaveClub, listMembers, listJoinRequests, setMemberStatus } from "@services/clubs.js";
+import { getClub, joinClub, leaveClub, listMembers, listJoinRequests, setMemberStatus, setMemberRole } from "@services/clubs.js";
 import { listPosts, likePost, unlikePost } from "@services/posts.js";
 import { listEvents, rsvpEvent } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
@@ -254,6 +254,21 @@ export default function ClubProfilePage() {
     } catch (e) {
       console.error(e);
       toast.error('Failed to update request');
+    }
+  };
+
+  const handleRoleChange = async (userId, currentRole) => {
+    const newRole = currentRole === 'admin' ? 'member' : 'admin';
+    if (!(await confirm(`Set member as ${newRole}?`))) return;
+    try {
+      await setMemberRole(id, userId, { role: newRole });
+      setMembers(prev =>
+        prev.map(m => (m.id === userId ? { ...m, role: newRole } : m))
+      );
+      toast.success('Member role updated');
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to update member role');
     }
   };
 
@@ -525,21 +540,32 @@ export default function ClubProfilePage() {
                   {members.map((member) => (
                     <Card key={member.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm">
                       <CardContent className="p-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-full overflow-hidden">
-                            <SafeImage
-                              src={member.avatar}
-                              alt={member.name}
-                              wrapperClassName="w-full h-full rounded-full"
-                              className="w-full h-full object-cover"
-                              sizePx={96}
-                              placeholderSize={36}
-                            />
+                        <div className="flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-12 h-12 rounded-full overflow-hidden">
+                              <SafeImage
+                                src={member.avatar}
+                                alt={member.name}
+                                wrapperClassName="w-full h-full rounded-full"
+                                className="w-full h-full object-cover"
+                                sizePx={96}
+                                placeholderSize={36}
+                              />
+                            </div>
+                            <div>
+                              <p className="font-medium">{member.name}</p>
+                              <p className="text-sm text-muted-foreground">{member.role}</p>
+                            </div>
                           </div>
-                          <div>
-                            <p className="font-medium">{member.name}</p>
-                            <p className="text-sm text-muted-foreground">{member.role}</p>
-                          </div>
+                          {isClubAdmin && member.role !== 'owner' && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleRoleChange(member.id, member.role)}
+                            >
+                              {member.role === 'admin' ? 'Make Member' : 'Make Admin'}
+                            </Button>
+                          )}
                         </div>
                       </CardContent>
                     </Card>

@@ -116,6 +116,21 @@ export const setMemberStatus = async (id, userId, payload) => {
   return data;
 };
 
+/**
+ * Update member role
+ * @param {number} id club id
+ * @param {number} userId user identifier
+ * @param {Object} payload
+ * @returns {Promise<object>}
+ */
+export const setMemberRole = async (id, userId, payload) => {
+  const path = map.setMemberRole.path
+    .replace(":id", id)
+    .replace(":userId", userId);
+  const { data } = await api.patch(path, payload);
+  return data;
+};
+
 export const getClub = async (id) => {
   const { data } = await api.get(`/clubs/${id}`);
   return data;
@@ -132,6 +147,7 @@ export default {
   leaveClub,
   getClub,
   setMemberStatus,
+  setMemberRole,
   listMembers,
   listJoinRequests,
 };

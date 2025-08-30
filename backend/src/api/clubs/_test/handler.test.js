@@ -118,3 +118,22 @@ test("joinClub returns existing status if already joined", async () => {
         get: async () => undefined,
     });
 });
+
+test("setMemberRole updates role", async () => {
+    let params;
+    __setDbMocks({
+        run: async (sql, p) => {
+            params = p;
+            return { rowCount: 1, rows: [] };
+        },
+    });
+    const req = { params: { id: "5", userId: "3" }, body: { role: "admin" } };
+    let json;
+    const res = { json: (d) => (json = d) };
+
+    await Clubs.setMemberRole(req, res);
+
+    assert.deepEqual(params, ["admin", 5, 3]);
+    assert.deepEqual(json, { ok: true });
+    __setDbMocks({ run: async () => ({ rowCount: 0, rows: [] }) });
+});
