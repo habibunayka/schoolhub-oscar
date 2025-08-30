@@ -1,8 +1,19 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Plus, Calendar, Clock, MapPin, Users, Edit, Trash2, Eye } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
-import { listAllEvents } from "@services/events.js";
+import { listAllEvents, rsvpEvent } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@components/common/ui/feedback";
 
 
 const FILTER_OPTIONS = [
@@ -128,21 +139,50 @@ function EventCard({ event, currentUser, onJoinToggle, onEdit, onDelete, onViewD
 
       {/* Action Buttons */}
       <div className="flex gap-2">
-        {/* TODO : Buat ini itu benar-benar join yang berfungsi. Jika di pencet buat ada konfirmasi apakah anda bena-benar ingin join (jangan konfirmasi yang default, buat component nya saja), jangan langsung masuk, tapi ada requesting... */}
         {canJoin && (
-          <button
-            onClick={() => onJoinToggle(event.id)}
-            disabled={isFull && !event.isJoined}
-            className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
-              event.isJoined
-                ? 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500'
-                : isFull
-                ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500'
-            }`}
-          >
-            {event.isJoined ? 'Leave' : isFull ? 'Full' : 'Join'}
-          </button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <button
+                disabled={isFull && !event.isJoined}
+                className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                  event.isJoined
+                    ? 'bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500'
+                    : isFull
+                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                    : 'bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500'
+                }`}
+              >
+                {event.isJoined ? 'Leave' : isFull ? 'Full' : 'Join'}
+              </button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>
+                  {event.isJoined ? 'Leave event?' : 'Join event?'}
+                </AlertDialogTitle>
+                <AlertDialogDescription>
+                  {event.isJoined
+                    ? 'Are you sure you want to leave this event?'
+                    : 'Confirm your participation in this event.'}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                {!isFull && (
+                  <AlertDialogAction
+                    onClick={() => onJoinToggle(event.id, event.isJoined)}
+                    className={
+                      event.isJoined
+                        ? 'bg-red-600 text-white hover:bg-red-700'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }
+                  >
+                    {event.isJoined ? 'Leave' : 'Join'}
+                  </AlertDialogAction>
+                )}
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         )}
 
         {/* View Details Button */}
@@ -272,20 +312,27 @@ export default function EventsPage() {
     });
   }, [events, searchQuery, filterType]);
 
-  const handleJoinToggle = (eventId) => {
-    setEvents(prev =>
-      prev.map(event =>
-        event.id === eventId
-          ? { 
-              ...event, 
-              isJoined: !event.isJoined,
-              currentParticipants: event.isJoined 
-                ? event.currentParticipants - 1 
-                : event.currentParticipants + 1
-            }
-          : event
-      )
-    );
+  const handleJoinToggle = async (eventId, isJoined) => {
+    try {
+      await rsvpEvent(eventId, {
+        status: isJoined ? 'declined' : 'going',
+      });
+      setEvents(prev =>
+        prev.map(event =>
+          event.id === eventId
+            ? {
+                ...event,
+                isJoined: !isJoined,
+                currentParticipants: isJoined
+                  ? event.currentParticipants - 1
+                  : event.currentParticipants + 1,
+              }
+            : event
+        )
+      );
+    } catch (e) {
+      console.error(e);
+    }
   };
 
     const handleCreateEvent = () => {
