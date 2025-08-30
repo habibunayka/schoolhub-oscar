@@ -32,7 +32,8 @@ export default function EventCard({
     role === "school_admin" ||
     (role === "club_admin" && event.organizerId === currentUser?.clubId);
   const canDelete = role === "school_admin";
-  const canJoin = role === "student" && !isPastEvent && onJoinToggle;
+  const canJoin =
+    role === "student" && !isPastEvent && onJoinToggle && event.requireRsvp;
 
   const visibilityIcon =
     event.visibility === "public" ? Globe : event.visibility === "private" ? Lock : null;
@@ -134,18 +135,18 @@ export default function EventCard({
                     : "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500"
                 }`}
               >
-                {event.isJoined ? "Leave" : isFull ? "Full" : "Join"}
+                {event.isJoined ? "Cancel RSVP" : isFull ? "Full" : "RSVP"}
               </button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>
-                  {event.isJoined ? "Leave event?" : "Join event?"}
+                  {event.isJoined ? "Cancel RSVP?" : "RSVP to event?"}
                 </AlertDialogTitle>
                 <AlertDialogDescription>
                   {event.isJoined
-                    ? "Are you sure you want to leave this event?"
-                    : "Confirm your participation in this event."}
+                    ? "Are you sure you want to cancel your RSVP?"
+                    : "Confirm your attendance by RSVPing."}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -159,7 +160,7 @@ export default function EventCard({
                         : "bg-blue-600 text-white hover:bg-blue-700"
                     }
                   >
-                    {event.isJoined ? "Leave" : "Join"}
+                    {event.isJoined ? "Cancel RSVP" : "RSVP"}
                   </AlertDialogAction>
                 )}
               </AlertDialogFooter>

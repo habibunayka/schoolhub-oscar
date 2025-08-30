@@ -84,6 +84,7 @@ export default function EventsPage() {
             isJoined: e.rsvp_status === 'going',
             visibility: e.visibility,
             status: new Date(e.end_at) < new Date() ? 'past' : 'upcoming',
+            requireRsvp: e.require_rsvp,
           }));
           setEvents(mapped);
         } finally {
