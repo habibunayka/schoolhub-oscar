@@ -16,10 +16,10 @@ if (service) {
     });
 
   test("list builds query", async () => {
-    const res = await service.list({ page: 2, clubId: 5 });
+    const res = await service.list({ page: 2, search: "hello" });
     assert.equal(res.url, "/announcements");
     assert.equal(res.params.offset, 10);
-    assert.equal(res.params.club_id, 5);
+    assert.equal(res.params.search, "hello");
   });
 
   test("get uses path", async () => {
@@ -28,14 +28,14 @@ if (service) {
   });
 
   test("create posts payload", async () => {
-    const payload = { club_id: 1, title: "t", content_html: "c", target: "all" };
+    const payload = { title: "t", content_html: "c" };
     const res = await service.create(payload);
     assert.equal(res.method, "post");
     assert.deepEqual(JSON.parse(res.data), payload);
   });
 
   test("update puts payload", async () => {
-    const payload = { title: "t", content_html: "c", target: "all" };
+    const payload = { title: "t", content_html: "c" };
     const res = await service.update(2, payload);
     assert.equal(res.method, "put");
     assert.equal(res.url, "/announcements/2");

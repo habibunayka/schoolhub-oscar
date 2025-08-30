@@ -28,8 +28,7 @@ export const endpoints = {
           "body": [],
           "params": [],
           "query": [
-            "club_id",
-            "target",
+            "search",
             "limit",
             "offset"
           ]
@@ -59,10 +58,8 @@ export const endpoints = {
       "validators": [
         {
           "body": [
-            "club_id",
             "title",
-            "content_html",
-            "target"
+            "content_html"
           ],
           "params": [],
           "query": []
@@ -78,8 +75,7 @@ export const endpoints = {
         {
           "body": [
             "title",
-            "content_html",
-            "target"
+            "content_html"
           ],
           "params": [
             "id"
