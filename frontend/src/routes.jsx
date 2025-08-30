@@ -10,6 +10,7 @@ const ClubProfilePage = lazy(() => import('@pages/Clubs/ClubProfilePage'));
 const CreateEventPage = lazy(() => import('@pages/Clubs/CreateEventPage'));
 const CreatePostPage = lazy(() => import('@pages/Clubs/CreatePostPage'));
 const CreateClubPage = lazy(() => import('@pages/Clubs/CreateClubPage'));
+const ClubSettingsPage = lazy(() => import('@pages/Clubs/ClubSettingsPage'));
 const ClubCrudPage = lazy(() => import('@pages/Admin/ClubCrudPage'));
 const StudentDashboard = lazy(() => import('@pages/Dashboard/StudentDashboard'));
 const AnnouncementsList = lazy(() => import('@pages/Announcements/List'));
@@ -38,6 +39,7 @@ export const router = createBrowserRouter([
       { path: 'clubs', element: withSuspense(<RequireAuth><ClubListPage /></RequireAuth>) },
       { path: 'clubs/new', element: withSuspense(<RequireAuth><CreateClubPage /></RequireAuth>) },
       { path: 'clubs/:id', element: withSuspense(<RequireAuth><ClubProfilePage /></RequireAuth>) },
+      { path: 'clubs/:id/settings', element: withSuspense(<RequireAuth><ClubSettingsPage /></RequireAuth>) },
       { path: 'clubs/:id/events/new', element: withSuspense(<RequireAuth><CreateEventPage /></RequireAuth>) },
       { path: 'clubs/:id/posts/new', element: withSuspense(<RequireAuth><CreatePostPage /></RequireAuth>) },
       { path: 'events', element: withSuspense(<RequireAuth><EventsList /></RequireAuth>) },
