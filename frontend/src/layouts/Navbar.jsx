@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
-import { Bell, Search, Menu, X } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Bell, Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@hooks/useAuth.js";
 import useUnreadNotifications from "../hooks/useUnreadNotifications.js";
@@ -104,92 +104,14 @@ function UserMenu() {
   );
 }
 
-function MobileNavMenu({ isOpen, onClose }) {
-  const navLinks = [
-    { to: "/", label: "Home" },
-    { to: "/clubs", label: "Clubs" },
-    { to: "/events", label: "Events" },
-    { to: "/announcements", label: "Announcements" },
-  ];
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="absolute left-0 right-0 top-full bg-white border-b border-border md:hidden z-40">
-      <div className="px-4 py-2 space-y-1">
-        {navLinks.map((link) => (
-          <NavLink
-            key={link.to}
-            to={link.to}
-            onClick={onClose}
-            className={({ isActive }) =>
-              `block px-3 py-2 rounded-md text-base font-medium transition-all duration-200 ${
-                isActive
-                  ? "text-primary bg-gray-100"
-                  : "text-gray-700 hover:text-black hover:bg-primary hover:shadow-md hover:scale-[1.02]"
-              }`
-            }
-          >
-            {link.label}
-          </NavLink>
-        ))}
-      </div>
-    </div>
-  );
-}
-
-function DesktopNavLinks() {
-  const navLinks = [
-    { to: "/", label: "Home" },
-    { to: "/clubs", label: "Clubs" },
-    { to: "/events", label: "Events" },
-    { to: "/announcements", label: "Announcements" },
-  ];
-
-  return (
-    <div className="hidden md:flex items-center space-x-8">
-      {navLinks.map((link) => (
-        <NavLink
-          key={link.to}
-          to={link.to}
-          className={({ isActive }) =>
-            `relative text-sm font-medium transition-all duration-200 border-b-2 ${
-              isActive
-                ? "text-primary border-primary"
-                : "text-gray-700 border-transparent hover:text-primary hover:border-primary/70"
-            }`
-          }
-        >
-          {link.label}
-        </NavLink>
-      ))}
-    </div>
-  );
-}
-
 export default function Navbar() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const unreadCount = useUnreadNotifications();
 
   return (
     <nav className="w-full bg-white/80 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 px-4 py-3">
         <div className="flex items-center gap-3">
-          {/* Mobile hamburger menu */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors duration-200 rounded-lg"
-            onClick={() => setMobileNavOpen(!mobileNavOpen)}
-          >
-            {mobileNavOpen ? (
-              <X className="size-5 transition-transform duration-200 rotate-90" />
-            ) : (
-              <Menu className="size-5 transition-transform duration-200" />
-            )}
-          </Button>
-
           {/* Logo */}
           <Link
             to="/"
@@ -198,10 +120,6 @@ export default function Navbar() {
             SchoolHub
           </Link>
         </div>
-
-        {/* Desktop navigation links */}
-        <DesktopNavLinks />
-
         {/* Search bar (desktop) */}
         <div className="flex-1 max-w-md hidden md:block">
           <GlobalSearch />
@@ -243,11 +161,6 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile navigation menu */}
-      <MobileNavMenu
-        isOpen={mobileNavOpen}
-        onClose={() => setMobileNavOpen(false)}
-      />
     </nav>
   );
 }
