@@ -4,7 +4,7 @@ import { listCategories } from "@services/clubCategories.js";
 import { getAssetUrl } from "@utils";
 import SafeImage from '@/components/SafeImage';
 import { toast } from 'sonner';
-import useConfirm from "@hooks/useConfirm.js";
+import useConfirm from "@hooks/useConfirm.jsx";
 
 const SORT_OPTIONS = [
   { value: "name", label: "Name A-Z" },
