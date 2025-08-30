@@ -1,6 +1,6 @@
 # SchoolHub
 
-SchoolHub is a full-stack monorepo that provides a web platform for managing school activities. It combines an Express.js API and a modern React interface to handle authentication, clubs, events, posts, and more.
+SchoolHub is a full-stack monorepo that provides a web platform for managing school activities. It combines an Express.js API and a modern React interface to handle authentication, clubs, events, posts, and more. this project created by Terima Kasih.
 
 ## Features
 
@@ -124,3 +124,5 @@ scripts/   - utility scripts
 ## License
 
 MIT
+
+
