@@ -23,8 +23,14 @@ export const updateProfile = async (payload) => {
   return data;
 };
 
+export const searchUsers = async (search) => {
+  const { data } = await api.get("/users", { params: { search } });
+  return data;
+};
+
 export default {
   getUserStats,
   getAchievements,
   updateProfile,
+  searchUsers,
 };

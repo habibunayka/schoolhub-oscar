@@ -1,4 +1,4 @@
-import { get, run } from "../../database/db.js";
+import { get, run, query } from "../../database/db.js";
 
 export const getMyStats = async (req, res) => {
     const id = req.user.id;
@@ -30,4 +30,13 @@ export const updateMe = async (req, res) => {
         [id]
     );
     res.json(user);
+};
+
+export const listUsers = async (req, res) => {
+    const search = req.query.search ? `%${req.query.search}%` : "%";
+    const rows = await query(
+        `SELECT id, name FROM users WHERE name ILIKE $1 ORDER BY name LIMIT 20`,
+        [search]
+    );
+    res.json(rows);
 };
