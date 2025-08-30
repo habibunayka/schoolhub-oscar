@@ -11,9 +11,15 @@ export const getAchievements = async () => {
 };
 
 export const updateProfile = async (payload) => {
-  const { data } = await api.patch("/users/me", JSON.stringify(payload), {
-    headers: { "Content-Type": "application/json" },
-  });
+  const isFormData = payload instanceof FormData;
+  const config = isFormData
+    ? {}
+    : { headers: { "Content-Type": "application/json" } };
+  const { data } = await api.patch(
+    "/users/me",
+    isFormData ? payload : JSON.stringify(payload),
+    config
+  );
   return data;
 };
 
