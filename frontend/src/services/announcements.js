@@ -33,7 +33,8 @@ export const get = async (id) => {
  * @param {{ title:string, content_html:string }} payload
  * @returns {Promise<object>}
  */
-export const create = async (payload) => {
+export const create = async ({ title, content_html }) => {
+  const payload = { title, content_html };
   const { data } = await api.post(map.createAnnouncement.path, payload);
   return data;
 };
@@ -44,8 +45,12 @@ export const create = async (payload) => {
  * @param {{ title:string, content_html:string }} payload
  * @returns {Promise<object>}
  */
-export const update = async (id, payload) => {
-  const { data } = await api.put(map.updateAnnouncement.path.replace(":id", id), payload);
+export const update = async (id, { title, content_html }) => {
+  const payload = { title, content_html };
+  const { data } = await api.put(
+    map.updateAnnouncement.path.replace(":id", id),
+    payload
+  );
   return data;
 };
 

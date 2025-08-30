@@ -27,18 +27,19 @@ if (service) {
     assert.equal(res.url, "/announcements/3");
   });
 
-  test("create posts payload", async () => {
-    const payload = { title: "t", content_html: "c" };
+  test("create posts only allowed fields", async () => {
+    const payload = { title: "t", content_html: "c", extra: "x" };
     const res = await service.create(payload);
     assert.equal(res.method, "post");
-    assert.deepEqual(JSON.parse(res.data), payload);
+    assert.deepEqual(JSON.parse(res.data), { title: "t", content_html: "c" });
   });
 
-  test("update puts payload", async () => {
-    const payload = { title: "t", content_html: "c" };
+  test("update sends only allowed fields", async () => {
+    const payload = { title: "t", content_html: "c", extra: "x" };
     const res = await service.update(2, payload);
     assert.equal(res.method, "put");
     assert.equal(res.url, "/announcements/2");
+    assert.deepEqual(JSON.parse(res.data), { title: "t", content_html: "c" });
   });
 
   test("remove calls delete", async () => {
