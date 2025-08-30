@@ -25,6 +25,7 @@ import {
     DialogFooter,
     DialogClose,
 } from "@components/common/ui/feedback";
+import { formatDateOnly } from "@/utils/date";
 
 export default function ProfilePage() {
     const navigate = useNavigate();
@@ -191,7 +192,7 @@ export default function ProfilePage() {
                             <div className="flex items-center space-x-6 mt-4 text-sm text-gray-600">
                                 <div className="flex items-center space-x-2">
                                     <Calendar className="w-4 h-4" />
-                                    <span>{user?.joined_at || "-"}</span>
+                                    <span>{formatDateOnly(user?.joined_at) || "-"}</span>
                                 </div>
                                 <div className="flex items-center space-x-2">
                                     <MapPin className="w-4 h-4" />
