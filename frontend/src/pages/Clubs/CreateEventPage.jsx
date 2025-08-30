@@ -2,19 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { listClubs } from "@services/clubs.js";
 import { me as getCurrentUser } from "@services/auth.js";
-import {
-  ArrowLeft,
-  Upload,
-  Calendar,
-  Clock,
-  MapPin,
-  Users,
-  Eye,
-  Bold,
-  Italic,
-  List,
-  Save,
-} from "lucide-react";
+import { ArrowLeft, Upload, Eye, Bold, Italic, List, Save } from "lucide-react";
+import { EventCard } from "@components/common/ui";
 
 // Restrict page to club admin role
 
@@ -458,80 +447,22 @@ export default function CreateEventPage() {
                 </div>
                 <div className="p-6">
                   {/* Event Card Preview */}
-                  <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                    <div className="relative">
-                      {formData.image ? (
-                        <img
-                          src={formData.image}
-                          alt="Event preview"
-                          className="w-full h-32 object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-32 bg-gray-100 flex items-center justify-center">
-                          <Upload className="w-8 h-8 text-gray-400" />
-                        </div>
-                      )}
-                      {formData.club && (
-                        <span className="absolute top-2 left-2 px-2 py-1 bg-orange-500 text-white text-xs font-medium rounded-full">
-                          {getClubLabel(formData.club)}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="p-4">
-                      <h3 className="font-medium mb-2 text-gray-900">
-                        {formData.title || "Event Title"}
-                      </h3>
-
-                      {formData.description && (
-                        <p className="text-sm text-gray-600 mb-3">
-                          {formData.description.length > 100 
-                            ? `${formData.description.substring(0, 100)}...` 
-                            : formData.description}
-                        </p>
-                      )}
-
-                      <div className="space-y-2 text-sm text-gray-600">
-                        {formData.date && (
-                          <div className="flex items-center gap-2">
-                            <Calendar className="w-4 h-4" />
-                            <span>{formatDate(formData.date)}</span>
-                          </div>
-                        )}
-                        {(formData.startTime || formData.endTime) && (
-                          <div className="flex items-center gap-2">
-                            <Clock className="w-4 h-4" />
-                            <span>
-                              {formatTime(formData.startTime)}
-                              {formData.startTime && formData.endTime && " - "}
-                              {formatTime(formData.endTime)}
-                            </span>
-                          </div>
-                        )}
-                        {formData.location && (
-                          <div className="flex items-center gap-2">
-                            <MapPin className="w-4 h-4" />
-                            <span>{formData.location}</span>
-                          </div>
-                        )}
-                        {formData.capacity && (
-                          <div className="flex items-center gap-2">
-                            <Users className="w-4 h-4" />
-                            <span>Max {formData.capacity} attendees</span>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="mt-4">
-                        <button
-                          className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg opacity-50 cursor-not-allowed"
-                          disabled
-                        >
-                          {formData.requiresRSVP ? "RSVP" : "Join Event"}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
+                  <EventCard
+                    title={formData.title || "Event Title"}
+                    clubName={formData.club ? getClubLabel(formData.club) : "Club"}
+                    date={formData.date ? formatDate(formData.date) : ""}
+                    time={
+                      formData.startTime || formData.endTime
+                        ? `${formatTime(formData.startTime)}${
+                            formData.startTime && formData.endTime ? " - " : ""
+                          }${formatTime(formData.endTime)}`
+                        : ""
+                    }
+                    location={formData.location || ""}
+                    image={formData.image || undefined}
+                    attendeeCount={formData.capacity ? Number(formData.capacity) : 0}
+                    isRSVPed={false}
+                  />
 
                   {/* Event Settings Summary */}
                   <div className="mt-4 p-3 bg-gray-50 rounded-lg">

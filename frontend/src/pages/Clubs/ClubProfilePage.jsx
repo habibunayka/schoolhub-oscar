@@ -214,7 +214,11 @@ export default function ClubProfilePage() {
     navigate(`/clubs/${id}/events/new`);
   };
 
-  const canCreateEvent =
+  const handleCreatePost = () => {
+    navigate(`/clubs/${id}/posts/new`);
+  };
+
+  const isClubAdmin =
     currentUser &&
     currentUser.role === 'club_admin' &&
     String(currentUser.clubId) === id;
@@ -390,6 +394,17 @@ export default function ClubProfilePage() {
             <Tabs value={activeTab} className="w-full">
               <TabsContent value="posts" className="mt-0">
                 <div className="space-y-6">
+                  {isClubAdmin && (
+                    <div className="flex justify-end">
+                      <Button
+                        onClick={handleCreatePost}
+                        className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white"
+                      >
+                        <Plus className="size-4" />
+                        Create Post
+                      </Button>
+                    </div>
+                  )}
                   {posts.map((post) => (
                     // Buat ini benar-benar posts yang real, ada beberapa bug disini seperti caption nya gaada. Dan buat like nya bekerja, habus komentarnya.
                     <Card key={post.id} className="overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm">
@@ -487,9 +502,12 @@ export default function ClubProfilePage() {
 
               <TabsContent value="events" className="mt-0">
                 <div className="space-y-4">
-                  {canCreateEvent && (
+                  {isClubAdmin && (
                     <div className="flex justify-end">
-                      <Button onClick={handleCreateEvent} className="flex items-center gap-2">
+                      <Button
+                        onClick={handleCreateEvent}
+                        className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white"
+                      >
                         <Plus className="size-4" />
                         Create Event
                       </Button>
