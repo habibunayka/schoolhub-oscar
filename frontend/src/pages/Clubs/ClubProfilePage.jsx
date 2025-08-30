@@ -406,7 +406,7 @@ export default function ClubProfilePage() {
                 <Button
                   onClick={clubData.isJoined ? handleLeaveClub : handleJoinClub}
                   disabled={clubData.isRequested && !clubData.isJoined}
-                  className={`${clubData.isJoined ? 'bg-red-600 hover:bg-red-700' : 'bg-[#2563EB] hover:bg-blue-700'} text-white px-6 sm:px-8 disabled:bg-gray-300 disabled:text-gray-600`}
+                  className={`w-full sm:w-auto ${clubData.isJoined ? 'bg-red-600 hover:bg-red-700' : 'bg-[#2563EB] hover:bg-blue-700'} text-white px-6 sm:px-8 disabled:bg-gray-300 disabled:text-gray-600`}
                   size="lg"
                 >
                   <UserPlus className="size-4 mr-2" />
