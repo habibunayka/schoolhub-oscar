@@ -51,11 +51,6 @@ DB_PORT=5432
 DB_USER=postgres
 DB_PASSWORD=postgres
 DB_NAME=schoolhub
-S3_ENDPOINT=
-S3_REGION=
-S3_BUCKET=
-S3_ACCESS_KEY=
-S3_SECRET_KEY=
 ```
 
 ### Frontend (`frontend/.env`)
