@@ -29,6 +29,7 @@ import {
   DialogFooter,
   DialogClose,
 } from "@components/common/ui/feedback";
+import { formatDateOnly } from "@/utils/date";
 
 export default function ProfilePage() {
   const navigate = useNavigate();
@@ -205,18 +206,18 @@ export default function ProfilePage() {
                   {user?.bio || "No bio provided."}
                 </p>
 
-                <div className="flex items-center space-x-6 mt-4 text-sm text-gray-600">
-                  <div className="flex items-center space-x-2">
-                    <Calendar className="w-4 h-4" />
-                    <span>{user?.joined_at || "-"}</span>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <MapPin className="w-4 h-4" />
-                    <span>{user?.location || "-"}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+                            <div className="flex items-center space-x-6 mt-4 text-sm text-gray-600">
+                                <div className="flex items-center space-x-2">
+                                    <Calendar className="w-4 h-4" />
+                                    <span>{formatDateOnly(user?.joined_at) || "-"}</span>
+                                </div>
+                                <div className="flex items-center space-x-2">
+                                    <MapPin className="w-4 h-4" />
+                                    <span>{user?.location || "-"}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
             <div className="mt-4">
               <button
@@ -262,41 +263,42 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* My Clubs */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">
-              My Clubs
-            </h3>
-            <div className="space-y-3">
-              {Array.isArray(clubs) &&
-                clubs.map((club) => (
-                  <div
-                    key={club.id}
-                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50"
-                  >
-                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
-                      {club.logo_url ? (
-                        <img
-                          src={getAssetUrl(club.logo_url)}
-                          alt={club.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-xl">{club.name?.charAt(0)}</span>
-                      )}
+                {/* My Clubs */}
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">My Clubs</h3>
+                    <div className="space-y-3">
+
+                        {Array.isArray(clubs) &&
+                            clubs.map((club) => (
+                                <div
+                                    key={club.id}
+                                    className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50"
+                                >
+                                    <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
+                                        {club.logo_url ? (
+                                            <SafeImage
+                                                src={getAssetUrl(club.logo_url)}
+                                                alt={club.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="text-xl">
+                                                {club.name?.charAt(0)}
+                                            </span>
+                                        )}
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="font-medium text-gray-900">
+                                            {club.name}
+                                        </div>
+                                        <div className="text-sm text-gray-500">
+                                            {club.category_name || club.role || "Member"}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
                     </div>
-                    <div className="flex-1">
-                      <div className="font-medium text-gray-900">
-                        {club.name}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {club.category_name || club.role || "Member"}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
+                </div>
 
           {/* Recent Achievements */}
           <div className="bg-white rounded-lg shadow-sm p-6">
