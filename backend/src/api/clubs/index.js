@@ -10,6 +10,7 @@ import {
     validateSetMemberStatus,
     validateGetClub,
 } from "./validator.js";
+import { upload } from "../../services/storage.js";
 
 const r = Router();
 
@@ -34,12 +35,16 @@ r.post(
 
 r.patch(
     "/:id",
-    validatePatchClub,
     auth(),
     (req, res, next) => {
         if (req.user.role_global === "school_admin") return next();
         return permitClub("owner", "admin")(req, res, next);
     },
+    upload.fields([
+        { name: "logo", maxCount: 1 },
+        { name: "banner", maxCount: 1 },
+    ]),
+    validatePatchClub,
     Clubs.patchClub
 );
 r.delete(
