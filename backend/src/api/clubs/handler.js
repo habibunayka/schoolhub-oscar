@@ -192,6 +192,16 @@ export const setMemberStatus = async (req, res) => {
     res.json({ ok: true });
 };
 
+export const setMemberRole = async (req, res) => {
+    const { userId } = req.params;
+    const { role } = req.body; // 'admin'|'member'
+    await run(
+        `UPDATE club_members SET role = $1 WHERE club_id = $2 AND user_id = $3`,
+        [role, Number(req.params.id), Number(userId)]
+    );
+    res.json({ ok: true });
+};
+
 export const deleteClub = async (req, res) => {
     const id = Number(req.params.id);
     await run(`UPDATE clubs SET is_active = false WHERE id = $1`, [id]);

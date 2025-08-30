@@ -263,6 +263,40 @@ export const validateSetMemberStatus = [
     checkValidationResult,
 ];
 
+export const validateSetMemberRole = [
+    param("id")
+        .isInt({ min: 1 })
+        .withMessage("Club ID must be a positive integer"),
+
+    param("userId")
+        .isInt({ min: 1 })
+        .withMessage("User ID must be a positive integer"),
+
+    body("role")
+        .notEmpty()
+        .withMessage("Role is required")
+        .isIn(["admin", "member"])
+        .withMessage('Role must be either "admin" or "member"'),
+
+    body().custom((body) => {
+        const allowedFields = ["role"];
+        const bodyKeys = Object.keys(body);
+        const unexpectedFields = bodyKeys.filter(
+            (key) => !allowedFields.includes(key)
+        );
+
+        if (unexpectedFields.length > 0) {
+            throw new Error(
+                `Unexpected fields: ${unexpectedFields.join(", ")}`
+            );
+        }
+
+        return true;
+    }),
+
+    checkValidationResult,
+];
+
 export const validatePatchHasFields = (req, res, next) => {
     const allowedFields = [
         "name",
