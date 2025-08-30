@@ -165,7 +165,7 @@ export default function ProfilePage() {
                             />
                             <button
                                 className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-lg hover:shadow-xl"
-                                onClick={() => avatarInputRef.current?.click()}
+                                onClick={() => navigate('/profile/edit')}
                             >
                                 <Camera className="w-4 h-4 text-gray-600" />
                             </button>
