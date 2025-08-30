@@ -1,27 +1,27 @@
-import { Home, Grid3X3, Calendar, Megaphone } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { Home, Grid3X3, Calendar, Megaphone } from "lucide-react";
 
 export function BottomNavigation() {
   const navItems = [
     {
       to: "/",
-      icon: <Home className="size-5" />,
       label: "Home",
+      icon: <Home className="size-5" />,
     },
     {
       to: "/clubs",
-      icon: <Grid3X3 className="size-5" />,
       label: "Clubs",
+      icon: <Grid3X3 className="size-5" />,
     },
     {
       to: "/events",
-      icon: <Calendar className="size-5" />,
       label: "Events",
+      icon: <Calendar className="size-5" />,
     },
     {
       to: "/announcements",
-      icon: <Megaphone className="size-5" />,
       label: "Announcements",
+      icon: <Megaphone className="size-5" />,
     },
   ];
 
@@ -33,14 +33,14 @@ export function BottomNavigation() {
             key={item.to}
             to={item.to}
             className={({ isActive }) =>
-              `flex flex-col items-center justify-center gap-1 relative ${
+              `flex flex-col items-center justify-center gap-1 ${
                 isActive
                   ? "text-[#2563EB]"
                   : "text-muted-foreground hover:text-foreground"
               }`
             }
           >
-            <div className="p-1">{item.icon}</div>
+            {item.icon}
             <span className="text-xs">{item.label}</span>
           </NavLink>
         ))}

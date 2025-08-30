@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Bell, Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@hooks/useAuth.js";
@@ -104,6 +104,35 @@ function UserMenu() {
   );
 }
 
+function DesktopNavLinks() {
+  const navLinks = [
+    { to: "/", label: "Home" },
+    { to: "/clubs", label: "Clubs" },
+    { to: "/events", label: "Events" },
+    { to: "/announcements", label: "Announcements" },
+  ];
+
+  return (
+    <div className="hidden md:flex items-center space-x-8">
+      {navLinks.map((link) => (
+        <NavLink
+          key={link.to}
+          to={link.to}
+          className={({ isActive }) =>
+            `relative text-sm font-medium transition-all duration-200 border-b-2 ${
+              isActive
+                ? "text-primary border-primary"
+                : "text-gray-700 border-transparent hover:text-primary hover:border-primary/70"
+            }`
+          }
+        >
+          {link.label}
+        </NavLink>
+      ))}
+    </div>
+  );
+}
+
 export default function Navbar() {
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const unreadCount = useUnreadNotifications();
@@ -112,7 +141,6 @@ export default function Navbar() {
     <nav className="hidden md:block w-full bg-white/80 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 px-4 py-3">
         <div className="flex items-center gap-3">
-          {/* Logo */}
           <Link
             to="/"
             className="font-bold text-xl text-primary hover:text-blue-600 transition-colors duration-200 hover:scale-105 transform"
@@ -120,6 +148,7 @@ export default function Navbar() {
             SchoolHub
           </Link>
         </div>
+        <DesktopNavLinks />
         {/* Search bar (desktop) */}
         <div className="flex-1 max-w-md hidden md:block">
           <GlobalSearch />
