@@ -1,7 +1,7 @@
 // src/pages/ClubProfilePage.jsx
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getClub, joinClub, listMembers } from "@services/clubs.js";
+import { getClub, joinClub, listMembers, listJoinRequests, setMemberStatus } from "@services/clubs.js";
 import { listPosts } from "@services/posts.js";
 import { listEvents } from "@services/events.js";
 import { getAssetUrl } from "@utils";
@@ -38,6 +38,7 @@ import {
 
 import SafeImage from "@components/SafeImage";
 import { getInitials } from "@utils/string";
+import { toast } from "sonner";
 
 export default function ClubProfilePage() {
   const navigate = useNavigate();
@@ -47,6 +48,8 @@ export default function ClubProfilePage() {
   const [posts, setPosts] = useState([]);
   const [members, setMembers] = useState([]);
   const [upcomingEvents, setUpcomingEvents] = useState([]);
+  const [requests, setRequests] = useState([]);
+  const [canViewRequests, setCanViewRequests] = useState(false);
 
   useEffect(() => {
     async function fetchClub() {
@@ -62,6 +65,7 @@ export default function ClubProfilePage() {
         coverImage: getAssetUrl(data.banner_url) || "",
         logoImage: getAssetUrl(data.logo_url) || "",
         isJoined: false,
+        isRequested: false,
         stats: { events: 0, posts: 0, achievements: 0 },
       });
     }
@@ -75,8 +79,29 @@ export default function ClubProfilePage() {
         listMembers(id),
         listEvents(id),
       ]);
+      let requestsData = [];
+      try {
+        requestsData = await listJoinRequests(id);
+        setCanViewRequests(true);
+      } catch {
+        setCanViewRequests(false);
+      }
       setPosts(postsData || []);
-      setMembers(membersData || []);
+      setMembers(
+        (membersData || []).map((m) => ({
+          id: m.id,
+          name: m.name,
+          role: m.role,
+          avatar: getAssetUrl(m.avatar_url) || "",
+        }))
+      );
+      setRequests(
+        (requestsData || []).map((r) => ({
+          id: r.id,
+          name: r.name,
+          avatar: getAssetUrl(r.avatar_url) || "",
+        }))
+      );
       setUpcomingEvents(eventsData || []);
       setClubData((prev) =>
         prev
@@ -112,11 +137,35 @@ export default function ClubProfilePage() {
   };
 
   const handleJoinClub = async () => {
+    if (clubData.isJoined || clubData.isRequested) return;
+    if (!window.confirm(`Request to join ${clubData.name}?`)) return;
     try {
       await joinClub(clubData.id);
-      setClubData({ ...clubData, isJoined: true });
+      setClubData({ ...clubData, isRequested: true });
+      toast.success('Join request sent');
     } catch (e) {
       console.error(e);
+      toast.error('Failed to send request');
+    }
+  };
+
+  const handleRequestDecision = async (userId, decision) => {
+    try {
+      await setMemberStatus(id, userId, { decision });
+      setRequests(prev => prev.filter(r => r.id !== userId));
+      if (decision === 'approved') {
+        const req = requests.find(r => r.id === userId);
+        if (req) {
+          setMembers(prev => [...prev, { ...req, role: 'member' }]);
+          setClubData(prev => ({ ...prev, memberCount: prev.memberCount + 1 }));
+        }
+        toast.success('Member approved');
+      } else {
+        toast.success('Request rejected');
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error('Failed to update request');
     }
   };
 
@@ -222,11 +271,16 @@ export default function ClubProfilePage() {
               <div>
                 <Button
                   onClick={handleJoinClub}
-                  className="bg-[#2563EB] hover:bg-blue-700 text-white px-8"
+                  disabled={clubData.isRequested}
+                  className="bg-[#2563EB] hover:bg-blue-700 text-white px-8 disabled:bg-gray-300 disabled:text-gray-600"
                   size="lg"
                 >
                   <UserPlus className="size-4 mr-2" />
-                  {clubData.isJoined ? "Joined" : "Join Club"}
+                  {clubData.isJoined
+                    ? "Joined"
+                    : clubData.isRequested
+                      ? "Requested"
+                      : "Join Club"}
                 </Button>
               </div>
             </div>
@@ -257,6 +311,14 @@ export default function ClubProfilePage() {
               >
                 Members ({clubData.memberCount})
               </TabsTrigger>
+              {canViewRequests && (
+                <TabsTrigger
+                  value="requests"
+                  className="data-[state=active]:border-b-2 data-[state=active]:border-[#2563EB] data-[state=active]:bg-transparent rounded-none pb-4"
+                >
+                  Requests ({requests.length})
+                </TabsTrigger>
+              )}
               <TabsTrigger
                 value="about"
                 className="data-[state=active]:border-b-2 data-[state=active]:border-[#2563EB] data-[state=active]:bg-transparent rounded-none pb-4"
@@ -428,6 +490,42 @@ export default function ClubProfilePage() {
                   ))}
                 </div>
               </TabsContent>
+
+              {canViewRequests && (
+                <TabsContent value="requests" className="mt-0">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {requests.map((req) => (
+                      <Card key={req.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm">
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between gap-3">
+                            <div className="flex items-center gap-3">
+                              <div className="w-12 h-12 rounded-full overflow-hidden">
+                                <SafeImage
+                                  src={req.avatar}
+                                  alt={req.name}
+                                  wrapperClassName="w-full h-full rounded-full"
+                                  className="w-full h-full object-cover"
+                                  sizePx={96}
+                                  placeholderSize={36}
+                                />
+                              </div>
+                              <p className="font-medium">{req.name}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button size="sm" onClick={() => handleRequestDecision(req.id, 'approved')}>
+                                Approve
+                              </Button>
+                              <Button size="sm" variant="outline" onClick={() => handleRequestDecision(req.id, 'rejected')}>
+                                Reject
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </TabsContent>
+              )}
 
               <TabsContent value="about" className="mt-0">
                 <Card className="bg-white rounded-2xl border border-gray-200 shadow-sm">

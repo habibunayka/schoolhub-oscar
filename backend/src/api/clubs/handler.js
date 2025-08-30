@@ -17,17 +17,20 @@ export const listClubs = async (req, res) => {
     }
 
     const params = [`%${search}%`];
-    let userJoin = "", groupExtra = "", isMemberSelect = ", false AS is_member";
+    let userJoin = "",
+        groupExtra = "",
+        membershipSelect = ", NULL AS membership_status, false AS is_member";
     if (userId) {
         params.push(userId);
         userJoin =
-            "LEFT JOIN club_members me ON c.id = me.club_id AND me.user_id = $2 AND me.status = 'approved'";
-        isMemberSelect = ", CASE WHEN me.id IS NULL THEN false ELSE true END AS is_member";
-        groupExtra = ", me.id";
+            "LEFT JOIN club_members me ON c.id = me.club_id AND me.user_id = $2";
+        membershipSelect =
+            ", me.status AS membership_status, CASE WHEN me.status = 'approved' THEN true ELSE false END AS is_member";
+        groupExtra = ", me.id, me.status";
     }
 
     const rows = await query(
-        `SELECT c.*, cat.name AS category_name, COUNT(m.id) AS member_count${isMemberSelect}
+        `SELECT c.*, cat.name AS category_name, COUNT(m.id) AS member_count${membershipSelect}
          FROM clubs c
          LEFT JOIN club_categories cat ON c.category_id = cat.id
          LEFT JOIN club_members m ON c.id = m.club_id AND m.status = 'approved'
@@ -61,6 +64,19 @@ export const listMembers = async (req, res) => {
          FROM club_members cm
          JOIN users u ON cm.user_id = u.id
          WHERE cm.club_id = $1 AND cm.status = 'approved'
+         ORDER BY u.name`,
+        [id]
+    );
+    res.json(rows);
+};
+
+export const listRequests = async (req, res) => {
+    const id = Number(req.params.id);
+    const rows = await query(
+        `SELECT u.id, u.name, u.avatar_url
+         FROM club_members cm
+         JOIN users u ON cm.user_id = u.id
+         WHERE cm.club_id = $1 AND cm.status = 'pending'
          ORDER BY u.name`,
         [id]
     );
