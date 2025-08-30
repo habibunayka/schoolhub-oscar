@@ -30,12 +30,14 @@ export default function ClubCrudPage() {
   useEffect(() => {
     async function init() {
       try {
-        const [clubData, catData] = await Promise.all([
+        const [clubData, catData, userData] = await Promise.all([
           listClubs(),
           listCategories(),
+          searchUsers(""),
         ]);
         setClubs(clubData);
         setCategories(catData);
+        setUserOptions(userData);
       } catch (e) {
         console.error(e);
       }
@@ -47,19 +49,8 @@ export default function ClubCrudPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleLeaderChange = async (e) => {
-    const value = e.target.value;
-    setForm({ ...form, leader_name: value });
-    if (value.length >= 2) {
-      try {
-        const users = await searchUsers(value);
-        setUserOptions(users);
-      } catch (err) {
-        console.error(err);
-      }
-    } else {
-      setUserOptions([]);
-    }
+  const handleLeaderSelect = (e) => {
+    setForm({ ...form, leader_name: e.target.value });
   };
 
   const resetForm = () => {
@@ -110,6 +101,15 @@ export default function ClubCrudPage() {
       category_id: club.category_id || "",
       description: club.description || "",
     });
+    if (
+      club.advisor_name &&
+      !userOptions.some((u) => u.name === club.advisor_name)
+    ) {
+      setUserOptions((prev) => [
+        ...prev,
+        { id: `club-${club.id}-leader`, name: club.advisor_name },
+      ]);
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
@@ -159,18 +159,19 @@ export default function ClubCrudPage() {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Leader</label>
-              <input
+              <select
                 name="leader_name"
-                list="user-options"
                 value={form.leader_name}
-                onChange={handleLeaderChange}
+                onChange={handleLeaderSelect}
                 className="w-full border border-gray-300 p-2 rounded"
-              />
-              <datalist id="user-options">
+              >
+                <option value="">Select leader</option>
                 {userOptions.map((u) => (
-                  <option key={u.id} value={u.name} />
+                  <option key={u.id} value={u.name}>
+                    {u.name}
+                  </option>
                 ))}
-              </datalist>
+              </select>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Category</label>

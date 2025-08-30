@@ -8,6 +8,7 @@ import {
     validatePatchClub,
     validateJoinClub,
     validateSetMemberStatus,
+    validateSetMemberRole,
     validateGetClub,
 } from "./validator.js";
 import { upload } from "../../services/storage.js";
@@ -64,6 +65,14 @@ r.patch(
     auth(),
     permitClub("owner", "admin"),
     Clubs.setMemberStatus
+);
+
+r.patch(
+    "/:id/members/:userId/role",
+    validateSetMemberRole,
+    auth(),
+    permitClub("owner"),
+    Clubs.setMemberRole
 );
 
 export default r;

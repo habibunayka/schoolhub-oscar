@@ -309,6 +309,24 @@ export const endpoints = {
         }
       ],
       "auth": true
+    },
+    {
+      "name": "setMemberRole",
+      "method": "PATCH",
+      "path": "/clubs/:id/members/:userId/role",
+      "validators": [
+        {
+          "body": [
+            "role"
+          ],
+          "params": [
+            "id",
+            "userId"
+          ],
+          "query": []
+        }
+      ],
+      "auth": true
     }
   ],
   "events": [

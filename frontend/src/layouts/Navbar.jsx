@@ -1,12 +1,12 @@
 import React, { useRef, useState } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Bell, Search, Menu, X } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@hooks/useAuth.js";
 import useUnreadNotifications from "../hooks/useUnreadNotifications.js";
 
 import {
   Avatar,
-  AvatarFallback,
   Input,
   Button,
   DropdownMenu,
@@ -14,6 +14,9 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
 } from "@components/common/ui";
+import SafeImage from "@components/SafeImage";
+import authService from "@services/auth.js";
+import { getAssetUrl } from "@utils";
 import clubs from "@services/clubs.js";
 function GlobalSearch() {
   const timer = useRef();
@@ -63,9 +66,13 @@ function GlobalSearch() {
 
 
 function UserMenu() {
-  const { logout } = useAuth();
+  const auth = useAuth();
+  const { data: user } = useQuery({
+    queryKey: ["auth:me"],
+    queryFn: authService.me,
+  });
   const handleLogout = () => {
-    logout();
+    auth?.logout?.();
   };
   return (
     <DropdownMenu>
@@ -75,7 +82,12 @@ function UserMenu() {
           className="w-8 h-8 p-0 hover:bg-gray-100 rounded-lg"
         >
           <Avatar className="w-8 h-8">
-            <AvatarFallback>U</AvatarFallback>
+            <SafeImage
+              src={getAssetUrl(user?.avatar_url || user?.photo)}
+              alt={user?.name}
+              className="w-8 h-8 rounded-full object-cover"
+              sizePx={64}
+            />
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

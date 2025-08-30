@@ -17,7 +17,7 @@ if (Navbar) {
     assert(html.includes("SchoolHub"));
     assert(html.includes("aria-label=\"Search\""));
     assert(html.includes("data-lucide=\"bell\""));
-    assert(html.includes("AvatarFallback"));
+    assert(html.includes("<img"));
   });
 } else {
   test("navbar render", { skip: true }, () => {});
