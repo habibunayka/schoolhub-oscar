@@ -488,12 +488,6 @@ export default function StudentDashboard() {
                             <span className="text-xs text-muted-foreground">
                               {club.memberCount} members
                             </span>
-                            <Badge
-                              variant="secondary"
-                              className="text-xs bg-[#16A34A]/10 text-[#16A34A]"
-                            >
-                              {club.matchPercentage}% match
-                            </Badge>
                           </div>
                         </div>
                       </div>

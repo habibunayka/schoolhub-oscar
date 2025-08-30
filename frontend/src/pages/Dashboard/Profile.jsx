@@ -16,6 +16,7 @@ import { getJoinedClubs } from "@services/clubs.js";
 import { listAllEvents } from "@services/events.js";
 import { getUserStats, getAchievements } from "@services/users.js";
 import { getAssetUrl } from "@utils";
+import SafeImage from "@/components/SafeImage";
 
 export default function ProfilePage() {
     const navigate = useNavigate();
@@ -47,7 +48,7 @@ export default function ProfilePage() {
                         <div className="relative">
                             <div className="w-32 h-32 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center overflow-hidden">
                                 {user?.avatar_url ? (
-                                    <img
+                                    <SafeImage
                                         src={getAssetUrl(user.avatar_url)}
                                         alt={user.name}
                                         className="w-full h-full object-cover"
