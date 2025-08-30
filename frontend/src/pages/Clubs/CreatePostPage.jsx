@@ -2,13 +2,12 @@ import React, { useState, useRef } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
-  ArrowLeft, 
-  Upload, 
-  Save, 
-  X, 
-  Image as ImageIcon, 
+  ArrowLeft,
+  Upload,
+  Save,
+  X,
+  Image as ImageIcon,
   FileText,
-  Users,
   Globe,
   Lock,
   ChevronDown,
@@ -17,27 +16,21 @@ import {
 import { me as getCurrentUser } from "@services/auth.js";
 import { createPost } from "@services/posts.js";
 import useConfirm from "@hooks/useConfirm.jsx";
+import { EventCard } from "@components/common/ui";
 
 // Restrict page to club admin role
 
 const VISIBILITY_OPTIONS = [
-  { 
-    value: 'public', 
-    label: 'Public', 
+  {
+    value: 'public',
+    label: 'Public',
     description: 'Anyone can see this post',
     icon: Globe,
     color: 'text-green-600'
   },
   {
-    value: 'members_only',
-    label: 'Members Only',
-    description: 'Only club members can see this',
-    icon: Users,
-    color: 'text-blue-600'
-  },
-  { 
-    value: 'private', 
-    label: 'Private', 
+    value: 'private',
+    label: 'Private',
     description: 'Only admins can see this',
     icon: Lock,
     color: 'text-red-600'
@@ -379,52 +372,14 @@ export default function CreatePostPage() {
                   <FileText className="w-4 h-4" />
                   Post Preview
                 </h3>
-                <div className="bg-gray-50 rounded-lg p-4 border">
-                  <div className="flex items-start gap-3">
-                    <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center">
-                      <span className="text-white font-medium text-sm">You</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="font-medium text-gray-900">Your Name</span>
-                        <span className="text-xs text-gray-500">Just now</span>
-                        <div className="flex items-center gap-1">
-                          <selectedVisibility.icon className={`w-3 h-3 ${selectedVisibility.color}`} />
-                          <span className="text-xs text-gray-500">{selectedVisibility.label}</span>
-                        </div>
-                      </div>
-                      {formData.content.trim() && (
-                        <p className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap mb-3">
-                          {formData.content}
-                        </p>
-                      )}
-                      {formData.images.length > 0 && (
-                        <div className={`grid gap-2 ${
-                          formData.images.length === 1 ? 'grid-cols-1' :
-                          formData.images.length === 2 ? 'grid-cols-2' :
-                          'grid-cols-2 md:grid-cols-3'
-                        }`}>
-                          {formData.images.slice(0, 6).map((img, idx) => (
-                            <div key={img.id} className="relative">
-                              <img
-                                src={img.url}
-                                alt={`Preview ${idx + 1}`}
-                                className="w-full h-32 object-cover rounded"
-                              />
-                              {idx === 5 && formData.images.length > 6 && (
-                                <div className="absolute inset-0 bg-black bg-opacity-50 rounded flex items-center justify-center">
-                                  <span className="text-white font-medium">
-                                    +{formData.images.length - 6} more
-                                  </span>
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                <EventCard
+                  title={formData.content.split("\n")[0] || "Post Title"}
+                  clubName={user?.club_name || "Club"}
+                  image={formData.images[0]?.url}
+                  description={formData.content}
+                  visibility={formData.visibility}
+                  hideButton
+                />
               </div>
             )}
           </div>
