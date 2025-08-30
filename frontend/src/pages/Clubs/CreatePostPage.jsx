@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft, 
@@ -15,6 +15,7 @@ import {
   Trash2
 } from "lucide-react";
 import { me as getCurrentUser } from "@services/auth.js";
+import { createPost } from "@services/posts.js";
 import useConfirm from "@hooks/useConfirm.jsx";
 
 // Restrict page to club admin role
@@ -27,9 +28,9 @@ const VISIBILITY_OPTIONS = [
     icon: Globe,
     color: 'text-green-600'
   },
-  { 
-    value: 'members', 
-    label: 'Members Only', 
+  {
+    value: 'members_only',
+    label: 'Members Only',
     description: 'Only club members can see this',
     icon: Users,
     color: 'text-blue-600'
@@ -45,6 +46,7 @@ const VISIBILITY_OPTIONS = [
 
 export default function CreatePostPage() {
   const navigate = useNavigate();
+  const { id } = useParams();
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
@@ -149,15 +151,15 @@ export default function CreatePostPage() {
     }
 
     setIsPublishing(true);
-    
+
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      console.log("Saving post:", formData);
-      
-      // Navigate back or to posts list
-      navigate('/posts');
+      const payload = {
+        body_html: formData.content.replace(/\n/g, "<br>"),
+        visibility: formData.visibility,
+        images: formData.images.map((img) => img.file),
+      };
+      const { id: postId } = await createPost(id, payload);
+      navigate(`/posts/${postId}`);
     } catch (error) {
       console.error('Error publishing post:', error);
       alert('Failed to publish post. Please try again.');
