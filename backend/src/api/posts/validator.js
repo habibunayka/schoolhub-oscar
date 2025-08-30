@@ -77,3 +77,31 @@ export const validateCreatePost = [
 
     checkValidationResult,
 ];
+
+export const validateToggleLike = [
+    param("id")
+        .isInt({ min: 1 })
+        .withMessage("Post ID must be a positive integer"),
+    checkValidationResult,
+];
+
+export const validateListComments = [
+    param("id")
+        .isInt({ min: 1 })
+        .withMessage("Post ID must be a positive integer"),
+    checkValidationResult,
+];
+
+export const validateCreateComment = [
+    param("id")
+        .isInt({ min: 1 })
+        .withMessage("Post ID must be a positive integer"),
+    body("body_html")
+        .notEmpty()
+        .withMessage("Comment body is required")
+        .isString()
+        .trim()
+        .isLength({ min: 1, max: 1000 })
+        .withMessage("Comment must be between 1-1000 characters"),
+    checkValidationResult,
+];

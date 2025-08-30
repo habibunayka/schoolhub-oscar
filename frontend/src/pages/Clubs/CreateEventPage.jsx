@@ -1,6 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
+import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { listClubs } from "@services/clubs.js";
 import { me as getCurrentUser } from "@services/auth.js";
 import { ArrowLeft, Upload, Eye, Bold, Italic, List, Save } from "lucide-react";
 import { EventCard } from "@components/common/ui";
@@ -8,13 +8,13 @@ import { EventCard } from "@components/common/ui";
 // Restrict page to club admin role
 
 export default function CreateEventPage() {
+  const { id } = useParams();
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    club: "",
     date: "",
     startTime: "",
     endTime: "",
@@ -65,7 +65,7 @@ export default function CreateEventPage() {
   };
 
   const handleSave = () => {
-    console.log("Saving event:", formData);
+    console.log("Saving event:", { ...formData, clubId: id });
     alert("Event saved successfully!");
   };
 
@@ -90,20 +90,6 @@ export default function CreateEventPage() {
   const formatTime = (timeStr) => {
     if (!timeStr) return "";
     return timeStr;
-  };
-
-  const [clubOptions, setClubOptions] = useState([]);
-  useEffect(() => {
-    async function fetchClubs() {
-      const data = await listClubs();
-      setClubOptions(data.map(c => ({ value: String(c.id), label: c.name })));
-    }
-    fetchClubs();
-  }, []);
-
-  const getClubLabel = (value) => {
-    const club = clubOptions.find(option => option.value === value);
-    return club ? club.label : value;
   };
 
   const { data: user, isLoading: isLoadingUser } = useQuery({
@@ -180,25 +166,6 @@ export default function CreateEventPage() {
                     onChange={(e) => handleInputChange("title", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                   />
-                </div>
-
-                <div className="space-y-2">
-                  <label htmlFor="club" className="block text-sm font-medium text-gray-700">
-                    Organizing Club
-                  </label>
-                  <select
-                    id="club"
-                    value={formData.club}
-                    onChange={(e) => handleInputChange("club", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-white"
-                  >
-                    <option value="">Select organizing club</option>
-                    {clubOptions.map(option => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
                 </div>
 
                 {/* Rich Text Editor for Description */}

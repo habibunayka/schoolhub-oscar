@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import posts from "@services/posts.js";
 import SafeImage from "@components/SafeImage";
-import { Globe, Users, Lock } from "lucide-react";
+import { Globe, Users, Lock, Heart, MessageCircle, Share } from "lucide-react";
 import { getAssetUrl } from "@utils";
 
 const VISIBILITY_MAP = {
@@ -18,6 +18,57 @@ export default function PostDetailPage() {
     queryKey: ["post", id],
     queryFn: () => posts.getPost(id),
   });
+
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [likes, setLikes] = useState(0);
+  const [isLiked, setIsLiked] = useState(false);
+
+  useEffect(() => {
+    if (data) {
+      setLikes(data.likes_count || 0);
+      setIsLiked(!!data.liked);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    posts.listComments(id).then(setComments).catch(console.error);
+  }, [id]);
+
+  const handleLike = async () => {
+    try {
+      const { likes_count } = isLiked
+        ? await posts.unlikePost(id)
+        : await posts.likePost(id);
+      setIsLiked(!isLiked);
+      setLikes(likes_count);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleShare = () => {
+    const url = `${window.location.origin}/posts/${id}`;
+    if (navigator.share) {
+      navigator.share({ url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        alert("Link copied to clipboard");
+      });
+    }
+  };
+
+  const handleSubmitComment = async (e) => {
+    e.preventDefault();
+    if (!newComment.trim()) return;
+    try {
+      const comment = await posts.createComment(id, newComment);
+      setComments((prev) => [...prev, comment]);
+      setNewComment("");
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   if (isLoading) return <div className="p-4">Loading...</div>;
   if (error) return <div className="p-4">Error loading post</div>;
@@ -84,7 +135,70 @@ export default function PostDetailPage() {
                 ))}
               </div>
             )}
+            <div className="flex items-center gap-4 mt-3">
+              <button
+                onClick={handleLike}
+                className="flex items-center gap-1 text-sm text-gray-600"
+              >
+                <Heart
+                  className={`w-4 h-4 ${isLiked ? "fill-red-500 text-red-500" : ""}`}
+                />
+                <span>{likes}</span>
+              </button>
+              <button
+                onClick={() => {
+                  const el = document.getElementById("comments");
+                  if (el) el.scrollIntoView({ behavior: "smooth" });
+                }}
+                className="flex items-center gap-1 text-sm text-gray-600"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>{comments.length}</span>
+              </button>
+              <button
+                onClick={handleShare}
+                className="text-gray-600"
+              >
+                <Share className="w-4 h-4" />
+              </button>
+            </div>
           </div>
+        </div>
+        <div id="comments" className="mt-6">
+          <h4 className="font-medium mb-2">Comments</h4>
+          <ul className="space-y-4 mb-4">
+            {comments.map((c) => (
+              <li key={c.id} className="flex gap-3">
+                <SafeImage
+                  src={getAssetUrl(c.author_avatar)}
+                  alt={c.author_name}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+                <div>
+                  <p className="text-sm font-medium">{c.author_name}</p>
+                  <div
+                    className="text-sm text-gray-700"
+                    dangerouslySetInnerHTML={{ __html: c.body_html }}
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
+          <form onSubmit={handleSubmitComment} className="flex gap-2">
+            <input
+              type="text"
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              className="flex-1 border rounded px-3 py-2 text-sm"
+              placeholder="Add a comment..."
+            />
+            <button
+              type="submit"
+              className="px-3 py-2 bg-blue-600 text-white rounded text-sm"
+            >
+              Post
+            </button>
+          </form>
         </div>
       </div>
     </article>

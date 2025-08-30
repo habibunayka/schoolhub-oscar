@@ -7,6 +7,9 @@ import {
     validateListPosts,
     validateGetPostById,
     validateGetPost,
+    validateToggleLike,
+    validateListComments,
+    validateCreateComment,
 } from "./validator.js";
 import { upload } from "../../services/storage.js";
 
@@ -29,6 +32,21 @@ r.post(
     upload.array("images", 10),
     validateCreatePost,
     Posts.createPost
+);
+
+r.post("/posts/:id/likes", auth(), validateToggleLike, Posts.likePost);
+r.delete("/posts/:id/likes", auth(), validateToggleLike, Posts.unlikePost);
+r.get(
+    "/posts/:id/comments",
+    auth(true),
+    validateListComments,
+    Posts.listComments
+);
+r.post(
+    "/posts/:id/comments",
+    auth(),
+    validateCreateComment,
+    Posts.createComment
 );
 
 export default r;

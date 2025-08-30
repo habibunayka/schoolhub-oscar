@@ -34,7 +34,7 @@ import {
   getJoinedClubs,
   getClubRecommendations,
 } from "@services/clubs.js";
-import { getFeedPosts } from "@services/posts.js";
+import { getFeedPosts, likePost, unlikePost } from "@services/posts.js";
 import { getUpcomingEvents } from "@services/events.js";
 import { getUserStats } from "@services/users.js";
 import { getAssetUrl } from "@utils";
@@ -166,8 +166,32 @@ export default function StudentDashboard() {
     })();
   }, []);
 
-  const handleLike = (postId) => {
-    console.log("Liked post:", postId);
+  const handleLike = async (postId) => {
+    const post = feedPosts.find((p) => p.id === postId);
+    if (!post) return;
+    try {
+      const { likes_count } = post.isLiked
+        ? await unlikePost(postId)
+        : await likePost(postId);
+      setFeedPosts((prev) =>
+        prev.map((p) =>
+          p.id === postId ? { ...p, isLiked: !post.isLiked, likes: likes_count } : p
+        )
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleShare = (postId) => {
+    const url = `${window.location.origin}/posts/${postId}`;
+    if (navigator.share) {
+      navigator.share({ url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        alert("Link copied to clipboard");
+      });
+    }
   };
 
   const getStatusIcon = (status) => {
@@ -341,13 +365,19 @@ export default function StudentDashboard() {
                           <Button
                             variant="ghost"
                             size="sm"
+                            onClick={() => navigate(`/posts/${post.id}`)}
                             className="flex items-center gap-2 p-2 hover:bg-blue-50 hover:text-blue-600"
                           >
                             <MessageCircle className="size-4" />
                             <span className="text-sm">{post.comments}</span>
                           </Button>
                         </div>
-                        <Button variant="ghost" size="sm" className="p-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-2"
+                          onClick={() => handleShare(post.id)}
+                        >
                           <Share className="size-4" />
                         </Button>
                       </div>

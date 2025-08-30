@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getClub, joinClub, leaveClub, listMembers, listJoinRequests, setMemberStatus } from "@services/clubs.js";
-import { listPosts } from "@services/posts.js";
+import { listPosts, likePost, unlikePost } from "@services/posts.js";
 import { listEvents } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
 import { getAssetUrl } from "@utils";
@@ -163,18 +163,32 @@ export default function ClubProfilePage() {
 
   if (!clubData) return null;
 
-  const handleLike = (postId) => {
-    setPosts((prev) =>
-      prev.map((p) =>
-        p.id === postId
-          ? {
-              ...p,
-              isLiked: !p.isLiked,
-              likes: p.likes + (p.isLiked ? -1 : 1),
-            }
-          : p
-      )
-    );
+  const handleLike = async (postId) => {
+    const post = posts.find((p) => p.id === postId);
+    if (!post) return;
+    try {
+      const { likes_count } = post.isLiked
+        ? await unlikePost(postId)
+        : await likePost(postId);
+      setPosts((prev) =>
+        prev.map((p) =>
+          p.id === postId ? { ...p, isLiked: !post.isLiked, likes: likes_count } : p
+        )
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleShare = (postId) => {
+    const url = `${window.location.origin}/posts/${postId}`;
+    if (navigator.share) {
+      navigator.share({ url }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(url).then(() => {
+        alert("Link copied to clipboard");
+      });
+    }
   };
 
   const handleJoinClub = async () => {
@@ -502,13 +516,19 @@ export default function ClubProfilePage() {
                             <Button
                               variant="ghost"
                               size="sm"
+                              onClick={() => navigate(`/posts/${post.id}`)}
                               className="flex items-center gap-2 p-2"
                             >
                               <MessageCircle className="size-4" />
                               <span className="text-sm">{post.comments}</span>
                             </Button>
                           </div>
-                          <Button variant="ghost" size="sm" className="p-2">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="p-2"
+                            onClick={() => handleShare(post.id)}
+                          >
                             <Share className="size-4" />
                           </Button>
                         </div>
