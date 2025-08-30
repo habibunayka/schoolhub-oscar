@@ -77,3 +77,47 @@ test("createAnnouncement sanitizes HTML and inserts", async () => {
     __setDbMocks({ run: async () => ({ rowCount: 0, rows: [] }) });
 });
 
+test("updateAnnouncement updates provided fields", async () => {
+    let params;
+    let runCalled = false;
+    __setDbMocks({
+        get: async () => ({ title: "Old", content_html: "<p>Old</p>" }),
+        run: async (sql, p) => {
+            runCalled = true;
+            params = p;
+            return { rowCount: 1 };
+        },
+    });
+
+    const req = {
+        params: { id: "5" },
+        body: { content_html: "<p>New<script></script></p>" },
+    };
+    let json;
+    const res = { json: (data) => (json = data), status: () => res };
+
+    await Announcements.updateAnnouncement(req, res);
+
+    assert.equal(runCalled, true);
+    assert.deepEqual(params, ["Old", "<p>New</p>", 5]);
+    assert.deepEqual(json, { id: 5 });
+    __setDbMocks({ get: async () => undefined, run: async () => ({ rowCount: 0, rows: [] }) });
+});
+
+test("updateAnnouncement responds 404 when not found", async () => {
+    __setDbMocks({ get: async () => undefined });
+
+    const req = { params: { id: "2" }, body: { title: "New" } };
+    let status, json;
+    const res = {
+        status: (code) => ((status = code), res),
+        json: (data) => (json = data),
+    };
+
+    await Announcements.updateAnnouncement(req, res);
+
+    assert.equal(status, 404);
+    assert.deepEqual(json, { message: "Announcement not found" });
+    __setDbMocks({ get: async () => undefined, run: async () => ({ rowCount: 0, rows: [] }) });
+});
+
