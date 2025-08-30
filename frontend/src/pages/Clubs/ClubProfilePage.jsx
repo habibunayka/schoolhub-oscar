@@ -8,13 +8,11 @@ import { me as getCurrentUser } from "@services/auth.js";
 import { getAssetUrl } from "@utils";
 import {
   ArrowLeft,
-  Heart,
-  MessageCircle,
-  Share,
   Users,
   Calendar,
   MapPin,
   Settings,
+  Share,
   UserPlus,
   Plus,
 } from "lucide-react";
@@ -29,20 +27,14 @@ import {
   CardHeader,
   CardTitle,
   Badge,
-  Avatar,
   Separator,
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from "@components/common/ui";
 import EventCard from "@components/events/EventCard.jsx";
 import useConfirm from "@hooks/useConfirm.jsx";
 
 import SafeImage from "@components/SafeImage";
-import { getInitials } from "@utils/string";
 import { toast } from "sonner";
+import PostCard from "@components/posts/PostCard.jsx";
 
 export default function ClubProfilePage() {
   const navigate = useNavigate();
@@ -485,102 +477,13 @@ export default function ClubProfilePage() {
                     </div>
                   )}
                   {posts.map((post) => (
-                    // Buat ini benar-benar posts yang real, ada beberapa bug disini seperti caption nya gaada. Dan buat like nya bekerja, habus komentarnya.
-                    <Card key={post.id} className="overflow-hidden bg-white rounded-2xl border border-gray-200 shadow-sm">
-                      <CardHeader className="pb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full overflow-hidden">
-                            <SafeImage
-                              src={post.authorAvatar}
-                              alt={post.author}
-                              wrapperClassName="w-full h-full rounded-full"
-                              className="w-full h-full object-cover"
-                              sizePx={64}
-                              placeholderSize={28}
-                            />
-                          </div>
-                          <div>
-                            <p className="font-medium">{post.author}</p>
-                            <p className="text-sm text-muted-foreground">
-                              {post.timestamp}
-                            </p>
-                          </div>
-                        </div>
-                      </CardHeader>
-
-                      <div className="px-6 pb-3">
-                        <p className="text-sm leading-relaxed">{post.caption}</p>
-                      </div>
-
-                      {post.images && post.images.length > 0 && (
-                        post.images.length === 1 ? (
-                          <div className="w-full">
-                            <SafeImage
-                              src={post.images[0]}
-                              alt="Post content"
-                              wrapperClassName="w-full h-80"
-                              className="w-full h-full object-cover"
-                              sizePx={800}
-                              placeholderSize={48}
-                            />
-                          </div>
-                        ) : (
-                          <Carousel className="w-full">
-                            <CarouselContent>
-                              {post.images.map((img, idx) => (
-                                <CarouselItem key={idx}>
-                                  <SafeImage
-                                    src={img}
-                                    alt={`Post image ${idx + 1}`}
-                                    wrapperClassName="w-full h-80"
-                                    className="w-full h-full object-cover"
-                                    sizePx={800}
-                                    placeholderSize={48}
-                                  />
-                                </CarouselItem>
-                              ))}
-                            </CarouselContent>
-                            <CarouselPrevious />
-                            <CarouselNext />
-                          </Carousel>
-                        )
-                      )}
-
-                      <CardContent className="pt-3">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-4">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleLike(post.id)}
-                              className="flex items-center gap-2 p-2"
-                            >
-                              <Heart
-                                className={`size-4 ${post.isLiked ? "fill-red-500 text-red-500" : ""}`}
-                              />
-                              <span className="text-sm">{post.likes}</span>
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => navigate(`/posts/${post.id}`)}
-                              className="flex items-center gap-2 p-2"
-                            >
-                              <MessageCircle className="size-4" />
-                              <span className="text-sm">{post.comments}</span>
-                            </Button>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="p-2"
-                            onClick={() => handleShare(post.id)}
-                          >
-                            <Share className="size-4" />
-                          </Button>
-                        </div>
-                      </CardContent>
-                    </Card>
+                    <PostCard
+                      key={post.id}
+                      post={post}
+                      onLike={() => handleLike(post.id)}
+                      onComment={() => navigate(`/posts/${post.id}`)}
+                      onShare={() => handleShare(post.id)}
+                    />
                   ))}
                 </div>
               </TabsContent>
