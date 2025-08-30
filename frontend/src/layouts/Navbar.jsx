@@ -176,19 +176,6 @@ export default function Navbar() {
     <nav className="w-full bg-white/80 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 px-4 py-3">
         <div className="flex items-center gap-3">
-          {/* Mobile hamburger menu */}
-          <Button
-            variant="ghost"
-            size="icon"
-            className="md:hidden hover:bg-gray-100 dark:hover:bg-gray-200 transition-colors duration-200 rounded-lg"
-            onClick={() => setMobileNavOpen(!mobileNavOpen)}
-          >
-            {mobileNavOpen ? (
-              <X className="size-5 transition-transform duration-200 rotate-90" />
-            ) : (
-              <Menu className="size-5 transition-transform duration-200" />
-            )}
-          </Button>
 
           {/* Logo */}
           <Link
@@ -242,12 +229,6 @@ export default function Navbar() {
           <UserMenu />
         </div>
       </div>
-
-      {/* Mobile navigation menu */}
-      <MobileNavMenu
-        isOpen={mobileNavOpen}
-        onClose={() => setMobileNavOpen(false)}
-      />
     </nav>
   );
 }
