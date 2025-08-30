@@ -222,6 +222,21 @@ export const endpoints = {
       "auth": true
     },
     {
+      "name": "deleteClub",
+      "method": "DELETE",
+      "path": "/clubs/:id",
+      "validators": [
+        {
+          "body": [],
+          "params": [
+            "id"
+          ],
+          "query": []
+        }
+      ],
+      "auth": true
+    },
+    {
       "name": "joinClub",
       "method": "POST",
       "path": "/clubs/:id/join",

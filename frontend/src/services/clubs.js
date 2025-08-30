@@ -53,6 +53,12 @@ export const patchClub = async (id, payload) => {
   return data;
 };
 
+export const deleteClub = async (id) => {
+  const path = map.deleteClub.path.replace(":id", id);
+  const { data } = await api.delete(path);
+  return data;
+};
+
 /**
  * Join a club
  * @param {number} id
@@ -113,6 +119,7 @@ export default {
   getClubRecommendations,
   createClub,
   patchClub,
+  deleteClub,
   joinClub,
   leaveClub,
   getClub,
