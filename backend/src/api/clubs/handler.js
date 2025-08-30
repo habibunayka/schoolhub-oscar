@@ -126,7 +126,13 @@ export const patchClub = async (req, res) => {
     const id = Number(req.params.id);
     const club = await get(`SELECT * FROM clubs WHERE id = $1`, [id]);
     if (!club) return res.status(404).json({ message: "Not found" });
-    const payload = req.body;
+    const payload = { ...req.body };
+    if (req.files?.logo?.[0]) {
+        payload.logo_url = `/uploads/${req.files.logo[0].filename}`;
+    }
+    if (req.files?.banner?.[0]) {
+        payload.banner_url = `/uploads/${req.files.banner[0].filename}`;
+    }
     await run(
         `UPDATE clubs SET name = COALESCE($1,name), slug = COALESCE($2,slug), description = COALESCE($3,description), logo_url = COALESCE($4,logo_url), banner_url = COALESCE($5,banner_url), advisor_name = COALESCE($6,advisor_name), category_id = COALESCE($7,category_id), location = COALESCE($8,location) WHERE id = $9`,
         [
