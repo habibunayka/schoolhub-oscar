@@ -13,7 +13,7 @@ function NotificationHeader() {
           </button>
           <div className="flex items-center space-x-3">
             <Bell className="w-6 h-6 text-blue-600" />
-            <h1 className="text-xl font-semibold text-gray-900">Announcement</h1>
+            <h1 className="text-xl font-semibold text-gray-900">Notifications</h1>
           </div>
         </div>
         <button className="p-2 hover:bg-gray-100 rounded-lg">
@@ -68,6 +68,7 @@ function NotificationSection({ title, children }) {
 export default function NotificationsPage() {
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Buat notifikasi ini benar-benar bekerja, jika belum ada endpoint nya silakan segera dibuat.
   const todayNotifications = [
     {
       icon: <Calendar className="w-5 h-5 text-orange-600" />,
@@ -89,6 +90,7 @@ export default function NotificationsPage() {
     }
   ];
 
+    // Buat notifikasi ini benar-benar bekerja, jika belum ada endpoint nya silakan segera dibuat.
   const yesterdayNotifications = [
     {
       icon: <MessageCircle className="w-5 h-5 text-blue-600" />,
@@ -107,6 +109,7 @@ export default function NotificationsPage() {
     }
   ];
 
+    // Buat notifikasi ini benar-benar bekerja, jika belum ada endpoint nya silakan segera dibuat.
   const thisWeekNotifications = [
     {
       icon: <AlertCircle className="w-5 h-5 text-orange-600" />,
