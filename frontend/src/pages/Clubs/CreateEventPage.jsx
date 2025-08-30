@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
-import { useParams } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { listClubs } from "@services/clubs.js";
 import { me as getCurrentUser } from "@services/auth.js";
 import { ArrowLeft, Upload, Eye, Bold, Italic, List, Save } from "lucide-react";
 import { EventCard } from "@components/common/ui";
@@ -8,13 +8,13 @@ import { EventCard } from "@components/common/ui";
 // Restrict page to club admin role
 
 export default function CreateEventPage() {
-  const { id } = useParams();
   const fileInputRef = useRef(null);
   const [isDragOver, setIsDragOver] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
+    club: "",
     date: "",
     startTime: "",
     endTime: "",
@@ -65,7 +65,7 @@ export default function CreateEventPage() {
   };
 
   const handleSave = () => {
-    console.log("Saving event:", { ...formData, clubId: id });
+    console.log("Saving event:", formData);
     alert("Event saved successfully!");
   };
 
@@ -90,6 +90,20 @@ export default function CreateEventPage() {
   const formatTime = (timeStr) => {
     if (!timeStr) return "";
     return timeStr;
+  };
+
+  const [clubOptions, setClubOptions] = useState([]);
+  useEffect(() => {
+    async function fetchClubs() {
+      const data = await listClubs();
+      setClubOptions(data.map(c => ({ value: String(c.id), label: c.name })));
+    }
+    fetchClubs();
+  }, []);
+
+  const getClubLabel = (value) => {
+    const club = clubOptions.find(option => option.value === value);
+    return club ? club.label : value;
   };
 
   const { data: user, isLoading: isLoadingUser } = useQuery({
@@ -166,6 +180,25 @@ export default function CreateEventPage() {
                     onChange={(e) => handleInputChange("title", e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
                   />
+                </div>
+
+                <div className="space-y-2">
+                  <label htmlFor="club" className="block text-sm font-medium text-gray-700">
+                    Organizing Club
+                  </label>
+                  <select
+                    id="club"
+                    value={formData.club}
+                    onChange={(e) => handleInputChange("club", e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 bg-white"
+                  >
+                    <option value="">Select organizing club</option>
+                    {clubOptions.map(option => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 {/* Rich Text Editor for Description */}
@@ -414,25 +447,22 @@ export default function CreateEventPage() {
                 </div>
                 <div className="p-6">
                   {/* Event Card Preview */}
-                    <EventCard
-                      title={formData.title || "Event Title"}
-                      clubName={user?.club_name || "Club"}
-                      description={formData.description || ""}
-                      date={formData.date ? formatDate(formData.date) : ""},
-                      time={
-                        formData.startTime || formData.endTime
+                  <EventCard
+                    title={formData.title || "Event Title"}
+                    clubName={formData.club ? getClubLabel(formData.club) : "Club"}
+                    date={formData.date ? formatDate(formData.date) : ""}
+                    time={
+                      formData.startTime || formData.endTime
                         ? `${formatTime(formData.startTime)}${
                             formData.startTime && formData.endTime ? " - " : ""
                           }${formatTime(formData.endTime)}`
                         : ""
                     }
-                      location={formData.location || ""}
-                      image={formData.image || undefined}
-                      attendeeCount={formData.capacity ? Number(formData.capacity) : 0}
-                      isRSVPed={false}
-                      visibility={formData.isPublic ? "public" : "private"}
-                      hideButton
-                    />
+                    location={formData.location || ""}
+                    image={formData.image || undefined}
+                    attendeeCount={formData.capacity ? Number(formData.capacity) : 0}
+                    isRSVPed={false}
+                  />
 
                   {/* Event Settings Summary */}
                   <div className="mt-4 p-3 bg-gray-50 rounded-lg">
