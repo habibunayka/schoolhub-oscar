@@ -20,42 +20,54 @@ const seed = async () => {
     const passwordHash = await argon2.hash("password123");
     const [{ id: user1Id }] = await query(
         "INSERT INTO users (name, email, password_hash, avatar_url) VALUES ($1,$2,$3,$4) RETURNING id",
-        [
-            "Alice",
-            "alice@example.com",
-            passwordHash,
-            "/uploads/avatar-alice.png",
-        ]
+        ["Alice", "alice@example.com", passwordHash, "/uploads/avatar-alice.png"]
     );
     const [{ id: user2Id }] = await query(
         "INSERT INTO users (name, email, password_hash, avatar_url) VALUES ($1,$2,$3,$4) RETURNING id",
         ["Bob", "bob@example.com", passwordHash, "/uploads/avatar-bob.png"]
     );
 
-    const [{ id: catSportsId }] = await query(
+    // club categories
+    const [{ id: academicCatId }] = await query(
+        "INSERT INTO club_categories (name) VALUES ($1) RETURNING id",
+        ["Academic"]
+    );
+    const [{ id: sportsCatId }] = await query(
         "INSERT INTO club_categories (name) VALUES ($1) RETURNING id",
         ["Sports"]
     );
-    const [{ id: catArtsId }] = await query(
+    const [{ id: artsCatId }] = await query(
         "INSERT INTO club_categories (name) VALUES ($1) RETURNING id",
         ["Arts"]
     );
 
+    // clubs
     const [{ id: club1Id }] = await query(
-        "INSERT INTO clubs (name, slug, description, logo_url, category_id) VALUES ($1,$2,$3,$4,$5) RETURNING id",
+        "INSERT INTO clubs (name, slug, description, logo_url, advisor_name, category_id, location) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id",
         [
             "Chess Club",
             "chess-club",
             "All about chess",
             "/uploads/logo-chess.png",
-            catSportsId,
+            "Mr. Smith",
+            academicCatId,
+            "Room 101",
         ]
     );
     const [{ id: club2Id }] = await query(
-        "INSERT INTO clubs (name, slug, description, logo_url, category_id) VALUES ($1,$2,$3,$4,$5) RETURNING id",
-        ["Music Club", "music-club", "We love music", "/uploads/logo-music.png", catArtsId]
+        "INSERT INTO clubs (name, slug, description, logo_url, advisor_name, category_id, location) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id",
+        [
+            "Music Club",
+            "music-club",
+            "We love music",
+            "/uploads/logo-music.png",
+            "Mrs. Johnson",
+            artsCatId,
+            "Auditorium",
+        ]
     );
 
+    // club members
     await run(
         "INSERT INTO club_members (club_id, user_id, role, status, joined_at) VALUES ($1,$2,'owner','approved', NOW())",
         [club1Id, user1Id]
@@ -69,6 +81,7 @@ const seed = async () => {
         [club2Id, user2Id]
     );
 
+    // posts
     const [{ id: post1Id }] = await query(
         "INSERT INTO posts (club_id, author_id, body_html) VALUES ($1,$2,$3) RETURNING id",
         [club1Id, user1Id, "<p>Welcome to our club!</p>"]
@@ -92,6 +105,7 @@ const seed = async () => {
         [post2Id, user1Id]
     );
 
+    // events
     const now = new Date();
     const [{ id: event1Id }] = await query(
         "INSERT INTO events (club_id, title, description, location, start_at, end_at, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id",
@@ -127,6 +141,7 @@ const seed = async () => {
         [event2Id, user2Id]
     );
 
+    // announcements
     await run(
         "INSERT INTO announcements (club_id, title, content_html, target, scheduled_at, sent_at) VALUES ($1,$2,$3,$4,NOW(),NOW())",
         [club1Id, "Welcome", "<p>Welcome to the club!</p>", "members"]

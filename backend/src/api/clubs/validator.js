@@ -82,6 +82,13 @@ export const validateCreateClub = [
         .isLength({ min: 2, max: 100 })
         .withMessage("Advisor name must be between 2-100 characters"),
 
+    body("location")
+        .optional()
+        .isString()
+        .trim()
+        .isLength({ max: 100 })
+        .withMessage("Location must not exceed 100 characters"),
+
     body("category_id")
         .optional()
         .isInt({ min: 1 })
@@ -93,6 +100,7 @@ export const validateCreateClub = [
             "slug",
             "description",
             "advisor_name",
+            "location",
             "category_id",
         ];
         const bodyKeys = Object.keys(body);
@@ -163,6 +171,13 @@ export const validatePatchClub = [
         .isLength({ min: 2, max: 100 })
         .withMessage("Advisor name must be between 2-100 characters"),
 
+    body("location")
+        .optional()
+        .isString()
+        .trim()
+        .isLength({ max: 100 })
+        .withMessage("Location must not exceed 100 characters"),
+
     body("category_id")
         .optional()
         .isInt({ min: 1 })
@@ -176,6 +191,7 @@ export const validatePatchClub = [
             "logo_url",
             "banner_url",
             "advisor_name",
+            "location",
             "category_id",
         ];
         const bodyKeys = Object.keys(body);
@@ -255,6 +271,7 @@ export const validatePatchHasFields = (req, res, next) => {
         "logo_url",
         "banner_url",
         "advisor_name",
+        "location",
         "category_id",
     ];
     const hasValidField = allowedFields.some((field) =>
