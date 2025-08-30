@@ -15,7 +15,7 @@ function AnnouncementCard({ announcement, currentUser, onEdit, onDelete }) {
     return date.toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
-      year: date.getFullYear(),
+      year: 'numeric',
     });
   };
 
