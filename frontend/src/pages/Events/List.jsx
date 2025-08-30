@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Search, Calendar, Clock, MapPin, Users, Edit, Trash2, Eye } from 'lucide-react';
-import { listAllEvents, rsvpEvent } from "@services/events.js";
+import { listAllEvents, rsvpEvent, getEvent } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
 import {
   AlertDialog,
@@ -81,7 +81,9 @@ function EventCard({ event, currentUser, onJoinToggle, onEdit, onDelete, onViewD
   };
 
   const { date, time } = formatDate(event.date, event.time);
-  const isFull = event.currentParticipants >= event.maxParticipants;
+  const isFull =
+    event.maxParticipants != null &&
+    event.currentParticipants >= event.maxParticipants;
 
   return (
     <div className={`bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-200 ${
@@ -251,7 +253,7 @@ export default function EventsPage() {
             description: e.description,
             maxParticipants: e.capacity,
             currentParticipants: Number(e.participant_count) || 0,
-            isJoined: false,
+            isJoined: e.rsvp_status === 'going',
             category: e.visibility,
             status: new Date(e.end_at) < new Date() ? 'past' : 'upcoming',
           }));
@@ -315,15 +317,14 @@ export default function EventsPage() {
       await rsvpEvent(eventId, {
         status: isJoined ? 'declined' : 'going',
       });
+      const updated = await getEvent(eventId);
       setEvents(prev =>
         prev.map(event =>
           event.id === eventId
             ? {
                 ...event,
-                isJoined: !isJoined,
-                currentParticipants: isJoined
-                  ? event.currentParticipants - 1
-                  : event.currentParticipants + 1,
+                isJoined: updated.rsvp_status === 'going',
+                currentParticipants: Number(updated.participant_count) || 0,
               }
             : event
         )
