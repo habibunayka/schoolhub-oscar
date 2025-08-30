@@ -63,7 +63,7 @@ export default function StudentDashboard() {
     id: String(c.id),
     name: c.name ?? c.club_name,
     image: getAssetUrl(c.logo_url ?? c.image_url ?? null),
-    category: c.category ?? c.type ?? "Unknown",
+    category: c.category_name ?? c.category ?? c.type ?? "Unknown",
     status: c.status ?? c.membership_status ?? "active",
     unreadCount: c.unread_count ?? 0,
   });
@@ -101,7 +101,7 @@ export default function StudentDashboard() {
     id: String(c.id),
     name: c.name,
     image: getAssetUrl(c.logo_url ?? c.image_url ?? null),
-    category: c.category ?? "Lainnya",
+    category: c.category_name ?? c.category ?? "Lainnya",
     memberCount: c.member_count ?? 0,
     matchPercentage: c.match ?? c.score ?? 0,
   });
@@ -459,7 +459,6 @@ export default function StudentDashboard() {
                 <CardTitle>Recommended Clubs</CardTitle>
               </CardHeader>
               <CardContent>
-                {/* TODO : Buat ini itu benar-benar club yang belum udah join, bukan semua club. Buat endpoint nya kalau diperlukan. */}
                 <div className="space-y-3">
                   {loadingRecom ? (
                     <p>Loading...</p>

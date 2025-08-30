@@ -34,6 +34,7 @@ r.patch(
 );
 
 r.post("/:id/join", validateJoinClub, auth(), Clubs.joinClub);
+r.delete("/:id/join", validateJoinClub, auth(), Clubs.leaveClub);
 
 r.patch(
     "/:id/members/:userId",

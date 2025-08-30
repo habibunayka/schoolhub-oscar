@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { listClubs } from "@services/clubs.js";
+import { listClubs, joinClub, leaveClub } from "@services/clubs.js";
+import { listCategories } from "@services/clubCategories.js";
 import { getAssetUrl } from "@utils";
-
-{/* TODO : Buat ini itu benar-benar kategori yang club nya ada. kalau tidak ada club nya jangan buat kategorinya. Buat juga crud kategori biar bisa dibuat lewat halaman create clubs (khusus admin sekolah [buatin]). */}
-const CATEGORIES = ["Technology", "Arts", "Sports", "Academic", "Environment", "Service", "Lifestyle"];
 
 const SORT_OPTIONS = [
   { value: "name", label: "Name A-Z" },
@@ -124,6 +122,7 @@ function Filters({
   sortBy,
   setSortBy,
   onReset,
+  availableCategories,
   className = ""
 }) {
   const [searchInput, setSearchInput] = useState(searchQuery);
@@ -168,7 +167,7 @@ function Filters({
       <div className="mb-4">
         <label className="block text-sm font-medium text-gray-700 mb-2">Categories</label>
         <div className="flex flex-wrap gap-2">
-          {CATEGORIES.map(category => (
+          {availableCategories.map(category => (
             <button
               key={category}
               onClick={() => toggleCategory(category)}
@@ -288,6 +287,7 @@ function Pagination({ currentPage, totalPages, onPageChange, className = "" }) {
 export default function ClubsPage({ className = "" }) {
   const [clubs, setClubs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [minMembers, setMinMembers] = useState('');
@@ -305,17 +305,22 @@ export default function ClubsPage({ className = "" }) {
           id: c.id,
           name: c.name,
           description: c.description || "",
-          category: c.category || "General",
-          members: c.member_count || 0,
+          category: c.category_name || "General",
+          members: Number(c.member_count) || 0,
           logoUrl: getAssetUrl(c.logo_url) || "",
-          isJoined: false,
+          isJoined: Boolean(c.is_member),
         }));
         setClubs(mapped);
       } finally {
         setLoading(false);
       }
     }
+    async function fetchCategories() {
+      const data = await listCategories({ withClubs: true });
+      setCategories(data.map(c => c.name));
+    }
     fetchClubs();
+    fetchCategories();
   }, []);
 
   // Filter and sort clubs
@@ -368,14 +373,29 @@ export default function ClubsPage({ className = "" }) {
     setCurrentPage(1);
   }, [searchQuery, selectedCategories, minMembers, maxMembers, sortBy]);
 
-  const handleJoinToggle = (clubId) => {
-    setClubs(prev =>
-      prev.map(club =>
-        club.id === clubId
-          ? { ...club, isJoined: !club.isJoined }
-          : club
-      )
-    );
+  const handleJoinToggle = async (clubId) => {
+    const club = clubs.find(c => c.id === clubId);
+    if (!club) return;
+    try {
+      if (club.isJoined) {
+        await leaveClub(clubId);
+      } else {
+        await joinClub(clubId);
+      }
+      setClubs(prev =>
+        prev.map(c =>
+          c.id === clubId
+            ? {
+                ...c,
+                isJoined: !c.isJoined,
+                members: c.isJoined ? c.members - 1 : c.members + 1,
+              }
+            : c
+        )
+      );
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleResetFilters = () => {
@@ -446,6 +466,7 @@ export default function ClubsPage({ className = "" }) {
             sortBy={sortBy}
             setSortBy={setSortBy}
             onReset={handleResetFilters}
+            availableCategories={categories}
           />
         </div>
 

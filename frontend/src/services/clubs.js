@@ -19,7 +19,7 @@ export const listClubs = async (params = {}) => {
  * @returns {Promise<object[]>}
  */
 export const getJoinedClubs = async (params = {}) => {
-  return listClubs(params);
+  return listClubs({ ...params, membership: "joined" });
 };
 
 /**
@@ -28,7 +28,7 @@ export const getJoinedClubs = async (params = {}) => {
  * @returns {Promise<object[]>}
  */
 export const getClubRecommendations = async (params = {}) => {
-  return listClubs(params);
+  return listClubs({ ...params, membership: "recommended" });
 };
 
 /**
@@ -61,6 +61,12 @@ export const patchClub = async (id, payload) => {
 export const joinClub = async (id) => {
   const path = map.joinClub.path.replace(":id", id);
   const { data } = await api.post(path);
+  return data;
+};
+
+export const leaveClub = async (id) => {
+  const path = map.leaveClub.path.replace(":id", id);
+  const { data } = await api.delete(path);
   return data;
 };
 
@@ -102,6 +108,7 @@ export default {
   createClub,
   patchClub,
   joinClub,
+  leaveClub,
   getClub,
   setMemberStatus,
   listMembers,

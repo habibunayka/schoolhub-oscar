@@ -31,6 +31,11 @@ export const validateListClubs = [
         .isLength({ max: 20 })
         .withMessage("Day must be a string with maximum 20 characters"),
 
+    query("membership")
+        .optional()
+        .isIn(["joined", "recommended"])
+        .withMessage("Membership must be either 'joined' or 'recommended'"),
+
     checkValidationResult,
 ];
 
@@ -77,8 +82,19 @@ export const validateCreateClub = [
         .isLength({ min: 2, max: 100 })
         .withMessage("Advisor name must be between 2-100 characters"),
 
+    body("category_id")
+        .optional()
+        .isInt({ min: 1 })
+        .withMessage("Category ID must be a positive integer"),
+
     body().custom((body) => {
-        const allowedFields = ["name", "slug", "description", "advisor_name"];
+        const allowedFields = [
+            "name",
+            "slug",
+            "description",
+            "advisor_name",
+            "category_id",
+        ];
         const bodyKeys = Object.keys(body);
         const unexpectedFields = bodyKeys.filter(
             (key) => !allowedFields.includes(key)
@@ -147,6 +163,11 @@ export const validatePatchClub = [
         .isLength({ min: 2, max: 100 })
         .withMessage("Advisor name must be between 2-100 characters"),
 
+    body("category_id")
+        .optional()
+        .isInt({ min: 1 })
+        .withMessage("Category ID must be a positive integer"),
+
     body().custom((body) => {
         const allowedFields = [
             "name",
@@ -155,6 +176,7 @@ export const validatePatchClub = [
             "logo_url",
             "banner_url",
             "advisor_name",
+            "category_id",
         ];
         const bodyKeys = Object.keys(body);
         const unexpectedFields = bodyKeys.filter(
@@ -233,6 +255,7 @@ export const validatePatchHasFields = (req, res, next) => {
         "logo_url",
         "banner_url",
         "advisor_name",
+        "category_id",
     ];
     const hasValidField = allowedFields.some((field) =>
         req.body.hasOwnProperty(field)
