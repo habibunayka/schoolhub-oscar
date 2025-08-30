@@ -1,5 +1,6 @@
 export default {
-    testEnvironment: "node",
-    testMatch: ["<rootDir>/src/api/**/_test/**/*.test.js"],
+  testEnvironment: 'node',
+  testMatch: ['<rootDir>/test/**/*.test.js'],
+  collectCoverage: true,
+  collectCoverageFrom: ['src/server.js'],
 };
-

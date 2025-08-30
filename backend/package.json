@@ -11,7 +11,7 @@
         "migrate": "node scripts/run-migrate.js",
         "migrate:create": "node-pg-migrate create",
         "seed": "node src/database/seed.js",
-        "test": "cross-env NODE_ENV=test JWT_SECRET=test node --test"
+        "test": "cross-env NODE_ENV=test JWT_SECRET=test node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage"
     },
     "dependencies": {
         "@aws-sdk/client-s3": "^3.645.0",
