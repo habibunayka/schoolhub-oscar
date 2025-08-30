@@ -33,10 +33,8 @@ test("validateCreateAnnouncement requires fields", async () => {
 test("validateCreateAnnouncement passes with valid data", async () => {
     const req = {
         body: {
-            club_id: 1,
             title: "Title",
             content_html: "<p>Valid</p>",
-            target: "all",
         },
     };
     await run(validateCreateAnnouncement, req);

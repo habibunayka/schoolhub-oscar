@@ -8,14 +8,12 @@ const map = Object.fromEntries(endpoints.announcements.map((e) => [e.name, e]));
  * @param {Object} [options]
  * @param {number} [options.page=1]
  * @param {number} [options.limit=10]
- * @param {number} [options.clubId]
- * @param {string} [options.target]
+ * @param {string} [options.search]
  * @returns {Promise<object[]>}
  */
-export const list = async ({ page = 1, limit = 10, clubId, target } = {}) => {
+export const list = async ({ page = 1, limit = 10, search } = {}) => {
   const params = { limit, offset: (page - 1) * limit };
-  if (clubId) params.club_id = clubId;
-  if (target) params.target = target;
+  if (search) params.search = search;
   const { data } = await api.get(map.getAllAnnouncements.path, { params });
   return data;
 };
@@ -32,7 +30,7 @@ export const get = async (id) => {
 
 /**
  * Create announcement
- * @param {{ club_id:number, title:string, content_html:string, target:string }} payload
+ * @param {{ title:string, content_html:string }} payload
  * @returns {Promise<object>}
  */
 export const create = async (payload) => {
@@ -43,7 +41,7 @@ export const create = async (payload) => {
 /**
  * Update announcement
  * @param {number} id
- * @param {{ title:string, content_html:string, target:string }} payload
+ * @param {{ title:string, content_html:string }} payload
  * @returns {Promise<object>}
  */
 export const update = async (id, payload) => {

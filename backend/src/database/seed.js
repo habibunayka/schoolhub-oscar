@@ -181,8 +181,8 @@ const seed = async () => {
 
     // announcements
     await run(
-        "INSERT INTO announcements (club_id, title, content_html, target, scheduled_at, sent_at) VALUES ($1,$2,$3,$4,NOW(),NOW())",
-        [club1Id, "Welcome", "<p>Welcome to the club!</p>", "members"]
+        "INSERT INTO announcements (club_id, title, content_html, target, scheduled_at, sent_at) VALUES (NULL,$1,$2,$3,NOW(),NOW())",
+        ["Welcome", "<p>Welcome to the school!</p>", "all_school"]
     );
 
     console.log("Database seeded");
