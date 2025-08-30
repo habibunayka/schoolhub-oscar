@@ -106,10 +106,6 @@ export default function AnnouncementForm() {
       newErrors.content_html = 'Content is required';
     }
     
-    if (!form.club_id.trim()) {
-      newErrors.club_id = 'Club ID is required';
-    }
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -171,46 +167,6 @@ export default function AnnouncementForm() {
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Club ID and Pin Toggle */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Club ID <span className="text-red-500">*</span>
-              </label>
-              <input
-                name="club_id"
-                type="text"
-                placeholder="Enter club ID (e.g., programming, drama, school)"
-                value={form.club_id}
-                onChange={onChange}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200 ${
-                  errors.club_id ? 'border-red-500' : 'border-gray-300'
-                }`}
-              />
-              {errors.club_id && (
-                <p className="mt-1 text-sm text-red-600">{errors.club_id}</p>
-              )}
-              <p className="mt-1 text-xs text-gray-500">
-                Use "school" for official school announcements
-              </p>
-            </div>
-            
-            <div className="flex items-center justify-start">
-              <label className="flex items-center gap-3 mt-7">
-                <input
-                  type="checkbox"
-                  name="is_pinned"
-                  checked={form.is_pinned}
-                  onChange={onChange}
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                />
-                <div>
-                  <span className="text-sm font-medium text-gray-700">Pin this announcement</span>
-                  <p className="text-xs text-gray-500">Pinned announcements appear at the top</p>
-                </div>
-              </label>
-            </div>
-          </div>
 
           {/* Title */}
           <div>
