@@ -3,10 +3,13 @@ import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Bell, Search, Menu, X } from "lucide-react";
 import { useAuth } from "@hooks/useAuth.js";
 import useUnreadNotifications from "../hooks/useUnreadNotifications.js";
+import { useQuery } from "@tanstack/react-query";
+import auth from "@services/auth.js";
+import { getAssetUrl } from "@utils";
+import SafeImage from "@/components/SafeImage";
 
 import {
   Avatar,
-  AvatarFallback,
   Input,
   Button,
   DropdownMenu,
@@ -64,6 +67,7 @@ function GlobalSearch() {
 
 function UserMenu() {
   const { logout } = useAuth();
+  const { data: user } = useQuery({ queryKey: ["me"], queryFn: auth.me });
   const handleLogout = () => {
     logout();
   };
@@ -75,7 +79,12 @@ function UserMenu() {
           className="w-8 h-8 p-0 hover:bg-gray-100 rounded-lg"
         >
           <Avatar className="w-8 h-8">
-            <AvatarFallback>U</AvatarFallback>
+            <SafeImage
+              src={user?.avatar_url ? getAssetUrl(user.avatar_url) : null}
+              alt={user?.name || "User"}
+              className="w-8 h-8 rounded-full object-cover"
+              sizePx={32}
+            />
           </Avatar>
         </Button>
       </DropdownMenuTrigger>

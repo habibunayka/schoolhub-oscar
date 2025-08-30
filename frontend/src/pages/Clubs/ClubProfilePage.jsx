@@ -37,6 +37,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@components/common/ui";
+import useConfirm from "@hooks/useConfirm.js";
 
 import SafeImage from "@components/SafeImage";
 import { getInitials } from "@utils/string";
@@ -53,6 +54,7 @@ export default function ClubProfilePage() {
   const [requests, setRequests] = useState([]);
   const [canViewRequests, setCanViewRequests] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const { confirm, ConfirmDialog } = useConfirm();
 
   useEffect(() => {
     async function fetchClub() {
@@ -159,7 +161,7 @@ export default function ClubProfilePage() {
 
   const handleJoinClub = async () => {
     if (clubData.isJoined || clubData.isRequested) return;
-    if (!window.confirm(`Request to join ${clubData.name}?`)) return;
+    if (!(await confirm(`Request to join ${clubData.name}?`))) return;
     try {
       await joinClub(clubData.id);
       setClubData({ ...clubData, isRequested: true });
@@ -200,6 +202,8 @@ export default function ClubProfilePage() {
     String(currentUser.clubId) === id;
 
   return (
+    <>
+    <ConfirmDialog />
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-white border-b border-border sticky top-0 z-50">
@@ -710,5 +714,6 @@ export default function ClubProfilePage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

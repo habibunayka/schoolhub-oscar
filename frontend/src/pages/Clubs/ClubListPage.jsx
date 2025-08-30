@@ -4,6 +4,7 @@ import { listCategories } from "@services/clubCategories.js";
 import { getAssetUrl } from "@utils";
 import SafeImage from '@/components/SafeImage';
 import { toast } from 'sonner';
+import useConfirm from "@hooks/useConfirm.js";
 
 const SORT_OPTIONS = [
   { value: "name", label: "Name A-Z" },
@@ -392,7 +393,7 @@ export default function ClubsPage({ className = "" }) {
     if (!club) return;
     try {
       if (club.isJoined) {
-        if (!window.confirm(`Leave ${club.name}?`)) return;
+        if (!(await confirm(`Leave ${club.name}?`))) return;
         await leaveClub(clubId);
         setClubs(prev =>
           prev.map(c =>
@@ -405,7 +406,7 @@ export default function ClubsPage({ className = "" }) {
       } else if (club.isRequested) {
         toast.info('Join request pending');
       } else {
-        if (!window.confirm(`Request to join ${club.name}?`)) return;
+        if (!(await confirm(`Request to join ${club.name}?`))) return;
         await joinClub(clubId);
         setClubs(prev =>
           prev.map(c =>
@@ -422,6 +423,8 @@ export default function ClubsPage({ className = "" }) {
     }
   };
 
+  const { confirm, ConfirmDialog } = useConfirm();
+
   const handleResetFilters = () => {
     setSearchQuery('');
     setSelectedCategories([]);
@@ -433,6 +436,8 @@ export default function ClubsPage({ className = "" }) {
 
   if (loading) {
     return (
+      <>
+      <ConfirmDialog />
       <div className={`max-w-7xl mx-auto px-4 py-8 ${className}`}>
         <div className="mb-8">
           <div className="h-8 bg-gray-200 rounded w-48 mb-4 animate-pulse"></div>
@@ -462,10 +467,13 @@ export default function ClubsPage({ className = "" }) {
           </div>
         </div>
       </div>
+      </>
     );
   }
 
   return (
+    <>
+    <ConfirmDialog />
     <div className={`max-w-7xl mx-auto px-4 py-8 ${className}`}>
       {/* Header */}
       <div className="mb-8">
@@ -538,5 +546,6 @@ export default function ClubsPage({ className = "" }) {
         </div>
       </div>
     </div>
+    </>
   );
 }

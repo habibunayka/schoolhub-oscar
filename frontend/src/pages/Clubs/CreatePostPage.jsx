@@ -15,6 +15,7 @@ import {
   Trash2
 } from "lucide-react";
 import { me as getCurrentUser } from "@services/auth.js";
+import useConfirm from "@hooks/useConfirm.js";
 
 // Restrict page to club admin role
 
@@ -57,6 +58,7 @@ export default function CreatePostPage() {
   });
 
   const [errors, setErrors] = useState({});
+  const { confirm, ConfirmDialog } = useConfirm();
 
   const { data: user, isLoading: isLoadingUser } = useQuery({
     queryKey: ['auth:me'],
@@ -164,9 +166,9 @@ export default function CreatePostPage() {
     }
   };
 
-  const handleGoBack = () => {
+  const handleGoBack = async () => {
     if (formData.content.trim() || formData.images.length > 0) {
-      if (confirm('You have unsaved changes. Are you sure you want to go back?')) {
+      if (await confirm('You have unsaved changes. Are you sure you want to go back?')) {
         navigate(-1);
       }
     } else {
@@ -177,6 +179,8 @@ export default function CreatePostPage() {
   const selectedVisibility = VISIBILITY_OPTIONS.find(opt => opt.value === formData.visibility);
 
   return (
+    <>
+    <ConfirmDialog />
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
@@ -433,5 +437,6 @@ export default function CreatePostPage() {
         />
       )}
     </div>
+    </>
   );
 }
