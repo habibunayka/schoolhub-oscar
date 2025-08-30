@@ -3,23 +3,17 @@ import { cleanHTML } from "../../services/sanitize.js";
 import { sendNotification } from "../../services/notifications.js";
 
 export const getAllAnnouncements = async (req, res) => {
-    const { club_id, target, limit = 50, offset = 0 } = req.query;
+    const { search, limit = 50, offset = 0 } = req.query;
 
-    let sql = `SELECT a.*, c.name as club_name
-               FROM announcements a
-               LEFT JOIN clubs c ON a.club_id = c.id
-               WHERE a.status != 'removed'`;
+    let sql =
+        "SELECT a.* FROM announcements a WHERE a.status != 'removed' AND a.target = 'all_school'";
     const params = [];
     let idx = 1;
 
-    if (club_id) {
-        sql += ` AND a.club_id = $${idx++}`;
-        params.push(Number(club_id));
-    }
-
-    if (target) {
-        sql += ` AND a.target = $${idx++}`;
-        params.push(target);
+    if (search) {
+        sql += ` AND (a.title ILIKE $${idx} OR a.content_html ILIKE $${idx})`;
+        params.push(`%${search}%`);
+        idx++;
     }
 
     sql += ` ORDER BY a.created_at DESC LIMIT $${idx++} OFFSET $${idx}`;
@@ -32,10 +26,7 @@ export const getAllAnnouncements = async (req, res) => {
 export const getAnnouncementById = async (req, res) => {
     const id = Number(req.params.id);
     const row = await get(
-        `SELECT a.*, c.name as club_name
-         FROM announcements a
-         LEFT JOIN clubs c ON a.club_id = c.id
-         WHERE a.id = $1 AND a.status != 'removed'`,
+        `SELECT a.* FROM announcements a WHERE a.id = $1 AND a.status != 'removed' AND a.target = 'all_school'`,
         [id]
     );
 
@@ -47,35 +38,20 @@ export const getAnnouncementById = async (req, res) => {
 };
 
 export const createAnnouncement = async (req, res) => {
-    const { club_id, title, content_html, target } = req.body;
+    const { title, content_html } = req.body;
     const { rows } = await run(
-        `INSERT INTO announcements(club_id, title, content_html, target) VALUES ($1,$2,$3,$4) RETURNING id`,
-        [club_id, title, cleanHTML(content_html), target]
+        `INSERT INTO announcements(title, content_html, target) VALUES ($1,$2,'all_school') RETURNING id`,
+        [title, cleanHTML(content_html)]
     );
     const announcementId = rows[0].id;
 
     try {
-        if (club_id) {
-            const members = await query(
-                `SELECT user_id FROM club_members WHERE club_id = $1 AND status = 'approved'`,
-                [club_id]
-            );
-            const club = await get(`SELECT name FROM clubs WHERE id = $1`, [club_id]);
-            const ids = members.map((m) => m.user_id);
-            await sendNotification(ids, "club_announcement", {
-                announcement_id: announcementId,
-                title,
-                club_id,
-                club_name: club?.name,
-            });
-        } else if (target === "all_school") {
-            const users = await query(`SELECT id FROM users`);
-            await sendNotification(
-                users.map((u) => u.id),
-                "school_announcement",
-                { announcement_id: announcementId, title }
-            );
-        }
+        const users = await query(`SELECT id FROM users`);
+        await sendNotification(
+            users.map((u) => u.id),
+            "school_announcement",
+            { announcement_id: announcementId, title }
+        );
     } catch (err) {
         console.error("failed to send announcement notifications", err);
     }
@@ -85,10 +61,10 @@ export const createAnnouncement = async (req, res) => {
 
 export const updateAnnouncement = async (req, res) => {
     const id = Number(req.params.id);
-    const { title, content_html, target } = req.body;
+    const { title, content_html } = req.body;
     await run(
-        `UPDATE announcements SET title = $1, content_html = $2, target = $3 WHERE id = $4`,
-        [title, cleanHTML(content_html), target, id]
+        `UPDATE announcements SET title = $1, content_html = $2 WHERE id = $3`,
+        [title, cleanHTML(content_html), id]
     );
     res.json({ id });
 };
