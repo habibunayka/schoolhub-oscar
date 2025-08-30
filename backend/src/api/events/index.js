@@ -7,6 +7,7 @@ import {
     validateGetEvent,
     validateCreateEvent,
     validateUpdateEvent,
+    validateDeleteEvent,
     validateRsvpEvent,
     validateCheckinEvent,
     validateReviewEvent,
@@ -31,6 +32,13 @@ r.put(
     validateUpdateEvent,
     auth(),
     Events.updateEvent
+);
+
+r.delete(
+    "/events/:id",
+    validateDeleteEvent,
+    auth(),
+    Events.deleteEvent
 );
 
 r.post("/events/:id/rsvp", validateRsvpEvent, auth(), Events.rsvpEvent);
