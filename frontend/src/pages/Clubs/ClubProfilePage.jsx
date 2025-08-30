@@ -56,6 +56,22 @@ export default function ClubProfilePage() {
   const [currentUser, setCurrentUser] = useState(null);
   const { confirm, ConfirmDialog } = useConfirm();
 
+  const normalizePost = (p) => ({
+    id: String(p.id),
+    author: p.author_name ?? p.author?.name,
+    authorAvatar: getAssetUrl(p.author_avatar ?? p.author?.avatar_url ?? null),
+    timestamp: p.created_at,
+    caption: p.body_html ? p.body_html.replace(/<[^>]*>/g, "") : "",
+    images: Array.isArray(p.images)
+      ? p.images.map((img) => getAssetUrl(img))
+      : p.image_url
+        ? [getAssetUrl(p.image_url)]
+        : [],
+    likes: p.likes_count ?? 0,
+    comments: p.comments_count ?? 0,
+    isLiked: !!p.liked,
+  });
+
   useEffect(() => {
     async function fetchClub() {
       const data = await getClub(id);
@@ -91,7 +107,7 @@ export default function ClubProfilePage() {
       } catch {
         setCanViewRequests(false);
       }
-      setPosts(postsData || []);
+      setPosts((postsData || []).map(normalizePost));
       setMembers(
         (membersData || []).map((m) => ({
           id: m.id,
