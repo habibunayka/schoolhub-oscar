@@ -416,7 +416,7 @@ export default function CreateEventPage() {
                   {/* Event Card Preview */}
                   <EventCard
                     title={formData.title || "Event Title"}
-                    clubName={formData.club ? getClubLabel(formData.club) : "Club"}
+                    clubName={user?.club_name || "Club"}
                     date={formData.date ? formatDate(formData.date) : ""}
                     time={
                       formData.startTime || formData.endTime
@@ -429,6 +429,9 @@ export default function CreateEventPage() {
                     image={formData.image || undefined}
                     attendeeCount={formData.capacity ? Number(formData.capacity) : 0}
                     isRSVPed={false}
+                    description={formData.description || ""}
+                    visibility={formData.isPublic ? "public" : "private"}
+                    hideButton
                   />
 
                   {/* Event Settings Summary */}

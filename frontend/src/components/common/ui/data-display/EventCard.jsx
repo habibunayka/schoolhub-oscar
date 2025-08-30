@@ -17,8 +17,8 @@ export function EventCard({
   hideButton = false,
 }) {
   const visibilityMap = {
-    public: { icon: Globe, color: "text-green-600" },
-    private: { icon: Lock, color: "text-red-600" },
+    public: { icon: Globe, color: "text-green-600", label: "Public" },
+    private: { icon: Lock, color: "text-red-600", label: "Private" },
   };
   const visibilityData = visibility ? visibilityMap[visibility] : null;
   return (
@@ -33,8 +33,9 @@ export function EventCard({
           {clubName}
         </Badge>
         {visibilityData && (
-          <div className="absolute top-2 right-2 bg-white rounded-full p-1 shadow">
+          <div className="absolute top-2 right-2 bg-white rounded-full px-2 py-1 shadow flex items-center gap-1">
             <visibilityData.icon className={`w-4 h-4 ${visibilityData.color}`} />
+            <span className="text-xs font-medium text-gray-600">{visibilityData.label}</span>
           </div>
         )}
       </div>
