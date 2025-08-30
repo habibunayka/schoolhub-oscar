@@ -5,11 +5,14 @@ import events from '@services/events.js';
 
 export default function EventDetailPage() {
   const { id } = useParams();
+  const isValidId = /^\d+$/.test(id);
   const { data, isLoading, error } = useQuery({
     queryKey: ['event', id],
     queryFn: () => events.getEvent(id),
+    enabled: isValidId,
   });
 
+  if (!isValidId) return <div className="p-4">Not found</div>;
   if (isLoading) return <div className="p-4">Loading...</div>;
   if (error) return <div className="p-4">Error loading event</div>;
   if (!data) return <div className="p-4">Not found</div>;

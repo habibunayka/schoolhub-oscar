@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Plus, Calendar, Clock, MapPin, Users, Edit, Trash2, Eye } from 'lucide-react';
-import { useNavigate } from "react-router-dom";
+import { Search, Calendar, Clock, MapPin, Users, Edit, Trash2, Eye } from 'lucide-react';
 import { listAllEvents, rsvpEvent } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
 import {
@@ -228,7 +227,6 @@ export default function EventsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterType, setFilterType] = useState('all');
   const [searchInput, setSearchInput] = useState('');
-  const navigate = useNavigate();
 
     useEffect(() => {
       async function fetchData() {
@@ -335,15 +333,6 @@ export default function EventsPage() {
     }
   };
 
-    const handleCreateEvent = () => {
-      if (!currentUser) return;
-      if (currentUser.role === "school_admin") {
-        navigate("/events/new");
-      } else if (currentUser.role === "club_admin") {
-        navigate(`/clubs/${currentUser.clubId}/events/new`);
-      }
-    };
-
   const handleEdit = (eventId) => {
     alert(`Edit event ${eventId}`);
   };
@@ -359,7 +348,6 @@ export default function EventsPage() {
     window.location.href = `/events/${eventId}`;
   };
 
-    const canCreateEvent = currentUser && (currentUser.role === 'school_admin' || currentUser.role === 'club_admin');
 
     if (loading) {
       return (
@@ -422,16 +410,6 @@ export default function EventsPage() {
           ))}
         </select>
 
-        {/* Create Event Button */}
-        {canCreateEvent && (
-          <button
-            onClick={handleCreateEvent}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors duration-200 flex items-center gap-2 whitespace-nowrap"
-          >
-            <Plus className="w-5 h-5" />
-            Create Event
-          </button>
-        )}
       </div>
 
       {/* Events Grid */}

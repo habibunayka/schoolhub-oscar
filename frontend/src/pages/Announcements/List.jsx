@@ -322,9 +322,9 @@ export default function AnnouncementsList() {
           <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
             <Megaphone className="w-12 h-12 text-gray-400" />
           </div>
-          <h3 className="text-xl font-medium text-gray-900 mb-2">No announcements</h3>
-          <p className="text-gray-500 mb-6">No announcements are currently available.</p>
-          {currentUser?.role === 'club_admin' && (
+        <h3 className="text-xl font-medium text-gray-900 mb-2">No announcements</h3>
+        <p className="text-gray-500 mb-6">No announcements are currently available.</p>
+          {currentUser?.role === 'admin' && (
             <button
               onClick={handleCreate}
               className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors duration-200 flex items-center gap-2 mx-auto"
@@ -376,7 +376,7 @@ export default function AnnouncementsList() {
         </select>
 
         {/* Create Announcement Button */}
-        {currentUser?.role === 'club_admin' && (
+        {currentUser?.role === 'admin' && (
           <button
             onClick={handleCreate}
             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 transition-colors duration-200 flex items-center gap-2 whitespace-nowrap"
