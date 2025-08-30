@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import {
     Calendar,
     MapPin,
@@ -10,11 +10,11 @@ import {
     ArrowLeft,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import auth from "@services/auth.js";
 import { getJoinedClubs } from "@services/clubs.js";
 import { listAllEvents } from "@services/events.js";
-import { getUserStats, getAchievements } from "@services/users.js";
+import { getUserStats, getAchievements, updateProfile } from "@services/users.js";
 import { getAssetUrl } from "@utils";
 import SafeImage from "@/components/SafeImage";
 
@@ -25,6 +25,24 @@ export default function ProfilePage() {
     const { data: events } = useQuery({ queryKey: ["events"], queryFn: listAllEvents });
     const { data: stats } = useQuery({ queryKey: ["userStats"], queryFn: getUserStats });
     const { data: achievements } = useQuery({ queryKey: ["achievements"], queryFn: getAchievements });
+    const queryClient = useQueryClient();
+    const avatarInputRef = useRef();
+    const avatarMutation = useMutation({
+        mutationFn: updateProfile,
+        onSuccess: (data) => {
+            queryClient.setQueryData(["me"], data);
+        },
+    });
+
+    const handleAvatarChange = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            avatarMutation.mutate({ avatar_url: reader.result });
+        };
+        reader.readAsDataURL(file);
+    };
 
     const activeClubsCount = Array.isArray(clubs) ? clubs.length : 0;
     const eventsJoinedCount = Array.isArray(events) ? events.length : 0;
@@ -62,7 +80,17 @@ export default function ProfilePage() {
                                     </span>
                                 )}
                             </div>
-                            <button className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-lg hover:shadow-xl">
+                            <input
+                                type="file"
+                                ref={avatarInputRef}
+                                onChange={handleAvatarChange}
+                                accept="image/*"
+                                className="hidden"
+                            />
+                            <button
+                                className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-lg hover:shadow-xl"
+                                onClick={() => avatarInputRef.current?.click()}
+                            >
                                 <Camera className="w-4 h-4 text-gray-600" />
                             </button>
                         </div>

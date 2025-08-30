@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import announcements from "@services/announcements.js";
 import { me as getCurrentUser } from "@services/auth.js";
+import useConfirm from "@hooks/useConfirm.js";
 const TARGET_OPTIONS = [
   { value: 'all', label: 'All Announcements', color: 'bg-blue-100 text-blue-800' },
   { value: 'members', label: 'Members Only', color: 'bg-green-100 text-green-800' },
@@ -256,12 +257,14 @@ export default function AnnouncementsList() {
     });
   }, [data, searchQuery, filterType]);
 
+  const { confirm, ConfirmDialog } = useConfirm();
+
   const handleEdit = (id) => {
     navigate(`/announcements/${id}/edit`);
   };
 
-  const handleDelete = (id) => {
-    if (confirm('Are you sure you want to delete this announcement?')) {
+  const handleDelete = async (id) => {
+    if (await confirm('Are you sure you want to delete this announcement?')) {
       // Handle delete logic - integrate with your API
       console.log('Delete announcement:', id);
     }
@@ -273,11 +276,13 @@ export default function AnnouncementsList() {
 
   if (isLoading || isLoadingUser) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <div className="h-8 bg-gray-200 rounded w-40 mb-4 animate-pulse"></div>
-          <div className="h-4 bg-gray-200 rounded w-96 animate-pulse"></div>
-        </div>
+      <>
+        <ConfirmDialog />
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="mb-8">
+            <div className="h-8 bg-gray-200 rounded w-40 mb-4 animate-pulse"></div>
+            <div className="h-4 bg-gray-200 rounded w-96 animate-pulse"></div>
+          </div>
         
         <div className="flex flex-col md:flex-row gap-4 mb-8">
           <div className="h-10 bg-gray-200 rounded flex-1 animate-pulse"></div>
@@ -291,32 +296,38 @@ export default function AnnouncementsList() {
           ))}
         </div>
       </div>
+      </>
     );
   }
 
   if (error) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="text-center py-16">
-          <div className="w-24 h-24 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
-            <Megaphone className="w-12 h-12 text-red-400" />
+      <>
+        <ConfirmDialog />
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="text-center py-16">
+            <div className="w-24 h-24 mx-auto mb-6 bg-red-100 rounded-full flex items-center justify-center">
+              <Megaphone className="w-12 h-12 text-red-400" />
+            </div>
+            <h3 className="text-xl font-medium text-gray-900 mb-2">Error loading announcements</h3>
+            <p className="text-gray-500">Please try again later.</p>
           </div>
-          <h3 className="text-xl font-medium text-gray-900 mb-2">Error loading announcements</h3>
-          <p className="text-gray-500">Please try again later.</p>
         </div>
-      </div>
+      </>
     );
   }
 
   if (!data.length) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Announcements</h1>
-          <p className="text-gray-600">
-            Stay updated with the latest news and updates from school and clubs
-          </p>
-        </div>
+      <>
+        <ConfirmDialog />
+        <div className="max-w-7xl mx-auto px-4 py-8">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Announcements</h1>
+            <p className="text-gray-600">
+              Stay updated with the latest news and updates from school and clubs
+            </p>
+          </div>
 
         <div className="text-center py-16">
           <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
@@ -334,12 +345,15 @@ export default function AnnouncementsList() {
             </button>
           )}
         </div>
-      </div>
+        </div>
+      </>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <>
+      <ConfirmDialog />
+      <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 mb-2">Announcements</h1>
@@ -433,5 +447,6 @@ export default function AnnouncementsList() {
         </div>
       )}
     </div>
+    </>
   );
 }

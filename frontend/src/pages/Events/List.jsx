@@ -13,6 +13,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@components/common/ui/feedback";
+import useConfirm from "@hooks/useConfirm.js";
 
 
 const FILTER_OPTIONS = [
@@ -334,12 +335,14 @@ export default function EventsPage() {
     }
   };
 
+  const { confirm, ConfirmDialog } = useConfirm();
+
   const handleEdit = (eventId) => {
     alert(`Edit event ${eventId}`);
   };
 
-  const handleDelete = (eventId) => {
-    if (confirm('Are you sure you want to delete this event?')) {
+  const handleDelete = async (eventId) => {
+    if (await confirm('Are you sure you want to delete this event?')) {
       setEvents(prev => prev.filter(event => event.id !== eventId));
     }
   };
@@ -352,6 +355,8 @@ export default function EventsPage() {
 
     if (loading) {
       return (
+        <>
+        <ConfirmDialog />
         <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="mb-8">
           <div className="h-8 bg-gray-200 rounded w-32 mb-4 animate-pulse"></div>
@@ -369,12 +374,15 @@ export default function EventsPage() {
           ))}
         </div>
       </div>
+      </>
     );
     }
 
     if (!currentUser) return null;
 
   return (
+    <>
+    <ConfirmDialog />
     <div className="max-w-7xl mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
@@ -461,5 +469,6 @@ export default function EventsPage() {
         </div>
       )}
     </div>
+    </>
   );
 }
