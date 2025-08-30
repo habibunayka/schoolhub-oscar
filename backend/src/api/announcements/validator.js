@@ -9,18 +9,8 @@ export const checkValidationResult = (req, res, next) => {
     next();
 };
 
-const ALLOWED_TARGETS = ["all", "members", "public", "admins"];
-
 export const validateGetAllAnnouncements = [
-    query("club_id")
-        .optional()
-        .isInt({ min: 1 })
-        .withMessage("Club ID must be a positive integer"),
-
-    query("target")
-        .optional()
-        .isIn(ALLOWED_TARGETS)
-        .withMessage(`Target must be one of: ${ALLOWED_TARGETS.join(", ")}`),
+    query("search").optional().isString().trim().isLength({ min: 1, max: 200 }),
 
     query("limit")
         .optional()
@@ -44,12 +34,6 @@ export const validateGetAnnouncementById = [
 ];
 
 export const validateCreateAnnouncement = [
-    body("club_id")
-        .notEmpty()
-        .withMessage("Club ID is required")
-        .isInt({ min: 1 })
-        .withMessage("Club ID must be a positive integer"),
-
     body("title")
         .notEmpty()
         .withMessage("Title is required")
@@ -66,14 +50,8 @@ export const validateCreateAnnouncement = [
         .isLength({ min: 10, max: 50000 })
         .withMessage("Content must be between 10-50000 characters"),
 
-    body("target")
-        .notEmpty()
-        .withMessage("Target is required")
-        .isIn(ALLOWED_TARGETS)
-        .withMessage(`Target must be one of: ${ALLOWED_TARGETS.join(", ")}`),
-
     body().custom((body) => {
-        const allowedFields = ["club_id", "title", "content_html", "target"];
+        const allowedFields = ["title", "content_html"];
         const bodyKeys = Object.keys(body);
         const unexpectedFields = bodyKeys.filter(
             (key) => !allowedFields.includes(key)
@@ -112,14 +90,8 @@ export const validateUpdateAnnouncement = [
         .isLength({ min: 10, max: 50000 })
         .withMessage("Content must be between 10-50000 characters"),
 
-    body("target")
-        .notEmpty()
-        .withMessage("Target is required")
-        .isIn(ALLOWED_TARGETS)
-        .withMessage(`Target must be one of: ${ALLOWED_TARGETS.join(", ")}`),
-
     body().custom((body) => {
-        const allowedFields = ["title", "content_html", "target"];
+        const allowedFields = ["title", "content_html"];
         const bodyKeys = Object.keys(body);
         const unexpectedFields = bodyKeys.filter(
             (key) => !allowedFields.includes(key)
