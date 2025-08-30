@@ -11,6 +11,10 @@ export const up = (pgm) => {
         payload_json: { type: "jsonb", notNull: true },
         read_at: "timestamp",
     });
+
+    pgm.createIndex("notifications", ["user_id", "read_at"], {
+        name: "idx_notifications_user_id_read_at",
+    });
 };
 
 export const down = (pgm) => {
