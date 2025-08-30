@@ -23,7 +23,7 @@ SchoolHub is a full-stack monorepo that provides a web platform for managing sch
 
 ```bash
 # Clone repository
-git clone [<repository_url>](https://github.com/habibunayka/schoolhub-oscar)
+git clone https://github.com/habibunayka/schoolhub-oscar
 cd schoolhub-oscar
 npm install --prefix backend
 npm install --prefix frontend
