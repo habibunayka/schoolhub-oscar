@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { createBrowserRouter } from 'react-router-dom';
 import AppLayout from '@layouts/AppLayout.jsx';
 import RequireAuth from '@components/RequireAuth.jsx';
+import RequireSchoolAdmin from '@components/RequireSchoolAdmin.jsx';
 
 const LoginPage = lazy(() => import('@pages/Auth/LoginPage'));
 const RegisterPage = lazy(() => import('@pages/Auth/RegisterPage'));
@@ -54,7 +55,7 @@ export const router = createBrowserRouter([
       { path: 'profile/edit', element: withSuspense(<RequireAuth><EditProfilePage /></RequireAuth>) },
       { path: 'notifications', element: withSuspense(<RequireAuth><Notification /></RequireAuth>) },
       { path: 'settings', element: withSuspense(<RequireAuth><SettingsPage /></RequireAuth>) },
-      { path: 'admin/clubs', element: withSuspense(<RequireAuth><ClubCrudPage /></RequireAuth>) },
+      { path: 'admin/clubs', element: withSuspense(<RequireAuth><RequireSchoolAdmin><ClubCrudPage /></RequireSchoolAdmin></RequireAuth>) },
     ],
   },
   { path: '/login', element: withSuspense(<LoginPage />) },
