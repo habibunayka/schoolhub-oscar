@@ -75,16 +75,14 @@ export const validateUpdateAnnouncement = [
         .withMessage("Announcement ID must be a positive integer"),
 
     body("title")
-        .notEmpty()
-        .withMessage("Title is required")
+        .optional()
         .isString()
         .trim()
         .isLength({ min: 3, max: 200 })
         .withMessage("Title must be between 3-200 characters"),
 
     body("content_html")
-        .notEmpty()
-        .withMessage("Content is required")
+        .optional()
         .isString()
         .trim()
         .isLength({ min: 10, max: 50000 })
@@ -101,6 +99,10 @@ export const validateUpdateAnnouncement = [
             throw new Error(
                 `Unexpected fields: ${unexpectedFields.join(", ")}`
             );
+        }
+
+        if (bodyKeys.length === 0) {
+            throw new Error("At least one field is required");
         }
 
         return true;

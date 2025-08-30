@@ -61,7 +61,20 @@ export const createAnnouncement = async (req, res) => {
 
 export const updateAnnouncement = async (req, res) => {
     const id = Number(req.params.id);
-    const { title, content_html } = req.body;
+    const current = await get(
+        `SELECT title, content_html FROM announcements WHERE id = $1`,
+        [id]
+    );
+
+    if (!current) {
+        return res.status(404).json({ message: "Announcement not found" });
+    }
+
+    const {
+        title = current.title,
+        content_html = current.content_html,
+    } = req.body;
+
     await run(
         `UPDATE announcements SET title = $1, content_html = $2 WHERE id = $3`,
         [title, cleanHTML(content_html), id]

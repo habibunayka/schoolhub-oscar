@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
     validateGetAllAnnouncements,
     validateCreateAnnouncement,
+    validateUpdateAnnouncement,
 } from "../validator.js";
 import { ValidationError } from "../../../exceptions/ValidationError.js";
 
@@ -38,6 +39,27 @@ test("validateCreateAnnouncement passes with valid data", async () => {
         },
     };
     await run(validateCreateAnnouncement, req);
+});
+
+test("validateUpdateAnnouncement requires at least one field", async () => {
+    const req = { params: { id: "1" }, body: {} };
+    await assert.rejects(
+        () => run(validateUpdateAnnouncement, req),
+        ValidationError
+    );
+});
+
+test("validateUpdateAnnouncement allows partial update", async () => {
+    const req = { params: { id: "1" }, body: { title: "New Title" } };
+    await run(validateUpdateAnnouncement, req);
+});
+
+test("validateUpdateAnnouncement rejects unexpected fields", async () => {
+    const req = { params: { id: "1" }, body: { foo: "bar" } };
+    await assert.rejects(
+        () => run(validateUpdateAnnouncement, req),
+        ValidationError
+    );
 });
 
 
