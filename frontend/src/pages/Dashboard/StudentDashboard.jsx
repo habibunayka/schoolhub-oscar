@@ -1,35 +1,10 @@
 // src/pages/StudentDashboard.jsx
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import {
-  Calendar,
-  Heart,
-  MessageCircle,
-  Share,
-  Clock,
-  MapPin,
-  CheckCircle,
-  AlertCircle,
-  Plus,
-} from "lucide-react";
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Badge,
-  Avatar,
-  Separator,
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@components/common/ui";
+import { Calendar, Clock, MapPin, CheckCircle, AlertCircle, Plus } from "lucide-react";
+import { Button, Card, CardContent, CardHeader, CardTitle, Separator } from "@components/common/ui";
 import EmptyState from "@components/common/EmptyState";
 import SafeImage from "@components/SafeImage";
-import { getInitials } from "@utils/string";
 import {
   getJoinedClubs,
   getClubRecommendations,
@@ -38,6 +13,7 @@ import { getFeedPosts, likePost, unlikePost } from "@services/posts.js";
 import { getUpcomingEvents } from "@services/events.js";
 import { getUserStats } from "@services/users.js";
 import { getAssetUrl } from "@utils";
+import PostCard from "@components/posts/PostCard.jsx";
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
@@ -288,101 +264,13 @@ export default function StudentDashboard() {
                 <EmptyState message="No posts available" />
               ) : (
                 feedPosts.map((post) => (
-                  <Card key={post.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm">
-                    <CardHeader className="pb-3">
-                      <div className="flex items-center gap-3">
-                        <Avatar className="w-10 h-10">
-                          {/* use SafeImage inside Avatar to avoid broken avatar */}
-                          <SafeImage
-                            src={post.authorAvatar}
-                            alt={post.author}
-                            className="w-10 h-10 rounded-full object-cover"
-                            sizePx={64}
-                          />
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium">{post.author}</p>
-                            <Badge variant="secondary" className="text-xs">
-                              {post.clubName}
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground">
-                            {post.timestamp}
-                          </p>
-                        </div>
-                      </div>
-                    </CardHeader>
-
-                    <div className="px-6 pb-3">
-                      <p className="text-sm leading-relaxed">{post.content}</p>
-                    </div>
-
-                    {post.images.length > 0 && (
-                      post.images.length === 1 ? (
-                        <div className="w-full">
-                          <SafeImage
-                            src={post.images[0]}
-                            alt="Post content"
-                            className="w-full h-64 object-cover"
-                            sizePx={640}
-                          />
-                        </div>
-                      ) : (
-                        <Carousel className="w-full">
-                          <CarouselContent>
-                            {post.images.map((img, idx) => (
-                              <CarouselItem key={idx}>
-                                <SafeImage
-                                  src={img}
-                                  alt={`Post image ${idx + 1}`}
-                                  className="w-full h-64 object-cover"
-                                  sizePx={640}
-                                />
-                              </CarouselItem>
-                            ))}
-                          </CarouselContent>
-                          <CarouselPrevious />
-                          <CarouselNext />
-                        </Carousel>
-                      )
-                    )}
-
-                    <CardContent className="pt-3">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleLike(post.id)}
-                            className="flex items-center gap-2 p-2 hover:bg-red-50 hover:text-red-600"
-                          >
-                            <Heart
-                              className={`size-4 ${post.isLiked ? "fill-red-500 text-red-500" : ""}`}
-                            />
-                            <span className="text-sm">{post.likes}</span>
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => navigate(`/posts/${post.id}`)}
-                            className="flex items-center gap-2 p-2 hover:bg-blue-50 hover:text-blue-600"
-                          >
-                            <MessageCircle className="size-4" />
-                            <span className="text-sm">{post.comments}</span>
-                          </Button>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="p-2"
-                          onClick={() => handleShare(post.id)}
-                        >
-                          <Share className="size-4" />
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <PostCard
+                    key={post.id}
+                    post={post}
+                    onLike={() => handleLike(post.id)}
+                    onComment={() => navigate(`/posts/${post.id}`)}
+                    onShare={() => handleShare(post.id)}
+                  />
                 ))
               )}
             </div>

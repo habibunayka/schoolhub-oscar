@@ -16,7 +16,8 @@ import {
 import { me as getCurrentUser } from "@services/auth.js";
 import { createPost } from "@services/posts.js";
 import useConfirm from "@hooks/useConfirm.jsx";
-import { EventCard } from "@components/common/ui";
+import PostCard from "@components/posts/PostCard.jsx";
+import { getAssetUrl } from "@utils";
 
 // Restrict page to club admin role
 
@@ -172,6 +173,19 @@ export default function CreatePostPage() {
   };
 
   const selectedVisibility = VISIBILITY_OPTIONS.find(opt => opt.value === formData.visibility);
+
+  const previewPost = {
+    id: "preview",
+    author: user?.name || "",
+    authorAvatar: getAssetUrl(user?.avatar_url),
+    timestamp: "Just now",
+    caption: formData.content,
+    images: formData.images.map((img) => img.url),
+    likes: 0,
+    comments: 0,
+    isLiked: false,
+    clubName: user?.club_name,
+  };
 
   return (
     <>
@@ -372,14 +386,7 @@ export default function CreatePostPage() {
                   <FileText className="w-4 h-4" />
                   Post Preview
                 </h3>
-                <EventCard
-                  title={formData.content.split("\n")[0] || "Post Title"}
-                  clubName={user?.club_name || "Club"}
-                  image={formData.images[0]?.url}
-                  description={formData.content}
-                  visibility={formData.visibility}
-                  hideButton
-                />
+                <PostCard post={previewPost} hideActions />
               </div>
             )}
           </div>
