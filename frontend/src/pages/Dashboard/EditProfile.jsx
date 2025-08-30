@@ -89,10 +89,10 @@ export default function EditProfilePage() {
             const img = new Image();
             img.src = selectedImage;
             await new Promise((resolve) => (img.onload = resolve));
-            const sx = -position.x / scale;
-            const sy = -position.y / scale;
-            const sWidth = size / scale;
-            const sHeight = size / scale;
+            const sx = Math.max(0, -position.x / scale);
+            const sy = Math.max(0, -position.y / scale);
+            const sWidth = Math.min(img.width, size / scale);
+            const sHeight = Math.min(img.height, size / scale);
             ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, size, size);
             const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
             if (blob) formData.append("avatar", blob, "avatar.png");
