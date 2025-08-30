@@ -45,7 +45,8 @@ export default function EventDetailPage() {
   const canJoin = role === "student" && !isPast;
   const isJoined = data.rsvp_status === "going";
   const participantCount = Number(data.participant_count) || 0;
-  const isFull = data.capacity && participantCount >= data.capacity;
+  const isFull =
+    data.capacity != null && participantCount >= data.capacity;
 
   const handleJoinToggle = async () => {
     await rsvpEvent(id, { status: isJoined ? "declined" : "going" });

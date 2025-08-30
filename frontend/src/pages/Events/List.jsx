@@ -81,7 +81,9 @@ function EventCard({ event, currentUser, onJoinToggle, onEdit, onDelete, onViewD
   };
 
   const { date, time } = formatDate(event.date, event.time);
-  const isFull = event.currentParticipants >= event.maxParticipants;
+  const isFull =
+    event.maxParticipants != null &&
+    event.currentParticipants >= event.maxParticipants;
 
   return (
     <div className={`bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-200 ${
