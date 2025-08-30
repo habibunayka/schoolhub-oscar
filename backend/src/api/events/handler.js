@@ -166,3 +166,44 @@ export const checkinEvent = async (req, res) => {
     ]);
     res.json({ ok: true });
 };
+
+export const updateEvent = async (req, res) => {
+    const eventId = Number(req.params.id);
+    const event = await get(`SELECT club_id FROM events WHERE id = $1`, [eventId]);
+    if (!event) return res.status(404).json({ message: "Event not found" });
+    const member = await get(
+        `SELECT role, status FROM club_members WHERE club_id = $1 AND user_id = $2`,
+        [event.club_id, req.user.id]
+    );
+    if (!member || member.status !== "approved" || !["owner", "admin"].includes(member.role)) {
+        return res.status(403).json({ message: "Forbidden" });
+    }
+    const current = await get(`SELECT * FROM events WHERE id = $1`, [eventId]);
+    const {
+        title = current.title,
+        description = current.description,
+        location = current.location,
+        start_at = current.start_at,
+        end_at = current.end_at,
+        capacity = current.capacity,
+        require_rsvp = current.require_rsvp,
+        visibility = current.visibility,
+        image_url = current.image_url,
+    } = req.body;
+    await run(
+        `UPDATE events SET title=$1, description=$2, location=$3, start_at=$4, end_at=$5, capacity=$6, require_rsvp=$7, visibility=$8, image_url=$9 WHERE id=$10`,
+        [
+            title,
+            description,
+            location,
+            start_at,
+            end_at,
+            capacity,
+            require_rsvp,
+            visibility,
+            image_url,
+            eventId,
+        ]
+    );
+    res.json({ updated: true });
+};

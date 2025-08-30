@@ -6,6 +6,7 @@ import {
     validateListEvents,
     validateGetEvent,
     validateCreateEvent,
+    validateUpdateEvent,
     validateRsvpEvent,
     validateCheckinEvent,
     validateReviewEvent,
@@ -23,6 +24,13 @@ r.post(
     auth(),
     permitClub("owner", "admin"),
     Events.createEvent
+);
+
+r.put(
+    "/events/:id",
+    validateUpdateEvent,
+    auth(),
+    Events.updateEvent
 );
 
 r.post("/events/:id/rsvp", validateRsvpEvent, auth(), Events.rsvpEvent);

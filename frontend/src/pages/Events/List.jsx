@@ -14,6 +14,7 @@ import {
   AlertDialogAction,
 } from "@components/common/ui/feedback";
 import useConfirm from "@hooks/useConfirm.jsx";
+import SafeImage from "@components/SafeImage";
 
 
 const FILTER_OPTIONS = [
@@ -62,26 +63,14 @@ function EventCardSkeleton() {
 // Event Card Component
 function EventCard({ event, currentUser, onJoinToggle, onEdit, onDelete, onViewDetails }) {
   const isPastEvent = event.status === 'past';
-  const canEdit = (currentUser.role === 'school_admin') || 
+  const canEdit = (currentUser.role === 'school_admin') ||
                   (currentUser.role === 'club_admin' && event.organizerId === currentUser.clubId);
   const canDelete = currentUser.role === 'school_admin';
   const canJoin = currentUser.role === 'student' && !isPastEvent;
 
-  const formatDate = (dateStr, timeStr) => {
-    const date = new Date(`${dateStr}T${timeStr}`);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    return {
-      date: `${year}-${month}-${day}`,
-      time: date.toLocaleTimeString('id-ID', {
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-    };
-  };
-
-  const { date, time } = formatDate(event.date, event.time);
+  const dateObj = new Date(event.startAt);
+  const date = dateObj.toLocaleDateString('id-ID');
+  const time = dateObj.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
   const isFull =
     event.maxParticipants != null &&
     event.currentParticipants >= event.maxParticipants;
@@ -90,6 +79,7 @@ function EventCard({ event, currentUser, onJoinToggle, onEdit, onDelete, onViewD
     <div className={`bg-white rounded-lg border border-gray-200 p-6 shadow-sm hover:shadow-md transition-all duration-200 ${
       isPastEvent ? 'opacity-60' : ''
     }`}>
+      <SafeImage src={event.imageUrl} alt={event.title} className="w-full h-40 object-cover rounded-md mb-4" sizePx={256} />
       {/* Header */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex-1 min-w-0">
@@ -248,8 +238,7 @@ export default function EventsPage() {
             organizer: e.club_name,
             organizerId: e.club_id,
             organizerType: 'club',
-            date: e.start_at.slice(0,10),
-            time: e.start_at.slice(11,16),
+            startAt: e.start_at,
             location: e.location,
             description: e.description,
             imageUrl: e.image_url,
