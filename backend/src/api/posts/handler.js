@@ -1,5 +1,6 @@
-import { run, query, tx } from "../../database/db.js";
+import { run, query, tx, get } from "../../database/db.js";
 import { cleanHTML } from "../../services/sanitize.js";
+import { sendNotification } from "../../services/notifications.js";
 
 export const listPosts = async (req, res) => {
     const clubId = Number(req.params.id);
@@ -93,6 +94,26 @@ export const createPost = async (req, res) => {
         }
         return id;
     });
+
+    // notify club members about new post
+    try {
+        const members = await query(
+            `SELECT user_id FROM club_members WHERE club_id = $1 AND status = 'approved'`,
+            [clubId]
+        );
+        const club = await get(`SELECT name FROM clubs WHERE id = $1`, [clubId]);
+        const clubName = club?.name;
+        const ids = members
+            .map((m) => m.user_id)
+            .filter((id) => id !== req.user.id);
+        await sendNotification(ids, "post_created", {
+            post_id: postId,
+            club_id: clubId,
+            club_name: clubName,
+        });
+    } catch (err) {
+        console.error("failed to send post notifications", err);
+    }
 
     res.status(201).json({ id: postId });
 };

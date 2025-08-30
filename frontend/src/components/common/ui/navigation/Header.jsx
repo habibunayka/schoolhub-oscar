@@ -1,4 +1,5 @@
 import { Search, Bell, Menu, LogOut } from "lucide-react";
+import useUnreadNotifications from "../../../../hooks/useUnreadNotifications.js";
 import { Button } from "../forms/Button.jsx";
 import { Input } from "../forms/Input.jsx";
 import { Avatar, AvatarFallback } from "../data-display/Avatar.jsx";
@@ -10,6 +11,7 @@ import {
 } from "./DropdownMenu.jsx";
 
 export function Header({ showSearch = true, showProfile = true, onLogout }) {
+  const unreadCount = useUnreadNotifications();
   return (
     <header className="bg-white border-b border-border sticky top-0 z-50">
       <div className="container mx-auto px-4">
@@ -71,9 +73,11 @@ export function Header({ showSearch = true, showProfile = true, onLogout }) {
               <>
                 <Button variant="ghost" size="sm" className="relative">
                   <Bell className="size-5" />
-                  <span className="absolute -top-1 -right-1 bg-[#DC2626] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                    3
-                  </span>
+                  {unreadCount > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-[#DC2626] text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                      {unreadCount}
+                    </span>
+                  )}
                 </Button>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

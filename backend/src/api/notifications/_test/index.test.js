@@ -56,3 +56,25 @@ test("GET /notifications with invalid limit triggers validation", async () => {
     server.close();
     __setDbMocks({ query: async () => [] });
 });
+
+test("POST /notifications/read-all works", async () => {
+    let called = false;
+    __setDbMocks({
+        run: async (sql, params) => {
+            called = true;
+            assert.ok(sql.includes("UPDATE notifications"));
+            assert.equal(params[0], 1);
+        },
+        query: async () => [],
+    });
+    const token = jwt.sign({ id: 1 }, process.env.JWT_SECRET);
+    const { server, url } = await createServer();
+    const res = await fetch(`${url}/notifications/read-all`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+    });
+    assert.equal(res.status, 200);
+    assert.equal(called, true);
+    server.close();
+    __setDbMocks({ run: async () => {}, query: async () => [] });
+});

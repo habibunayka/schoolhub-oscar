@@ -1,5 +1,6 @@
 import { get, query, run } from "../../database/db.js";
 import { cleanHTML } from "../../services/sanitize.js";
+import { sendNotification } from "../../services/notifications.js";
 
 export const getAllAnnouncements = async (req, res) => {
     const { club_id, target, limit = 50, offset = 0 } = req.query;
@@ -51,7 +52,35 @@ export const createAnnouncement = async (req, res) => {
         `INSERT INTO announcements(club_id, title, content_html, target) VALUES ($1,$2,$3,$4) RETURNING id`,
         [club_id, title, cleanHTML(content_html), target]
     );
-    res.status(201).json({ id: rows[0].id });
+    const announcementId = rows[0].id;
+
+    try {
+        if (club_id) {
+            const members = await query(
+                `SELECT user_id FROM club_members WHERE club_id = $1 AND status = 'approved'`,
+                [club_id]
+            );
+            const club = await get(`SELECT name FROM clubs WHERE id = $1`, [club_id]);
+            const ids = members.map((m) => m.user_id);
+            await sendNotification(ids, "club_announcement", {
+                announcement_id: announcementId,
+                title,
+                club_id,
+                club_name: club?.name,
+            });
+        } else if (target === "all_school") {
+            const users = await query(`SELECT id FROM users`);
+            await sendNotification(
+                users.map((u) => u.id),
+                "school_announcement",
+                { announcement_id: announcementId, title }
+            );
+        }
+    } catch (err) {
+        console.error("failed to send announcement notifications", err);
+    }
+
+    res.status(201).json({ id: announcementId });
 };
 
 export const updateAnnouncement = async (req, res) => {

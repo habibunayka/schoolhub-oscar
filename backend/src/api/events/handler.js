@@ -1,5 +1,6 @@
 import { get, query, run } from "../../database/db.js";
 import { nanoid } from "nanoid";
+import { sendNotification } from "../../services/notifications.js";
 
 export const listEvents = async (req, res) => {
     const clubId = Number(req.params.id);
@@ -64,7 +65,29 @@ export const createEvent = async (req, res) => {
             visibility,
         ]
     );
-    res.status(201).json({ id: rows[0].id });
+    const eventId = rows[0].id;
+
+    // notify club members about new event
+    try {
+        const members = await query(
+            `SELECT user_id FROM club_members WHERE club_id = $1 AND status = 'approved'`,
+            [clubId]
+        );
+        const club = await get(`SELECT name FROM clubs WHERE id = $1`, [clubId]);
+        const ids = members
+            .map((m) => m.user_id)
+            .filter((id) => id !== req.user.id);
+        await sendNotification(ids, "event_created", {
+            event_id: eventId,
+            event_title: title,
+            club_id: clubId,
+            club_name: club?.name,
+        });
+    } catch (err) {
+        console.error("failed to send event notifications", err);
+    }
+
+    res.status(201).json({ id: eventId });
 };
 
 export const rsvpEvent = async (req, res) => {
