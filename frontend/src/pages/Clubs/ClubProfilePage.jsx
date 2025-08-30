@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { getClub, joinClub, leaveClub, listMembers, listJoinRequests, setMemberStatus } from "@services/clubs.js";
 import { listPosts, likePost, unlikePost } from "@services/posts.js";
-import { listEvents } from "@services/events.js";
+import { listEvents, rsvpEvent } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
 import { getAssetUrl } from "@utils";
 import {
@@ -37,6 +37,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@components/common/ui";
+import EventCard from "@components/events/EventCard.jsx";
 import useConfirm from "@hooks/useConfirm.jsx";
 
 import SafeImage from "@components/SafeImage";
@@ -125,7 +126,27 @@ export default function ClubProfilePage() {
           avatar: getAssetUrl(r.avatar_url) || "",
         }))
       );
-      setUpcomingEvents(eventsData || []);
+      setUpcomingEvents(
+        (eventsData || []).map((e) => {
+          const start = new Date(e.start_at);
+          return {
+            id: e.id,
+            title: e.title,
+            organizer: e.club_name,
+            organizerId: e.club_id,
+            startAt: e.start_at,
+            date: start.toLocaleDateString("id-ID"),
+            time: start.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
+            location: e.location,
+            description: e.description,
+            imageUrl: getAssetUrl(e.image_url) || "",
+            maxParticipants: e.capacity,
+            currentParticipants: Number(e.participant_count) || 0,
+            isJoined: e.rsvp_status === "going",
+            status: new Date(e.end_at) < new Date() ? "past" : "upcoming",
+          };
+        })
+      );
       setClubData((prev) =>
         prev
           ? {
@@ -240,6 +261,31 @@ export default function ClubProfilePage() {
       console.error(e);
       toast.error('Failed to update request');
     }
+  };
+
+  const handleEventJoinToggle = async (eventId, isJoined) => {
+    try {
+      const { participant_count, rsvp_status } = await rsvpEvent(eventId, {
+        status: isJoined ? "declined" : "going",
+      });
+      setUpcomingEvents((prev) =>
+        prev.map((e) =>
+          e.id === eventId
+            ? {
+                ...e,
+                isJoined: rsvp_status === "going",
+                currentParticipants: Number(participant_count) || e.currentParticipants,
+              }
+            : e
+        )
+      );
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const handleViewEventDetails = (eventId) => {
+    navigate(`/events/${eventId}`);
   };
 
   const handleCreateEvent = () => {
@@ -540,45 +586,28 @@ export default function ClubProfilePage() {
 
               <TabsContent value="events" className="mt-0">
                 <div className="space-y-4">
-                  {isClubAdmin && (
-                    <div className="flex justify-end">
-                      <Button
-                        onClick={handleCreateEvent}
-                        className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white"
-                      >
-                        <Plus className="size-4" />
-                        Create Event
-                      </Button>
-                    </div>
-                  )}
-                  {upcomingEvents.map((event) => (
-                    <Card key={event.id} className="bg-white rounded-2xl border border-gray-200 shadow-sm">
-                      <CardContent className="p-6">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h3 className="font-medium mb-2">{event.title}</h3>
-                            <div className="space-y-1 text-sm text-muted-foreground">
-                              <div className="flex items-center gap-2">
-                                <Calendar className="size-4" />
-                                <span>{event.date}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <Calendar className="size-4" />
-                                <span>{event.time}</span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <MapPin className="size-4" />
-                                <span>{event.location}</span>
-                              </div>
-                            </div>
-                          </div>
-                          <Button>RSVP</Button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+              {isClubAdmin && (
+                <div className="flex justify-end">
+                  <Button
+                    onClick={handleCreateEvent}
+                    className="flex items-center gap-2 bg-[#2563EB] hover:bg-blue-700 text-white"
+                  >
+                    <Plus className="size-4" />
+                    Create Event
+                  </Button>
                 </div>
-              </TabsContent>
+              )}
+              {upcomingEvents.map((event) => (
+                <EventCard
+                  key={event.id}
+                  event={event}
+                  currentUser={currentUser}
+                  onJoinToggle={handleEventJoinToggle}
+                  onViewDetails={handleViewEventDetails}
+                />
+              ))}
+            </div>
+          </TabsContent>
 
               <TabsContent value="members" className="mt-0">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
