@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import {
     Calendar,
     MapPin,
@@ -17,6 +17,14 @@ import { listAllEvents } from "@services/events.js";
 import { getUserStats, getAchievements, updateProfile } from "@services/users.js";
 import { getAssetUrl } from "@utils";
 import SafeImage from "@/components/SafeImage";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+    DialogFooter,
+    DialogClose,
+} from "@components/common/ui/feedback";
 
 export default function ProfilePage() {
     const navigate = useNavigate();
@@ -34,14 +42,41 @@ export default function ProfilePage() {
         },
     });
 
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [scale, setScale] = useState(1);
+    const [isEditing, setIsEditing] = useState(false);
+
     const handleAvatarChange = (e) => {
         const file = e.target.files?.[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onloadend = () => {
-            avatarMutation.mutate({ avatar_url: reader.result });
+            setSelectedImage(reader.result);
+            setIsEditing(true);
         };
         reader.readAsDataURL(file);
+    };
+
+    const handleSaveAvatar = () => {
+        if (!selectedImage) return;
+        const canvas = document.createElement("canvas");
+        const size = 256;
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext("2d");
+        const img = new Image();
+        img.src = selectedImage;
+        img.onload = () => {
+            const scaledWidth = img.width * scale;
+            const scaledHeight = img.height * scale;
+            const dx = (size - scaledWidth) / 2;
+            const dy = (size - scaledHeight) / 2;
+            ctx.drawImage(img, dx, dy, scaledWidth, scaledHeight);
+            avatarMutation.mutate({ avatar_url: canvas.toDataURL() });
+            setIsEditing(false);
+            setScale(1);
+            setSelectedImage(null);
+        };
     };
 
     const activeClubsCount = Array.isArray(clubs) ? clubs.length : 0;
@@ -50,8 +85,49 @@ export default function ProfilePage() {
     const achievementsCount = stats?.achievements_count ?? 0;
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
+        <>
+            <Dialog open={isEditing} onOpenChange={setIsEditing}>
+                <DialogContent className="max-w-md">
+                    <DialogHeader>
+                        <DialogTitle>Edit Avatar</DialogTitle>
+                    </DialogHeader>
+                    {selectedImage && (
+                        <div className="flex flex-col items-center space-y-4">
+                            <div className="w-40 h-40 rounded-full overflow-hidden">
+                                <img
+                                    src={selectedImage}
+                                    alt="New avatar"
+                                    style={{ transform: `scale(${scale})` }}
+                                    className="w-full h-full object-cover"
+                                />
+                            </div>
+                            <input
+                                type="range"
+                                min="1"
+                                max="3"
+                                step="0.1"
+                                value={scale}
+                                onChange={(e) => setScale(Number(e.target.value))}
+                                className="w-full"
+                            />
+                        </div>
+                    )}
+                    <DialogFooter>
+                        <DialogClose className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200">
+                            Cancel
+                        </DialogClose>
+                        <button
+                            type="button"
+                            onClick={handleSaveAvatar}
+                            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                        >
+                            Save
+                        </button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+            <div className="min-h-screen bg-gray-50">
+                <div className="max-w-3xl mx-auto px-4 py-6 space-y-6">
                 {/* Back Button */}
                 <button
                     className="p-2 hover:bg-gray-100 rounded-lg"
@@ -253,6 +329,7 @@ export default function ProfilePage() {
                     </div>
                 </div>
             </div>
-        </div>
+            </div>
+        </>
     );
 }

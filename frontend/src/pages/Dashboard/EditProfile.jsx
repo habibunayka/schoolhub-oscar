@@ -39,62 +39,66 @@ export default function EditProfilePage() {
     };
 
     return (
-        <div className="max-w-md mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Edit Profile</h1>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium mb-1">Name</label>
-                    <input
-                        name="name"
-                        value={form.name}
-                        onChange={handleChange}
-                        className="w-full border rounded p-2"
-                    />
+        <div className="min-h-screen bg-gray-50">
+            <div className="max-w-3xl mx-auto px-4 py-6">
+                <div className="bg-white rounded-lg shadow-sm p-6">
+                    <h1 className="text-2xl font-bold mb-6 text-gray-900">Edit Profile</h1>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium mb-1 text-gray-700">Name</label>
+                            <input
+                                name="name"
+                                value={form.name}
+                                onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1 text-gray-700">Bio</label>
+                            <textarea
+                                name="bio"
+                                value={form.bio}
+                                onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1 text-gray-700">Location</label>
+                            <input
+                                name="location"
+                                value={form.location}
+                                onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium mb-1 text-gray-700">Avatar URL</label>
+                            <input
+                                name="avatar_url"
+                                value={form.avatar_url}
+                                onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg p-2 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                        <div className="flex space-x-3 pt-2">
+                            <button
+                                type="button"
+                                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+                                onClick={() => navigate(-1)}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                disabled={mutation.isLoading}
+                            >
+                                Save
+                            </button>
+                        </div>
+                    </form>
                 </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Bio</label>
-                    <textarea
-                        name="bio"
-                        value={form.bio}
-                        onChange={handleChange}
-                        className="w-full border rounded p-2"
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Location</label>
-                    <input
-                        name="location"
-                        value={form.location}
-                        onChange={handleChange}
-                        className="w-full border rounded p-2"
-                    />
-                </div>
-                <div>
-                    <label className="block text-sm font-medium mb-1">Avatar URL</label>
-                    <input
-                        name="avatar_url"
-                        value={form.avatar_url}
-                        onChange={handleChange}
-                        className="w-full border rounded p-2"
-                    />
-                </div>
-                <div className="flex space-x-2">
-                    <button
-                        type="button"
-                        className="px-4 py-2 bg-gray-100 rounded"
-                        onClick={() => navigate(-1)}
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        className="px-4 py-2 bg-blue-600 text-white rounded"
-                        disabled={mutation.isLoading}
-                    >
-                        Save
-                    </button>
-                </div>
-            </form>
+            </div>
         </div>
     );
 }
