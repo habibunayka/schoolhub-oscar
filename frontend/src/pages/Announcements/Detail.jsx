@@ -1,28 +1,21 @@
 import React from 'react';
-import { useParams, useNavigate } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { Calendar, Clock, Edit, ChevronRight, Megaphone } from 'lucide-react';
-import announcements from "@services/announcements.js";
-import { me as getCurrentUser } from "@services/auth.js";
-
-const TARGET_OPTIONS = [
-  { value: 'all', label: 'All Announcements', color: 'bg-blue-100 text-blue-800' },
-  { value: 'members', label: 'Members Only', color: 'bg-green-100 text-green-800' },
-  { value: 'public', label: 'Public', color: 'bg-purple-100 text-purple-800' },
-  { value: 'admins', label: 'Admins Only', color: 'bg-red-100 text-red-800' },
-];
+import { useParams, useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { Calendar, Edit, ChevronRight, Megaphone } from 'lucide-react';
+import announcements from '@services/announcements.js';
+import { me as getCurrentUser } from '@services/auth.js';
 
 export default function AnnouncementDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const { data, isLoading, error } = useQuery({
-    queryKey: ["announcements", id],
+    queryKey: ['announcements', id],
     queryFn: () => announcements.get(id),
   });
 
   const { data: user } = useQuery({
-    queryKey: ["auth:me"],
+    queryKey: ['auth:me'],
     queryFn: getCurrentUser,
   });
 
@@ -33,13 +26,8 @@ export default function AnnouncementDetail() {
       month: 'long',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
-  };
-
-  const getTargetStyle = (target) => {
-    const option = TARGET_OPTIONS.find(opt => opt.value === target);
-    return option ? option.color : 'bg-gray-100 text-gray-800';
   };
 
   if (isLoading) {
@@ -87,7 +75,7 @@ export default function AnnouncementDetail() {
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-        <button 
+        <button
           onClick={() => navigate('/announcements')}
           className="hover:text-blue-600 transition-colors duration-200"
         >
@@ -98,56 +86,25 @@ export default function AnnouncementDetail() {
       </nav>
 
       {/* Announcement Content */}
-      <article className="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex-1">
-              <div className="flex items-center gap-2 mb-2">
-                {data.is_pinned && (
-                  <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                )}
-                <h1 className="text-3xl font-bold text-gray-900">{data.title}</h1>
-              </div>
-              <p className="text-lg text-blue-600 font-medium">
-                {data.club_name || 'School Administration'}
-              </p>
-            </div>
-            <span className={`px-3 py-1 text-sm font-medium rounded-full ${getTargetStyle(data.target)}`}>
-              {TARGET_OPTIONS.find(opt => opt.value === data.target)?.label || data.target}
-            </span>
-          </div>
-          
-          <div className="flex items-center gap-4 text-sm text-gray-500">
-            <div className="flex items-center gap-1">
-              <Calendar className="w-4 h-4" />
-              <span>Published {formatDate(data.created_at)}</span>
-            </div>
-            {data.updated_at && data.updated_at !== data.created_at && (
-              <div className="flex items-center gap-1">
-                <Clock className="w-4 h-4" />
-                <span>Updated {formatDate(data.updated_at)}</span>
-              </div>
-            )}
-          </div>
-        </div>
+      <article className="bg-white rounded-lg shadow-sm border border-gray-200 p-8 text-center">
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{data.title}</h1>
+        <p className="text-sm text-gray-500 mb-6">
+          <Calendar className="w-4 h-4 inline-block mr-1 align-text-top" />
+          Published {formatDate(data.created_at)}
+        </p>
 
-        {/* Content */}
-        <div 
-          className="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-li:text-gray-700"
+        <div
+          className="prose prose-lg max-w-none text-left prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900 prose-ul:text-gray-700 prose-ol:text-gray-700 prose-li:text-gray-700"
           dangerouslySetInnerHTML={{ __html: data.content_html }}
         />
 
-        {/* Actions */}
-        <div className="mt-8 pt-6 border-t border-gray-200 flex gap-3">
+        <div className="mt-8 pt-6 border-t border-gray-200 flex justify-center gap-3">
           <button
             onClick={() => navigate('/announcements')}
             className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors duration-200"
           >
             Back to List
           </button>
-
-          {/* Show edit button if user has permission */}
           {user?.role_global === 'school_admin' && (
             <button
               onClick={() => navigate(`/announcements/${id}/edit`)}

@@ -58,10 +58,8 @@ test("createAnnouncement sanitizes HTML and inserts", async () => {
 
     const req = {
         body: {
-            club_id: 1,
             title: "Title",
             content_html: "<p>Hi<script></script></p>",
-            target: "all",
         },
     };
     let status, json;
@@ -74,7 +72,7 @@ test("createAnnouncement sanitizes HTML and inserts", async () => {
 
     assert.equal(status, 201);
     assert.deepEqual(json, { id: 7 });
-    assert.equal(params[2], "<p>Hi</p>");
+    assert.equal(params[1], "<p>Hi</p>");
     assert.equal(runCalled, true);
     __setDbMocks({ run: async () => ({ rowCount: 0, rows: [] }) });
 });
