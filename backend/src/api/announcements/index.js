@@ -15,16 +15,12 @@ const r = Router();
 r.get(
     "/announcements",
     validateGetAllAnnouncements,
-    auth(),
-    permitGlobal("school_admin"),
     Announcements.getAllAnnouncements
 );
 
 r.get(
     "/announcements/:id",
     validateGetAnnouncementById,
-    auth(),
-    permitGlobal("school_admin"),
     Announcements.getAnnouncementById
 );
 

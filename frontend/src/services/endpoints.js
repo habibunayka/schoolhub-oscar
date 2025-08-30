@@ -35,7 +35,7 @@ export const endpoints = {
           ]
         }
       ],
-      "auth": true
+      "auth": false
     },
     {
       "name": "getAnnouncementById",
@@ -50,7 +50,7 @@ export const endpoints = {
           "query": []
         }
       ],
-      "auth": true
+      "auth": false
     },
     {
       "name": "createAnnouncement",
