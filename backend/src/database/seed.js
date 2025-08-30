@@ -144,7 +144,7 @@ const seed = async () => {
     // events
     const now = new Date();
     const [{ id: event1Id }] = await query(
-        "INSERT INTO events (club_id, title, description, location, start_at, end_at, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id",
+        "INSERT INTO events (club_id, title, description, location, start_at, end_at, capacity, image_url) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id",
         [
             club1Id,
             "Chess Tournament",
@@ -153,10 +153,11 @@ const seed = async () => {
             now,
             new Date(now.getTime() + 2 * 60 * 60 * 1000),
             50,
+            "https://example.com/event1.jpg",
         ]
     );
     const [{ id: event2Id }] = await query(
-        "INSERT INTO events (club_id, title, description, location, start_at, end_at, capacity) VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING id",
+        "INSERT INTO events (club_id, title, description, location, start_at, end_at, capacity, image_url) VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id",
         [
             club2Id,
             "Music Concert",
@@ -165,6 +166,7 @@ const seed = async () => {
             now,
             new Date(now.getTime() + 3 * 60 * 60 * 1000),
             100,
+            "https://example.com/event2.jpg",
         ]
     );
 

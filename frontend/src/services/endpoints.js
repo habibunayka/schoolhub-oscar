@@ -352,7 +352,8 @@ export const endpoints = {
             "end_at",
             "capacity",
             "require_rsvp",
-            "visibility"
+            "visibility",
+            "image_url"
           ],
           "params": [
             "id"

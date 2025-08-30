@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getEvent, rsvpEvent } from "@services/events.js";
 import { me as getCurrentUser } from "@services/auth.js";
 import { Calendar, Clock, MapPin, Users } from "lucide-react";
@@ -18,13 +18,13 @@ import {
 
 export default function EventDetailPage() {
   const { id } = useParams();
+  const queryClient = useQueryClient();
   const { data: user } = useQuery({ queryKey: ["me"], queryFn: getCurrentUser });
-  const {
-    data,
-    isLoading,
-    error,
-    refetch,
-  } = useQuery({
+    const {
+      data,
+      isLoading,
+      error,
+    } = useQuery({
     queryKey: ["event", id],
     queryFn: () => getEvent(id),
     enabled: /^\d+$/.test(id),
@@ -49,8 +49,12 @@ export default function EventDetailPage() {
     data.capacity != null && participantCount >= data.capacity;
 
   const handleJoinToggle = async () => {
-    await rsvpEvent(id, { status: isJoined ? "declined" : "going" });
-    await refetch();
+    const updated = await rsvpEvent(id, { status: isJoined ? "declined" : "going" });
+    queryClient.setQueryData(["event", id], (old) => ({
+      ...old,
+      participant_count: updated.participant_count,
+      rsvp_status: updated.rsvp_status,
+    }));
   };
 
   const formatDate = (iso) => {
@@ -68,6 +72,13 @@ export default function EventDetailPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
       <div className="bg-white rounded-lg border border-gray-200 p-6 shadow-sm space-y-4">
+        {data.image_url && (
+          <img
+            src={data.image_url}
+            alt={data.title}
+            className="w-full h-64 object-cover rounded-md"
+          />
+        )}
         <div className="flex justify-between items-start">
           <div className="flex-1 min-w-0">
             <h1 className="text-2xl font-semibold mb-1">{data.title}</h1>
