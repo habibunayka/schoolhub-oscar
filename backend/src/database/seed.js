@@ -18,14 +18,46 @@ const seed = async () => {
         RESTART IDENTITY CASCADE`);
 
     const passwordHash = await argon2.hash("password123");
-    const [{ id: user1Id }] = await query(
-        "INSERT INTO users (name, email, password_hash, avatar_url) VALUES ($1,$2,$3,$4) RETURNING id",
-        ["Alice", "alice@example.com", passwordHash, "/uploads/avatar-alice.png"]
-    );
-    const [{ id: user2Id }] = await query(
-        "INSERT INTO users (name, email, password_hash, avatar_url) VALUES ($1,$2,$3,$4) RETURNING id",
-        ["Bob", "bob@example.com", passwordHash, "/uploads/avatar-bob.png"]
-    );
+
+    // users
+    const createUser = async (name, email, options = {}) => {
+        const cols = ["name", "email", "password_hash"];
+        const vals = [name, email, passwordHash];
+        if (options.role_global) {
+            cols.push("role_global");
+            vals.push(options.role_global);
+        }
+        if (options.status) {
+            cols.push("status");
+            vals.push(options.status);
+        }
+        cols.push("avatar_url");
+        vals.push(options.avatar_url);
+        const placeholders = cols.map((_, i) => `$${i + 1}`).join(",");
+        const [{ id }] = await query(
+            `INSERT INTO users (${cols.join(",")}) VALUES (${placeholders}) RETURNING id`,
+            vals
+        );
+        return id;
+    };
+
+    const schoolAdminId = await createUser("School Admin", "admin@school.com", {
+        role_global: "school_admin",
+        avatar_url: "/uploads/avatar-school-admin.png",
+    });
+    const founderId = await createUser("Club Founder", "founder@example.com", {
+        avatar_url: "/uploads/avatar-founder.png",
+    });
+    const clubAdminId = await createUser("Club Admin", "clubadmin@example.com", {
+        avatar_url: "/uploads/avatar-clubadmin.png",
+    });
+    const memberId = await createUser("Club Member", "member@example.com", {
+        avatar_url: "/uploads/avatar-member.png",
+    });
+    const guestId = await createUser("Guest User", "guest@example.com", {
+        status: "guest",
+        avatar_url: "/uploads/avatar-guest.png",
+    });
 
     // club categories
     const [{ id: academicCatId }] = await query(
@@ -70,25 +102,29 @@ const seed = async () => {
     // club members
     await run(
         "INSERT INTO club_members (club_id, user_id, role, status, joined_at) VALUES ($1,$2,'owner','approved', NOW())",
-        [club1Id, user1Id]
+        [club1Id, founderId]
+    );
+    await run(
+        "INSERT INTO club_members (club_id, user_id, role, status, joined_at) VALUES ($1,$2,'admin','approved', NOW())",
+        [club1Id, clubAdminId]
     );
     await run(
         "INSERT INTO club_members (club_id, user_id, role, status, joined_at) VALUES ($1,$2,'member','approved', NOW())",
-        [club1Id, user2Id]
+        [club1Id, memberId]
     );
     await run(
         "INSERT INTO club_members (club_id, user_id, role, status, joined_at) VALUES ($1,$2,'owner','approved', NOW())",
-        [club2Id, user2Id]
+        [club2Id, clubAdminId]
     );
 
     // posts
     const [{ id: post1Id }] = await query(
         "INSERT INTO posts (club_id, author_id, body_html) VALUES ($1,$2,$3) RETURNING id",
-        [club1Id, user1Id, "<p>Welcome to our club!</p>"]
+        [club1Id, founderId, "<p>Welcome to our club!</p>"]
     );
     const [{ id: post2Id }] = await query(
         "INSERT INTO posts (club_id, author_id, body_html) VALUES ($1,$2,$3) RETURNING id",
-        [club2Id, user2Id, "<p>Music is life.</p>"]
+        [club2Id, clubAdminId, "<p>Music is life.</p>"]
     );
 
     await run(
@@ -98,11 +134,11 @@ const seed = async () => {
 
     await run(
         "INSERT INTO post_likes (post_id, user_id) VALUES ($1,$2)",
-        [post1Id, user2Id]
+        [post1Id, memberId]
     );
     await run(
         "INSERT INTO post_likes (post_id, user_id) VALUES ($1,$2)",
-        [post2Id, user1Id]
+        [post2Id, founderId]
     );
 
     // events
@@ -134,11 +170,11 @@ const seed = async () => {
 
     await run(
         "INSERT INTO event_rsvps (event_id, user_id, status) VALUES ($1,$2,'going')",
-        [event1Id, user1Id]
+        [event1Id, founderId]
     );
     await run(
         "INSERT INTO event_rsvps (event_id, user_id, status) VALUES ($1,$2,'going')",
-        [event2Id, user2Id]
+        [event2Id, clubAdminId]
     );
 
     // announcements
