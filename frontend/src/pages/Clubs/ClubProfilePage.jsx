@@ -337,7 +337,7 @@ export default function ClubProfilePage() {
 
       {/* Cover Photo Section */}
       <section className="relative">
-        <div className="h-[300px] relative">
+        <div className="h-48 sm:h-[300px] relative">
           {/* SafeImage fills the area and provides placeholder + fallback */}
           <SafeImage
             src={clubData.coverImage}
@@ -352,9 +352,9 @@ export default function ClubProfilePage() {
         </div>
 
         {/* Club Info Overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 text-white">
+        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 text-white">
           <div className="container mx-auto px-4">
-            <div className="flex items-end gap-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-end gap-4 sm:gap-6">
               {/* Club Logo */}
               <div className="relative">
                 <div className="w-24 h-24 rounded-xl overflow-hidden border-4 border-white">
@@ -372,8 +372,8 @@ export default function ClubProfilePage() {
 
               {/* Club Info */}
               <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h1 className="text-3xl font-bold">{clubData.name}</h1>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1 sm:gap-3 mb-2">
+                  <h1 className="text-2xl sm:text-3xl font-bold">{clubData.name}</h1>
                   <Badge
                     variant="secondary"
                     className="bg-white/20 text-white border-white/30"
@@ -381,10 +381,10 @@ export default function ClubProfilePage() {
                     {clubData.category}
                   </Badge>
                 </div>
-                <p className="text-lg text-white/90 mb-4 max-w-2xl">
+                <p className="text-base sm:text-lg text-white/90 mb-4 max-w-2xl">
                   {clubData.description}
                 </p>
-                <div className="flex items-center gap-6 text-sm">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-6 text-sm">
                   <div className="flex items-center gap-1">
                     <Users className="size-4" />
                     <span>{clubData.memberCount} members</span>
@@ -401,11 +401,11 @@ export default function ClubProfilePage() {
               </div>
 
               {/* Join Button */}
-              <div>
+              <div className="w-full sm:w-auto mt-4 sm:mt-0">
                 <Button
                   onClick={clubData.isJoined ? handleLeaveClub : handleJoinClub}
                   disabled={clubData.isRequested && !clubData.isJoined}
-                  className={`${clubData.isJoined ? 'bg-red-600 hover:bg-red-700' : 'bg-[#2563EB] hover:bg-blue-700'} text-white px-8 disabled:bg-gray-300 disabled:text-gray-600`}
+                  className={`w-full sm:w-auto ${clubData.isJoined ? 'bg-red-600 hover:bg-red-700' : 'bg-[#2563EB] hover:bg-blue-700'} text-white px-6 sm:px-8 disabled:bg-gray-300 disabled:text-gray-600`}
                   size="lg"
                 >
                   <UserPlus className="size-4 mr-2" />
@@ -425,36 +425,36 @@ export default function ClubProfilePage() {
       <section className="bg-white border-b border-border">
         <div className="container mx-auto px-4">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="h-14 bg-transparent border-0 gap-8">
+            <TabsList className="h-14 bg-transparent border-0 gap-4 overflow-x-auto">
               <TabsTrigger
                 value="posts"
-                className="data-[state=active]:border-b-2 data-[state=active]:border-[#2563EB] data-[state=active]:bg-transparent rounded-none pb-4"
+                className="whitespace-nowrap data-[state=active]:border-b-2 data-[state=active]:border-[#2563EB] data-[state=active]:bg-transparent rounded-none pb-4"
               >
                 Posts ({clubData.stats.posts})
               </TabsTrigger>
               <TabsTrigger
                 value="events"
-                className="data-[state=active]:border-b-2 data-[state=active]:border-[#2563EB] data-[state=active]:bg-transparent rounded-none pb-4"
+                className="whitespace-nowrap data-[state=active]:border-b-2 data-[state=active]:border-[#2563EB] data-[state=active]:bg-transparent rounded-none pb-4"
               >
                 Events ({clubData.stats.events})
               </TabsTrigger>
               <TabsTrigger
                 value="members"
-                className="data-[state=active]:border-b-2 data-[state=active]:border-[#2563EB] data-[state=active]:bg-transparent rounded-none pb-4"
+                className="whitespace-nowrap data-[state=active]:border-b-2 data-[state=active]:border-[#2563EB] data-[state=active]:bg-transparent rounded-none pb-4"
               >
                 Members ({clubData.memberCount})
               </TabsTrigger>
               {canViewRequests && (
                 <TabsTrigger
                   value="requests"
-                  className="data-[state=active]:border-b-2 data-[state=active]:border-[#2563EB] data-[state=active]:bg-transparent rounded-none pb-4"
+                  className="whitespace-nowrap data-[state=active]:border-b-2 data-[state=active]:border-[#2563EB] data-[state=active]:bg-transparent rounded-none pb-4"
                 >
                   Requests ({requests.length})
                 </TabsTrigger>
               )}
               <TabsTrigger
                 value="about"
-                className="data-[state=active]:border-b-2 data-[state=active]:border-[#2563EB] data-[state=active]:bg-transparent rounded-none pb-4"
+                className="whitespace-nowrap data-[state=active]:border-b-2 data-[state=active]:border-[#2563EB] data-[state=active]:bg-transparent rounded-none pb-4"
               >
                 About
               </TabsTrigger>
