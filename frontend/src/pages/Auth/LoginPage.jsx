@@ -169,14 +169,6 @@ export default function LoginPage() {
               </Button>
             </p>
           </div>
-
-          {/* Demo Account Info */}
-          <div className="mt-6 p-3 bg-blue-50 rounded-lg border border-blue-200">
-            <p className="text-xs text-blue-800 text-center">
-              <span className="font-medium">Demo:</span> Use any email and
-              password to sign in
-            </p>
-          </div>
         </CardContent>
       </Card>
     </div>
