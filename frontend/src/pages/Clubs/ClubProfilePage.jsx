@@ -61,7 +61,9 @@ export default function ClubProfilePage() {
     author: p.author_name ?? p.author?.name,
     authorAvatar: getAssetUrl(p.author_avatar ?? p.author?.avatar_url ?? null),
     timestamp: p.created_at,
-    caption: p.body_html ? p.body_html.replace(/<[^>]*>/g, "") : "",
+    caption: p.body_html
+      ? p.body_html.replace(/<[^>]*>/g, "")
+      : p.body_text ?? p.body ?? p.content ?? "",
     images: Array.isArray(p.images)
       ? p.images.map((img) => getAssetUrl(img))
       : p.image_url
