@@ -1,54 +1,48 @@
-import { Home, Grid3X3, Calendar, User } from "lucide-react";
-import { Badge } from "../data-display/Badge.jsx";
+import { Home, Grid3X3, Calendar, Megaphone } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 export function BottomNavigation() {
   const navItems = [
     {
+      to: "/",
       icon: <Home className="size-5" />,
       label: "Home",
-      isActive: true,
     },
     {
+      to: "/clubs",
       icon: <Grid3X3 className="size-5" />,
       label: "Clubs",
     },
     {
+      to: "/events",
       icon: <Calendar className="size-5" />,
-      label: "Calendar",
-      badge: 2,
+      label: "Events",
     },
     {
-      icon: <User className="size-5" />,
-      label: "Profile",
+      to: "/announcements",
+      icon: <Megaphone className="size-5" />,
+      label: "Announcements",
     },
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border md:hidden z-50">
+    <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border z-50">
       <div className="grid grid-cols-4 h-16">
-        {navItems.map((item, index) => (
-          <button
-            key={index}
-            className={`flex flex-col items-center justify-center gap-1 relative ${
-              item.isActive
-                ? "text-[#2563EB]"
-                : "text-muted-foreground hover:text-foreground"
-            }`}
+        {navItems.map((item) => (
+          <NavLink
+            key={item.to}
+            to={item.to}
+            className={({ isActive }) =>
+              `flex flex-col items-center justify-center gap-1 relative ${
+                isActive
+                  ? "text-[#2563EB]"
+                  : "text-muted-foreground hover:text-foreground"
+              }`
+            }
           >
-            <div className="relative">
-              {item.isActive ? (
-                <div className="p-1">{item.icon}</div>
-              ) : (
-                item.icon
-              )}
-              {item.badge && (
-                <Badge className="absolute -top-1 -right-1 bg-[#DC2626] text-white text-xs min-w-5 h-5 flex items-center justify-center p-0">
-                  {item.badge}
-                </Badge>
-              )}
-            </div>
+            <div className="p-1">{item.icon}</div>
             <span className="text-xs">{item.label}</span>
-          </button>
+          </NavLink>
         ))}
       </div>
     </div>
