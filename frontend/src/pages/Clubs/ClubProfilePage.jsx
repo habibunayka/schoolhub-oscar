@@ -37,7 +37,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@components/common/ui";
-import useConfirm from "@hooks/useConfirm.js";
+import useConfirm from "@hooks/useConfirm.jsx";
 
 import SafeImage from "@components/SafeImage";
 import { getInitials } from "@utils/string";

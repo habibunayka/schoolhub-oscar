@@ -15,7 +15,7 @@ import {
   Trash2
 } from "lucide-react";
 import { me as getCurrentUser } from "@services/auth.js";
-import useConfirm from "@hooks/useConfirm.js";
+import useConfirm from "@hooks/useConfirm.jsx";
 
 // Restrict page to club admin role
 

@@ -13,7 +13,7 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@components/common/ui/feedback";
-import useConfirm from "@hooks/useConfirm.js";
+import useConfirm from "@hooks/useConfirm.jsx";
 
 
 const FILTER_OPTIONS = [

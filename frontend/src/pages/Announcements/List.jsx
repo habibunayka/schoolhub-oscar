@@ -16,7 +16,7 @@ import {
 } from 'lucide-react';
 import announcements from "@services/announcements.js";
 import { me as getCurrentUser } from "@services/auth.js";
-import useConfirm from "@hooks/useConfirm.js";
+import useConfirm from "@hooks/useConfirm.jsx";
 const TARGET_OPTIONS = [
   { value: 'all', label: 'All Announcements', color: 'bg-blue-100 text-blue-800' },
   { value: 'members', label: 'Members Only', color: 'bg-green-100 text-green-800' },
