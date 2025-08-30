@@ -118,6 +118,7 @@ function AnnouncementCard({ announcement, currentUser, onEdit, onDelete, onView 
         <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTargetStyle(announcement.target)}`}>
           {TARGET_OPTIONS.find(opt => opt.value === announcement.target)?.label || announcement.target}
         </span>
+        {/* TODO : Buat tombol create announcement yang hanya terlihat untuk admin sekolah. */}
       </div>
 
       {/* Meta Information */}
