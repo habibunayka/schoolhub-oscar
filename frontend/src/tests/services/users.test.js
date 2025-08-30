@@ -17,10 +17,12 @@ if (service) {
     });
 
   test("updateProfile patches payload", async () => {
-    const payload = { name: "N", bio: "B" };
+    const payload = new FormData();
+    payload.append("name", "N");
+    payload.append("bio", "B");
     const res = await service.updateProfile(payload);
     assert.equal(res.method, "patch");
     assert.equal(res.url, "/users/me");
-    assert.deepEqual(JSON.parse(res.data), payload);
+    assert.ok(res.data instanceof FormData);
   });
 }

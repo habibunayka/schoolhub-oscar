@@ -66,13 +66,18 @@ export default function ProfilePage() {
         const ctx = canvas.getContext("2d");
         const img = new Image();
         img.src = selectedImage;
-        img.onload = () => {
+        img.onload = async () => {
             const scaledWidth = img.width * scale;
             const scaledHeight = img.height * scale;
             const dx = (size - scaledWidth) / 2;
             const dy = (size - scaledHeight) / 2;
             ctx.drawImage(img, dx, dy, scaledWidth, scaledHeight);
-            avatarMutation.mutate({ avatar_url: canvas.toDataURL() });
+            const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
+            if (blob) {
+                const formData = new FormData();
+                formData.append("avatar", blob, "avatar.png");
+                avatarMutation.mutate(formData);
+            }
             setIsEditing(false);
             setScale(1);
             setSelectedImage(null);
@@ -165,7 +170,7 @@ export default function ProfilePage() {
                             />
                             <button
                                 className="absolute bottom-2 right-2 bg-white rounded-full p-2 shadow-lg hover:shadow-xl"
-                                onClick={() => navigate('/profile/edit')}
+                                onClick={() => avatarInputRef.current?.click()}
                             >
                                 <Camera className="w-4 h-4 text-gray-600" />
                             </button>

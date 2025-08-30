@@ -14,7 +14,8 @@ export const getMyStats = async (req, res) => {
 
 export const updateMe = async (req, res) => {
     const id = req.user.id;
-    const { name, bio, location, avatar_url } = req.body;
+    const { name, bio, location } = req.body;
+    const avatar_url = req.file ? `/uploads/${req.file.filename}` : undefined;
     await run(
         `UPDATE users SET
             name = COALESCE($1, name),
