@@ -139,6 +139,8 @@ export default function ProfilePage() {
                 <div className="bg-white rounded-lg shadow-sm p-6">
                     <h3 className="text-lg font-semibold text-gray-900 mb-4">My Clubs</h3>
                     <div className="space-y-3">
+
+                        {/* TODO : Buat ini itu benar-benar club yang dia udah join, bukan semua club. Buat endpoint nya kalau diperlukan. */}
                         {Array.isArray(clubs) &&
                             clubs.map((club) => (
                                 <div

@@ -459,6 +459,7 @@ export default function StudentDashboard() {
                 <CardTitle>Recommended Clubs</CardTitle>
               </CardHeader>
               <CardContent>
+                {/* TODO : Buat ini itu benar-benar club yang belum udah join, bukan semua club. Buat endpoint nya kalau diperlukan. */}
                 <div className="space-y-3">
                   {loadingRecom ? (
                     <p>Loading...</p>

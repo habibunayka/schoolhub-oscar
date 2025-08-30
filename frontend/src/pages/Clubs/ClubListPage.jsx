@@ -2,7 +2,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { listClubs } from "@services/clubs.js";
 import { getAssetUrl } from "@utils";
 
+{/* TODO : Buat ini itu benar-benar kategori yang club nya ada. kalau tidak ada club nya jangan buat kategorinya. Buat juga crud kategori biar bisa dibuat lewat halaman create clubs (khusus admin sekolah [buatin]). */}
 const CATEGORIES = ["Technology", "Arts", "Sports", "Academic", "Environment", "Service", "Lifestyle"];
+
 const SORT_OPTIONS = [
   { value: "name", label: "Name A-Z" },
   { value: "members-desc", label: "Most Members" },

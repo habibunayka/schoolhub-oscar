@@ -128,7 +128,7 @@ function EventCard({ event, currentUser, onJoinToggle, onEdit, onDelete, onViewD
 
       {/* Action Buttons */}
       <div className="flex gap-2">
-        {/* Join/Leave Button for Students */}
+        {/* TODO : Buat ini itu benar-benar join yang berfungsi. Jika di pencet buat ada konfirmasi apakah anda bena-benar ingin join (jangan konfirmasi yang default, buat component nya saja), jangan langsung masuk, tapi ada requesting... */}
         {canJoin && (
           <button
             onClick={() => onJoinToggle(event.id)}
