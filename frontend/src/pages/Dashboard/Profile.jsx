@@ -258,7 +258,7 @@ export default function ProfilePage() {
                                 >
                                     <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
                                         {club.logo_url ? (
-                                            <img
+                                            <SafeImage
                                                 src={getAssetUrl(club.logo_url)}
                                                 alt={club.name}
                                                 className="w-full h-full object-cover"
