@@ -76,9 +76,11 @@ export default function StudentDashboard() {
     author: p.author_name ?? p.author?.name,
     authorAvatar: getAssetUrl(p.author_avatar ?? p.author?.avatar_url ?? null),
     timestamp: p.created_at,
-    content: p.body_text ?? p.body ?? p.content,
+    content: p.body_html
+      ? p.body_html.replace(/<[^>]*>/g, "")
+      : p.body_text ?? p.body ?? p.content ?? "",
     images: Array.isArray(p.images)
-      ? p.images.map(getAssetUrl)
+      ? p.images.map((img) => getAssetUrl(img))
       : p.image_url
         ? [getAssetUrl(p.image_url)]
         : [],
