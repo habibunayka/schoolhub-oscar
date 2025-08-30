@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import auth from "@services/auth.js";
@@ -11,6 +11,9 @@ export default function EditProfilePage() {
     const [form, setForm] = useState({ name: "", bio: "", location: "" });
     const [selectedImage, setSelectedImage] = useState(null);
     const [scale, setScale] = useState(1);
+    const [position, setPosition] = useState({ x: 0, y: 0 });
+    const [dragging, setDragging] = useState(false);
+    const lastPoint = useRef({ x: 0, y: 0 });
 
     useEffect(() => {
         if (user) {
@@ -41,9 +44,34 @@ export default function EditProfilePage() {
         reader.onloadend = () => {
             setSelectedImage(reader.result);
             setScale(1);
+            setPosition({ x: 0, y: 0 });
         };
         reader.readAsDataURL(file);
     };
+    const getClientPoint = (e) => {
+        if ("touches" in e) {
+            return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        return { x: e.clientX, y: e.clientY };
+    };
+
+    const handleDragStart = (e) => {
+        e.preventDefault();
+        setDragging(true);
+        lastPoint.current = getClientPoint(e);
+    };
+
+    const handleDragMove = (e) => {
+        if (!dragging) return;
+        e.preventDefault();
+        const pt = getClientPoint(e);
+        const dx = pt.x - lastPoint.current.x;
+        const dy = pt.y - lastPoint.current.y;
+        lastPoint.current = pt;
+        setPosition((prev) => ({ x: prev.x + dx, y: prev.y + dy }));
+    };
+
+    const handleDragEnd = () => setDragging(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -61,11 +89,11 @@ export default function EditProfilePage() {
             const img = new Image();
             img.src = selectedImage;
             await new Promise((resolve) => (img.onload = resolve));
-            const scaledWidth = img.width * scale;
-            const scaledHeight = img.height * scale;
-            const dx = (size - scaledWidth) / 2;
-            const dy = (size - scaledHeight) / 2;
-            ctx.drawImage(img, dx, dy, scaledWidth, scaledHeight);
+            const sx = -position.x / scale;
+            const sy = -position.y / scale;
+            const sWidth = size / scale;
+            const sHeight = size / scale;
+            ctx.drawImage(img, sx, sy, sWidth, sHeight, 0, 0, size, size);
             const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
             if (blob) formData.append("avatar", blob, "avatar.png");
         }
@@ -116,12 +144,27 @@ export default function EditProfilePage() {
                             />
                             {selectedImage && (
                                 <div className="mt-4 flex flex-col items-center space-y-2">
-                                    <div className="w-40 h-40 rounded-full overflow-hidden">
+                                    <div
+                                        className="relative w-64 h-64 overflow-hidden border border-gray-300 cursor-move"
+                                        onMouseDown={handleDragStart}
+                                        onMouseMove={handleDragMove}
+                                        onMouseUp={handleDragEnd}
+                                        onMouseLeave={handleDragEnd}
+                                        onTouchStart={handleDragStart}
+                                        onTouchMove={handleDragMove}
+                                        onTouchEnd={handleDragEnd}
+                                    >
                                         <img
                                             src={selectedImage}
                                             alt="New avatar"
-                                            style={{ transform: `scale(${scale})` }}
-                                            className="w-full h-full object-cover"
+                                            draggable={false}
+                                            className="absolute top-0 left-0"
+                                            style={{
+                                                top: position.y,
+                                                left: position.x,
+                                                transform: `scale(${scale})`,
+                                                transformOrigin: "top left",
+                                            }}
                                         />
                                     </div>
                                     <input
