@@ -393,6 +393,46 @@ export const endpoints = {
       "auth": true
     },
     {
+      "name": "updateEvent",
+      "method": "PUT",
+      "path": "/events/:id",
+      "validators": [
+        {
+          "body": [
+            "title",
+            "description",
+            "location",
+            "start_at",
+            "end_at",
+            "capacity",
+            "require_rsvp",
+            "visibility",
+            "image_url"
+          ],
+          "params": [
+            "id"
+          ],
+          "query": []
+        }
+      ],
+      "auth": true
+    },
+    {
+      "name": "deleteEvent",
+      "method": "DELETE",
+      "path": "/events/:id",
+      "validators": [
+        {
+          "body": [],
+          "params": [
+            "id"
+          ],
+          "query": []
+        }
+      ],
+      "auth": true
+    },
+    {
       "name": "rsvpEvent",
       "method": "POST",
       "path": "/events/:id/rsvp",
