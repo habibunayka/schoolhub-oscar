@@ -42,7 +42,7 @@ export default function EventDetailPage() {
       ? "club_admin"
       : "student";
   const isPast = new Date(data.end_at) < new Date();
-  const canJoin = role === "student" && !isPast;
+  const canJoin = role === "student" && !isPast && data.require_rsvp;
   const isJoined = data.rsvp_status === "going";
   const participantCount = Number(data.participant_count) || 0;
   const isFull =
@@ -134,18 +134,18 @@ export default function EventDetailPage() {
                     : "bg-blue-600 text-white hover:bg-blue-700"
                 }`}
               >
-                {isJoined ? "Leave" : isFull ? "Full" : "Join"}
+                {isJoined ? "Cancel RSVP" : isFull ? "Full" : "RSVP"}
               </button>
             </AlertDialogTrigger>
             <AlertDialogContent>
               <AlertDialogHeader>
                 <AlertDialogTitle>
-                  {isJoined ? "Leave event?" : "Join event?"}
+                  {isJoined ? "Cancel RSVP?" : "RSVP to event?"}
                 </AlertDialogTitle>
                 <AlertDialogDescription>
                   {isJoined
-                    ? "Are you sure you want to leave this event?"
-                    : "Confirm your participation in this event."}
+                    ? "Are you sure you want to cancel your RSVP?"
+                    : "Confirm your attendance by RSVP."}
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>
@@ -159,7 +159,7 @@ export default function EventDetailPage() {
                         : "bg-blue-600 text-white hover:bg-blue-700"
                     }
                   >
-                    {isJoined ? "Leave" : "Join"}
+                    {isJoined ? "Cancel RSVP" : "RSVP"}
                   </AlertDialogAction>
                 )}
               </AlertDialogFooter>

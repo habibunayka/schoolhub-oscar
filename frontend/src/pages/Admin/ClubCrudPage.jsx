@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 import {
@@ -10,11 +9,9 @@ import {
   getClub,
 } from "@services/clubs.js";
 import { listCategories } from "@services/clubCategories.js";
-import { me as getCurrentUser } from "@services/auth.js";
 import useConfirm from "@hooks/useConfirm.jsx";
 
 export default function ClubCrudPage() {
-  const navigate = useNavigate();
   const [clubs, setClubs] = useState([]);
   const [categories, setCategories] = useState([]);
   const [form, setForm] = useState({
@@ -31,11 +28,6 @@ export default function ClubCrudPage() {
   useEffect(() => {
     async function init() {
       try {
-        const user = await getCurrentUser();
-        if (user.role_global !== "school_admin") {
-          navigate("/");
-          return;
-        }
         const [clubData, catData] = await Promise.all([
           listClubs(),
           listCategories(),
@@ -47,7 +39,7 @@ export default function ClubCrudPage() {
       }
     }
     init();
-  }, [navigate]);
+  }, []);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
