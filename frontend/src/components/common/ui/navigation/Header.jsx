@@ -13,7 +13,7 @@ import {
 export function Header({ showSearch = true, showProfile = true, onLogout }) {
   const unreadCount = useUnreadNotifications();
   return (
-    <header className="bg-white border-b border-border sticky top-0 z-50">
+    <header className="bg-white sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
