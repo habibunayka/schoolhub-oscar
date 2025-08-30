@@ -51,7 +51,7 @@ function GlobalSearch() {
       {/* Input */}
       <Input
         aria-label="Search"
-        placeholder="Search..."
+        placeholder="Search Club..."
         value={query}
         onChange={onChange}
         onFocus={(e) => e.target.select()}
