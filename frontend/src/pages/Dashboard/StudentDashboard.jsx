@@ -14,7 +14,6 @@ import { getUpcomingEvents } from "@services/events.js";
 import { getUserStats } from "@services/users.js";
 import { getAssetUrl, formatDate, formatTime } from "@utils";
 import PostCard from "@components/posts/PostCard.jsx";
-import { me as getCurrentUser } from "@services/auth.js";
 
 export default function StudentDashboard() {
   const navigate = useNavigate();
@@ -35,7 +34,6 @@ export default function StudentDashboard() {
   const [errRecom, setErrRecom] = useState(null);
   const [activityPoints, setActivityPoints] = useState(0);
   const [achievementsCount, setAchievementsCount] = useState(0);
-  const [isSchoolAdmin, setIsSchoolAdmin] = useState(false);
 
   const normalizeClub = (c) => ({
     id: String(c.id),
@@ -119,12 +117,6 @@ export default function StudentDashboard() {
         setLoadingClubs(false);
       }
     })();
-  }, []);
-
-  useEffect(() => {
-    getCurrentUser()
-      .then((user) => setIsSchoolAdmin(user.role_global === "school_admin"))
-      .catch(() => setIsSchoolAdmin(false));
   }, []);
 
   useEffect(() => {
@@ -223,22 +215,6 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen bg-background">
       <div className="container mx-auto px-4 py-6">
-        {isSchoolAdmin && (
-          <div className="mb-6 flex gap-4">
-            <Button
-              onClick={() => navigate("/admin/clubs")}
-              className="bg-blue-600 text-white"
-            >
-              Manage Clubs
-            </Button>
-            <Button
-              onClick={() => navigate("/admin/categories")}
-              className="bg-blue-600 text-white"
-            >
-              Manage Categories
-            </Button>
-          </div>
-        )}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Left Sidebar - My Clubs */}
           <div className="lg:col-span-3">

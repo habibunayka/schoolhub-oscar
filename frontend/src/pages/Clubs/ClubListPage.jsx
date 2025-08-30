@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { listClubs, joinClub, leaveClub } from "@services/clubs.js";
 import { listCategories } from "@services/clubCategories.js";
+import { me as getCurrentUser } from "@services/auth.js";
 import { getAssetUrl } from "@utils";
 import SafeImage from '@/components/SafeImage';
 import { toast } from 'sonner';
@@ -308,7 +310,10 @@ export default function ClubsPage({ className = "" }) {
   const [maxMembers, setMaxMembers] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [currentPage, setCurrentPage] = useState(1);
-  
+  const [isSchoolAdmin, setIsSchoolAdmin] = useState(false);
+
+  const navigate = useNavigate();
+
   const ITEMS_PER_PAGE = 9;
 
   useEffect(() => {
@@ -336,6 +341,12 @@ export default function ClubsPage({ className = "" }) {
     }
     fetchClubs();
     fetchCategories();
+  }, []);
+
+  useEffect(() => {
+    getCurrentUser()
+      .then((user) => setIsSchoolAdmin(user.role_global === "school_admin"))
+      .catch(() => setIsSchoolAdmin(false));
   }, []);
 
   // Filter and sort clubs
@@ -476,11 +487,21 @@ export default function ClubsPage({ className = "" }) {
     <ConfirmDialog />
     <div className={`max-w-7xl mx-auto px-4 py-8 ${className}`}>
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Clubs</h1>
-        <p className="text-gray-600">
-          {filteredAndSortedClubs.length} of {clubs.length} clubs
-        </p>
+      <div className="mb-8 flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Clubs</h1>
+          <p className="text-gray-600">
+            {filteredAndSortedClubs.length} of {clubs.length} clubs
+          </p>
+        </div>
+        {isSchoolAdmin && (
+          <button
+            onClick={() => navigate('/admin/clubs')}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg"
+          >
+            Manage Clubs
+          </button>
+        )}
       </div>
 
       <div className="grid lg:grid-cols-4 gap-6">
